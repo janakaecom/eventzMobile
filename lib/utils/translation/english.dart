@@ -1,0 +1,28 @@
+class EnglishTranslations {
+  static final Map<String, String> en_text = {
+    'app_name': 'Eventz',
+    'login': 'LOGIN',
+    'enter_email': 'Enter your email',
+    'invalid_email': 'Please Enter valid email',
+    'enter_password': 'Enter your Password',
+    'invalid_password': 'Please Enter Password',
+    'email_cap': 'EMAIL',
+    'password_cap': 'PASSWORD',
+    'new_sign_up': 'NEW TO EVENTZ? SIGN UP',
+    'forgot_pw': 'Forgot Password',
+    'sign_up': 'Sign Up',
+    'first_name': 'FIRST NAME',
+    'enter_first_name': 'Please Enter First Name',
+    'last_name': 'LAST NAME',
+    'enter_last_name': 'Please Enter Last Name',
+    'mobile': 'MOBILE',
+    'enter_mobile': 'Please Enter Mobile Number',
+    'invalid_mobile': 'Please Enter Valid Mobile Number',
+    'register': 'Register',
+    'error': 'Error',
+    'no_internet': 'Please connect to the internet',
+    'event_calender': 'Event Calender',
+    'enroll': 'Enroll',
+    'empty': '',
+  };
+}
