@@ -528,8 +528,7 @@ class _HostRegistrationState extends State<HostRegistration> with BaseUI{
                 backgroundColor: AppColors.kWhite);
             // Get.off(LoginView());
           } else {
-            RegisterErrorResponse responseData =
-            RegisterErrorResponse.fromJson(json.decode(value.body));
+            RegisterErrorResponse responseData = RegisterErrorResponse.fromJson(json.decode(value.body));
             Get.snackbar('error'.tr, responseData.message,
                 colorText: AppColors.textRed,
                 backgroundColor: AppColors.kWhite);
