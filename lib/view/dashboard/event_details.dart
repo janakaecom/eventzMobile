@@ -269,6 +269,7 @@ class _EventDetailsState extends State<EventDetails> with BaseUI {
                       borderSide: BorderSide(color: Colors.red))),
             ),
           ),
+
           Container(
             margin:
                 const EdgeInsets.only(left: 20, right: 20, top: 10, bottom: 10),
@@ -288,6 +289,7 @@ class _EventDetailsState extends State<EventDetails> with BaseUI {
                       borderSide: BorderSide(color: Colors.red))),
             ),
           ),
+
           Container(
             margin:
                 const EdgeInsets.only(left: 20, right: 20, top: 10, bottom: 10),
@@ -307,6 +309,7 @@ class _EventDetailsState extends State<EventDetails> with BaseUI {
                       borderSide: BorderSide(color: Colors.red))),
             ),
           ),
+
           Container(
               padding: const EdgeInsets.only(
                   top: 30, left: 20, right: 20, bottom: 20),
@@ -383,6 +386,7 @@ class _EventDetailsState extends State<EventDetails> with BaseUI {
                   ),
                 ],
               )),
+
           Container(
             padding: const EdgeInsets.only(left: 50, right: 50),
             child: FLButton(
@@ -398,6 +402,7 @@ class _EventDetailsState extends State<EventDetails> with BaseUI {
               height: 40,
             ),
           ),
+
           SizedBox(
             height: 30,
           )

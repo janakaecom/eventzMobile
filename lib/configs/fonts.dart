@@ -10,6 +10,7 @@ class AppFonts {
   static const textFieldFontSize = 18.0;
   static const textFieldFontSize16 = 16.0;
   static const textFieldFontSize12 = 12.0;
+  static const textFieldFontSize15 = 15.0;
   static const textFieldFontSize14 = 14.0;
   static const textFieldFontSmall10 = 10.0;
   static const textFieldFontLarge = 22.0;

@@ -20,6 +20,7 @@ final String loginHeader = 'assets/images/img_login_header.png';
 final String navHeader = 'assets/images/img_nav_header_bg.png';
 final String navHeaderStar = 'assets/images/img_nav_header_star.png';
 final String menuHome = 'assets/images/menu_home.png';
+final String menuUser = 'assets/images/menu_user.png';
 final String menuCalender = 'assets/images/img_menu_calender.png';
 final String menuEvent = 'assets/images/my_events.png';
 final String menuLogout = 'assets/images/logout.png';

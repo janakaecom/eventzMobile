@@ -9,9 +9,10 @@ class APIs {
   static const String resendOTP = "$BASE_URL$apiVersion/User/ReSendOTP";
   // static const String login = "$BASE_URL$apiVersion/User/ReSendOTP";
   static const String allEvents = "$BASE_URL$apiVersion/Event/LoadAllEvents";
-  static const String getPaymentOptions =
-      "$BASE_URL$apiVersion/Paymode/LoadPaymode";
-  static const String myEvents =
-      "$BASE_URL$apiVersion/EventEnroll/LoadMyEvents";
+  static const String updateProfile = "$BASE_URL$apiVersion/User/UpdateUser";
+  static const String hostRegistration = "$BASE_URL$apiVersion/Host/SaveHost";
+  static const String loadCountries = "$BASE_URL$apiVersion/Country/LoadCountry";
+  static const String getPaymentOptions = "$BASE_URL$apiVersion/Paymode/LoadPaymode";
+  static const String myEvents = "$BASE_URL$apiVersion/EventEnroll/LoadMyEvents";
   static const String saveEvents = "$BASE_URL$apiVersion/EventEnroll/SaveEvent";
 }

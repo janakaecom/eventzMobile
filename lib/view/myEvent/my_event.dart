@@ -25,6 +25,7 @@ class MyEventView extends StatefulWidget {
 }
 
 class _MyEventViewState extends State<MyEventView> with BaseUI {
+
   List<ResultMyEvent> myEventList = new List();
 
   @override
@@ -351,7 +352,7 @@ class _MyEventViewState extends State<MyEventView> with BaseUI {
     apiService.check().then((check) {
       showProgressbar(context);
       if (check) {
-        apiService.getMyEvent(1).then((value) {
+        apiService.getMyEvent(userIdx).then((value) {
           hideProgressbar(context);
 
           if (value.statusCode == 200) {

@@ -7,10 +7,13 @@ import 'package:eventz/utils/shared_storage.dart';
 import 'package:eventz/view/dashboard/dashboard.dart';
 import 'package:eventz/view/login/login_view.dart';
 import 'package:eventz/view/myEvent/my_event.dart';
+import 'package:eventz/view/profile/change_password.dart';
+import 'package:eventz/view/profile/update_profile_screen.dart';
+import 'package:eventz/view/registrations/event_registration_step1.dart';
+import 'package:eventz/view/registrations/host_registrations.dart';
 import 'package:eventz/view/widget/fl_text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 
 class AppDrawer extends StatefulWidget {
@@ -64,13 +67,13 @@ class _AppDrawerState extends State<AppDrawer> {
     );
   }
 
+
   getProfileInfo() async {
     try {
       LoginResponse profileData =
           LoginResponse.fromJson(await sharedPref.read(ShardPrefKey.USER));
       setState(() {
-        _userName =
-            profileData.result.firstName + " " + profileData.result.lastName;
+        _userName = profileData.result.firstName + " " + profileData.result.lastName;
       });
     } catch (Excepetion) {
       print(Excepetion.toString());
@@ -158,6 +161,7 @@ class _AppDrawerState extends State<AppDrawer> {
     ));
   }
 
+
   ///list menu in drawer
   listMenus(context) {
     return Container(
@@ -172,6 +176,8 @@ class _AppDrawerState extends State<AppDrawer> {
             homeMenu("My Event", "MY_EVENT", menuEvent, context),
             homeMenu("My Profile", "PROFILE", userName, context),
             homeMenu("Password Change", "PASSWORD_CHANGE", password, context),
+            homeMenu("Host Registration", "HOST_REG", userName, context),
+            homeMenu("Event Registration", "EVENT_REG_STEP1", userName, context),
             homeMenu("Logout", "LOGOUT", menuLogout, context),
           ],
         ),
@@ -199,6 +205,17 @@ class _AppDrawerState extends State<AppDrawer> {
           }
           if (action == "MY_EVENT") {
             Get.to(MyEventView());
+          }if (action == "PROFILE") {
+            Get.to(UpdateProfileScreen());
+          }
+          if (action == "HOST_REG") {
+            Get.to(HostRegistration());
+          }
+          if (action == "PASSWORD_CHANGE") {
+            Get.to(ChangePasswordScreen());
+          }
+          if (action == "EVENT_REG_STEP1") {
+            Get.to(EventRegistrationStep1());
           }
           if (action == "HOME") {
             Get.off(DashBoard());

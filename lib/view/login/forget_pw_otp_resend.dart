@@ -1,5 +1,4 @@
 import 'dart:convert';
-
 import 'package:eventz/configs/colors.dart';
 import 'package:eventz/configs/fonts.dart';
 import 'package:eventz/configs/images.dart';
@@ -171,4 +170,5 @@ class _ForgetPWOtpResendState extends State<ForgetPWOtpResend> with BaseUI {
       fit: BoxFit.cover,
     );
   }
+
 }

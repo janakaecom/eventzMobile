@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "75881224567",
+    "project_id": "eventzapp-6fa00",
+    "storage_bucket": "eventzapp-6fa00.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:75881224567:android:68091cbf99f96d01992972",
+        "android_client_info": {
+          "package_name": "com.jana.eventz.eventz_wayo"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "75881224567-aljhqlaokpmq7q4s7vjqeqf60ccs4ei6.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAM8lScG3oBylKpjgXCYTy-gkCugQ5ADqE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "75881224567-aljhqlaokpmq7q4s7vjqeqf60ccs4ei6.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

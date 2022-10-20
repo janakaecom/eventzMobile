@@ -1,5 +1,4 @@
 import 'dart:convert';
-
 import 'package:eventz/configs/colors.dart';
 import 'package:eventz/configs/fonts.dart';
 import 'package:eventz/configs/images.dart';
@@ -166,24 +165,29 @@ class _DashBoardState extends State<DashBoard> with BaseUI {
                       // interestView(),
                       Align(
                         alignment: Alignment.centerRight,
-                        child: Container(
-                          margin: const EdgeInsets.only(top: 10, right: 10),
-                          decoration: BoxDecoration(
-                              color: AppColors.kWhite,
-                              border: Border.all(
+                        child: InkWell(
+                          onTap: (){
+                            Get.to(EventDetails(), arguments: item);
+                          },
+                          child: Container(
+                            margin: const EdgeInsets.only(top: 10, right: 10),
+                            decoration: BoxDecoration(
                                 color: AppColors.kWhite,
+                                border: Border.all(
+                                  color: AppColors.kWhite,
+                                ),
+                                borderRadius:
+                                    BorderRadius.all(Radius.circular(20))),
+                            alignment: Alignment.topRight,
+                            height: 30,
+                            width: 30,
+                            child: Center(
+                              child: Image.asset(
+                                imgNext,
+                                width: 15,
+                                height: 15,
+                                fit: BoxFit.fill,
                               ),
-                              borderRadius:
-                                  BorderRadius.all(Radius.circular(20))),
-                          alignment: Alignment.topRight,
-                          height: 30,
-                          width: 30,
-                          child: Center(
-                            child: Image.asset(
-                              imgNext,
-                              width: 15,
-                              height: 15,
-                              fit: BoxFit.fill,
                             ),
                           ),
                         ),

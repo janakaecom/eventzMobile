@@ -37,10 +37,10 @@ class _StartupViewState extends State<StartupView> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: Container(
-        margin: EdgeInsets.only(left: 20, right: 20),
+        margin: EdgeInsets.only(left: 20, right: 20,bottom: 250),
         decoration: BoxDecoration(
             image: DecorationImage(
-                image: AssetImage("assets/images/img_logo.png"),
+                image: AssetImage("assets/images/eventz-logo.png"),
                 fit: BoxFit.contain)),
         child: Center(
           child: Column(children: []),

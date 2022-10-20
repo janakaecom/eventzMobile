@@ -1,5 +1,4 @@
 import 'dart:convert';
-
 import 'package:connectivity/connectivity.dart';
 import 'package:eventz/api/api_client.dart';
 import 'package:eventz/api/apis.dart';
@@ -53,6 +52,20 @@ class APIService {
     return setValue;
   }
 
+  ///get all countries
+  Future<Response> getAllCountries() async {
+    Response setValue;
+    await httpService
+        .centsPostRequest(null, APIs.loadCountries, method: HttpMethod.GET)
+        .then((value) {
+      print("====response received====");
+      print(value);
+      setValue = value;
+    });
+
+    return setValue;
+  }
+
   ///get payment options from API initiate
   Future<Response> getPaymentOptions() async {
     Response setValue;
@@ -89,6 +102,37 @@ class APIService {
     print('*** REQUEST **** ' + nameString);
 
     await httpService.centsPostRequest(params, APIs.register).then((value) {
+      print("response received");
+      print(value);
+      setValue = value;
+    });
+
+    return setValue;
+  }
+
+  ///Update User
+  Future<Response> userUpdate(Map<dynamic, Object> params) async {
+    String nameString = jsonEncode(params);
+    Response setValue;
+    print('*** REQUEST **** ' + nameString);
+
+    await httpService.centsPostRequest(params, APIs.updateProfile).then((value) {
+      print("response received");
+      print(value);
+      setValue = value;
+    });
+
+    return setValue;
+  }
+
+
+  ///host registration API
+  Future<Response> hostRegister(Map<dynamic, Object> params) async {
+    String nameString = jsonEncode(params);
+    Response setValue;
+    print('*** REQUEST **** ' + nameString);
+
+    await httpService.centsPostRequest(params, APIs.hostRegistration).then((value) {
       print("response received");
       print(value);
       setValue = value;

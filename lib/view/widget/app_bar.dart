@@ -8,6 +8,7 @@ import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 
 class BaseAppBar extends StatelessWidget implements PreferredSizeWidget {
+
   @override
   Size get preferredSize => const Size.fromHeight(50);
 

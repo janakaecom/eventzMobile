@@ -3,14 +3,20 @@ import 'package:eventz/configs/routes.dart';
 import 'package:eventz/utils/translation/fl_translations.dart';
 import 'package:eventz/view/login/login_view.dart';
 import 'package:eventz/view/startup_view.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 import 'configs/colors.dart';
 import 'configs/fonts.dart';
+import 'firebase_options.dart';
 
-void main() {
+Future<void> main() async {
   mainDelegate();
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
+
 }
 
 void mainDelegate() => runApp(MyApp());
