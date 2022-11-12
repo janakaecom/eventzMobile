@@ -15,7 +15,7 @@ import 'package:flutter/material.dart';
 import 'package:image_cropper/image_cropper.dart';
 import 'package:image_picker/image_picker.dart';
 import '../../configs/images.dart';
-import '../../model/UpdateProfileResponse.dart';
+import '../../model/updateProfileResponse.dart';
 import '../../model/all_event_response.dart';
 import '../../model/error_response.dart';
 import '../../model/host_registration_response.dart';

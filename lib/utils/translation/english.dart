@@ -8,6 +8,7 @@ class EnglishTranslations {
     'invalid_password': 'Please Enter Password',
     'email_cap': 'Email',
     'password_cap': 'Password',
+    'confirm_password_cap': 'Confirm Password',
     'new_sign_up': 'New to Eventz? ',
     'forgot_pw': 'Forgot Password',
     'sign_up': 'Sign Up',

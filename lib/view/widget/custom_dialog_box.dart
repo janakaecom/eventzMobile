@@ -62,24 +62,25 @@ class _CustomDialogBoxState extends State<CustomDialogBox> {
           Container(
               child: Column(
             children: [
-              FlatButton(
-                padding: const EdgeInsets.all(8),
-                onPressed: () {
-                  Navigator.of(context).pop();
-                  widget.callbackWithReturn(pickerValue);
-                },
-                child: Align(
-                  alignment: Alignment.centerLeft,
-                  child: Text(
-                    pickerValue.toString(),
-                    style: TextStyle(
-                      fontFamily: AppFonts.circularStd,
-                      fontSize: AppFonts.drawerMenuFontSize,
-                      color: Colors.black,
-                    ),
-                  ),
-                ),
-              ),
+                  TextButton(),
+              // FlatButton(
+              //   padding: const EdgeInsets.all(8),
+              //   onPressed: () {
+              //     Navigator.of(context).pop();
+              //     widget.callbackWithReturn(pickerValue);
+              //   },
+              //   child: Align(
+              //     alignment: Alignment.centerLeft,
+              //     child: Text(
+              //       pickerValue.toString(),
+              //       style: TextStyle(
+              //         fontFamily: AppFonts.circularStd,
+              //         fontSize: AppFonts.drawerMenuFontSize,
+              //         color: Colors.black,
+              //       ),
+              //     ),
+              //   ),
+              // ),
               Container(
                 height: 0.5,
                 color: AppColors.kTextLight,
@@ -175,36 +176,82 @@ class _CustomDialogBoxState extends State<CustomDialogBox> {
 
   /// negative button design for alert
   Widget positiveButton() {
-    return FlatButton(
-        shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(5.0),
-            side: BorderSide(color: AppColors.kSecondary)),
-        onPressed: () {
-          onAlertClick();
-        },
-        color: AppColors.kSecondary,
-        textColor: Colors.white,
-        child: Text(
-          widget.textPositive,
-          style: TextStyle(fontSize: AppFonts.buttonFontSize),
-        ));
+    return
+      GestureDetector(
+          onTap: (){
+            onAlertClick();
+          },
+          child: Container(
+            // height: height,
+            // width: minWidth,
+            alignment: Alignment.center,
+            // margin: margin,
+            decoration: BoxDecoration(
+                color: AppColors.kSecondary,
+                borderRadius: BorderRadius.circular(5.0),
+              border: Border.all(
+               color: AppColors.kSecondary
+              )
+            ),
+            child: Container(
+              alignment: Alignment.center,
+              child: Text(
+                widget.textPositive,
+                style: TextStyle(fontSize: AppFonts.buttonFontSize,color: Colors.white),
+              )
+            ),
+          ));
+      // FlatButton(
+      //   shape: RoundedRectangleBorder(
+      //       borderRadius: BorderRadius.circular(5.0),
+      //       side: BorderSide(color: AppColors.kSecondary)),
+      //   onPressed: () {
+      //     onAlertClick();
+      //   },
+      //   color: AppColors.kSecondary,
+      //   textColor: Colors.white,
+      //   child: Text(
+      //     widget.textPositive,
+      //     style: TextStyle(fontSize: AppFonts.buttonFontSize),
+      //   ));
   }
 
   /// positive button design for alert
   Widget negativeButton() {
-    return FlatButton(
-        shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(10.0),
-            side: BorderSide(color: Colors.transparent)),
-        onPressed: () {
+    return  GestureDetector(
+        onTap: (){
           Navigator.of(context).pop();
         },
-        color: Colors.transparent,
-        textColor: AppColors.kSecondary,
-        child: Text(
-          widget.textNegative,
-          style: TextStyle(fontSize: AppFonts.buttonFontSize),
+        child: Container(
+          // height: height,
+          // width: minWidth,
+          alignment: Alignment.center,
+          // margin: margin,
+          decoration: BoxDecoration(
+            color: Colors.transparent,
+            borderRadius: BorderRadius.circular(5.0),
+          ),
+          child: Container(
+              alignment: Alignment.center,
+              child: Text(
+                widget.textPositive,
+                style: TextStyle(fontSize: AppFonts.buttonFontSize,color: AppColors.kSecondary),
+              )
+          ),
         ));
+      // FlatButton(
+      //   shape: RoundedRectangleBorder(
+      //       borderRadius: BorderRadius.circular(10.0),
+      //       side: BorderSide(color: Colors.transparent)),
+      //   onPressed: () {
+      //     Navigator.of(context).pop();
+      //   },
+      //   color: Colors.transparent,
+      //   textColor: AppColors.kSecondary,
+      //   child: Text(
+      //     widget.textNegative,
+      //     style: TextStyle(fontSize: AppFonts.buttonFontSize),
+      //   ));
   }
 
   ///on alert close click

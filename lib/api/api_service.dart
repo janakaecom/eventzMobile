@@ -126,6 +126,22 @@ class APIService {
   }
 
 
+  ///Update User
+  Future<Response> changePassword(Map<dynamic, Object> params) async {
+    String nameString = jsonEncode(params);
+    Response setValue;
+    print('*** REQUEST **** ' + nameString);
+
+    await httpService.centsPostRequest(params, APIs.changePassword).then((value) {
+      print("response received");
+      print(value);
+      setValue = value;
+    });
+
+    return setValue;
+  }
+
+
   ///host registration API
   Future<Response> hostRegister(Map<dynamic, Object> params) async {
     String nameString = jsonEncode(params);

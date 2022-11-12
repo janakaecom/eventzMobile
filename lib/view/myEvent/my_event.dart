@@ -267,18 +267,18 @@ class _MyEventViewState extends State<MyEventView> with BaseUI {
             flex: 1,
             child: Container(),
           ),
-          FLButton(
-            borderRadius: 20,
-            title: "More",
-            onPressed: () {
-              Get.to(MyEventDetailsView(), arguments: item);
-            },
-            backgroundColor: AppColors.buttonBlue,
-            titleFontColor: AppColors.kWhite,
-            borderColor: AppColors.buttonBlue,
-            minWidth: 100,
-            height: 30,
-          )
+          // FLButton(
+          //   borderRadius: 20,
+          //   title: "More",
+          //   onPressed: () {
+          //     Get.to(MyEventDetailsView(), arguments: item);
+          //   },
+          //   backgroundColor: AppColors.buttonBlue,
+          //   titleFontColor: AppColors.kWhite,
+          //   borderColor: AppColors.buttonBlue,
+          //   minWidth: 100,
+          //   height: 30,
+          // )
         ],
       ),
     );

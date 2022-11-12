@@ -21,9 +21,12 @@ class SignUpView extends StatefulWidget {
 class _SignUpViewState extends State<SignUpView> with BaseUI {
   TextEditingController emailController = new TextEditingController();
   TextEditingController pwController = new TextEditingController();
+  TextEditingController confirmPWController = new TextEditingController();
   TextEditingController fNameController = new TextEditingController();
   TextEditingController lNameController = new TextEditingController();
   TextEditingController mobileController = new TextEditingController();
+  bool obscurePassword = true;
+  bool obscureConfirmPassword = true;
 
   @override
   Widget build(BuildContext context) {
@@ -81,7 +84,7 @@ class _SignUpViewState extends State<SignUpView> with BaseUI {
           child: Stack(
             children: [
               SizedBox(
-                height: 460,
+                // height: 520,
                 child: Column(
                   children: [
                     Container(
@@ -133,7 +136,19 @@ class _SignUpViewState extends State<SignUpView> with BaseUI {
                     ),
                     formRow(password, 'enter_password'.tr, 'password_cap'.tr,
                         pwController,
-                        obscureText: true),
+                        obscureText: obscurePassword,
+                        passwordIconVisibility: true
+                    ),
+                    Container(
+                      width: Get.width,
+                      height: 0.25,
+                      color: AppColors.appDark,
+                    ),
+                    formRow(password, 're_enter_password'.tr, 'Confirm Password'.tr,
+                        confirmPWController,
+                        obscureText: obscureConfirmPassword,
+                        passwordIconVisibility: true
+                    ),
                     Container(
                       width: Get.width,
                       height: 0.25,
@@ -169,7 +184,7 @@ class _SignUpViewState extends State<SignUpView> with BaseUI {
 
   formRow(String img, String hintText, String label,
       TextEditingController controller,
-      {double height, bool obscureText = false}) {
+      {double height, bool obscureText = false,bool passwordIconVisibility = false}) {
     return Container(
       width: Get.width,
       height: 60,
@@ -189,7 +204,7 @@ class _SignUpViewState extends State<SignUpView> with BaseUI {
             width: 10,
           ),
           SizedBox(
-            width: 260,
+            width: 245,
             child: TextField(
               obscureText: obscureText,
               style: TextStyle(
@@ -209,10 +224,47 @@ class _SignUpViewState extends State<SignUpView> with BaseUI {
               ),
             ),
           ),
+          // Visibility(
+          //   visible: passwordIconVisibility,
+          //   child:
+          //   GestureDetector(
+          //     onTap: (){
+          //       print('dwdcwcw');
+          //       print(obscureText);
+          //       setState(() {
+          //         obscureText = !obscureText;
+          //       });
+          //       print('dwdcwcw=====');
+          //       print(obscureText);
+          //     },
+          //     child: Icon(
+          //       obscureText
+          //           ? Icons.visibility
+          //           : Icons.visibility_off,
+          //       size: 20,
+          //       color: Colors.grey,
+          //     ),
+          //   ),
+            // IconButton(
+            //   iconSize: 20,
+            //   icon: Icon(
+            //     obscureText == false
+            //       ? Icons.visibility
+            //       : Icons.visibility_off,),
+            //     color: Colors.black,
+            //   onPressed: () {
+            //     setState(() {
+            //   obscureText = !obscureText;
+            // });
+            //     },
+            //
+            // ),
+          // ),
         ],
       ),
     );
   }
+
 
   ///Sign-up validation call
   void signUpCall() {
@@ -222,6 +274,9 @@ class _SignUpViewState extends State<SignUpView> with BaseUI {
     String fName = fNameController.text;
     String lName = lNameController.text;
     String mobile = mobileController.text;
+
+    RegExp regex = RegExp(r'^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[!@#\$&*~]).{8,}$');
+
 
     if (!GetUtils.isEmail(email)) {
       Get.snackbar('error'.tr, 'invalid_email'.tr,
@@ -240,6 +295,14 @@ class _SignUpViewState extends State<SignUpView> with BaseUI {
           colorText: AppColors.textRed, backgroundColor: AppColors.kWhite);
     } else if (!GetUtils.isPhoneNumber(mobile)) {
       Get.snackbar('error'.tr, 'invalid_mobile'.tr,
+          colorText: AppColors.textRed, backgroundColor: AppColors.kWhite);
+    }
+    else if (!regex.hasMatch(pwController.text)) {
+      Get.snackbar('error'.tr, 'Enter valid password including uppercase letters, lowercase letters, numbers, special characters and minimum 8 characters.'.tr,
+          colorText: AppColors.textRed, backgroundColor: AppColors.kWhite);
+    }
+    else if (confirmPWController.text != pwController.text) {
+      Get.snackbar('error'.tr, "The Passwords you have entered don't match".tr,
           colorText: AppColors.textRed, backgroundColor: AppColors.kWhite);
     } else {
       apiService.check().then((check) {

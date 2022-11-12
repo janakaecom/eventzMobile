@@ -38,39 +38,67 @@ class FLButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return FlatButton(
-      minWidth: minWidth,
-      height: height,
-      splashColor: Colors.transparent,
-      highlightColor: hightLightColor,
-      color: backgroundColor,
-      textColor: isSelected ? AppColors.kSecondary : Colors.white,
-      padding: const EdgeInsets.all(8),
-      onPressed: isEnabled ? onPressed : null,
-      child: Align(
-        alignment: buttonTextAlignment,
-        child: Row(mainAxisAlignment: MainAxisAlignment.center, children: [
-          surfixImage != ""
-              ? Image.asset(
-                  surfixImage,
-                  width: 30,
-                  height: 20,
-                )
-              : SizedBox.shrink(),
-          Text(
-            title,
-            style: TextStyle(
+    return
+      GestureDetector(
+         onTap: isEnabled ? onPressed : null,
+        child: Container(
+          height: height,
+          width: minWidth,
+          alignment: Alignment.center,
+          // margin: margin,
+          decoration: BoxDecoration(
+              color: backgroundColor,
+              borderRadius: BorderRadius.circular(borderRadius),
+              border: Border.all(
+                  color: borderColor ?? Colors.transparent
+              )
+          ),
+          child: Container(
+            alignment: Alignment.center,
+            child: Text(
+                   title,
+                style: TextStyle(
               fontFamily: AppFonts.circularStd,
               fontSize: titleFontSize,
               color: titleFontColor,
             ),
           ),
-        ]),
-      ),
-      shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(borderRadius),
-          side: BorderSide(
-              color: borderColor, width: 1, style: BorderStyle.solid)),
-    );
+        ),
+      ));
+
+    //   FlatButton(
+    //   minWidth: minWidth,
+    //   height: height,
+    //   splashColor: Colors.transparent,
+    //   highlightColor: hightLightColor,
+    //   color: backgroundColor,
+    //   textColor: isSelected ? AppColors.kSecondary : Colors.white,
+    //   padding: const EdgeInsets.all(8),
+    //   onPressed: isEnabled ? onPressed : null,
+    //   child: Align(
+    //     alignment: buttonTextAlignment,
+    //     child: Row(mainAxisAlignment: MainAxisAlignment.center, children: [
+    //       surfixImage != ""
+    //           ? Image.asset(
+    //               surfixImage,
+    //               width: 30,
+    //               height: 20,
+    //             )
+    //           : SizedBox.shrink(),
+    //       Text(
+    //         title,
+    //         style: TextStyle(
+    //           fontFamily: AppFonts.circularStd,
+    //           fontSize: titleFontSize,
+    //           color: titleFontColor,
+    //         ),
+    //       ),
+    //     ]),
+    //   ),
+    //   shape: RoundedRectangleBorder(
+    //       borderRadius: BorderRadius.circular(borderRadius),
+    //       side: BorderSide(
+    //           color: borderColor, width: 1, style: BorderStyle.solid)),
+    // );
   }
 }
