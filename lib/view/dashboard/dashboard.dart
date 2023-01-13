@@ -22,7 +22,7 @@ class DashBoard extends StatefulWidget {
 }
 
 class _DashBoardState extends State<DashBoard> with BaseUI {
-  List<EventResult> eventList = new List();
+  List<AllEventResponse> eventList;
 
   @override
   void initState() {
@@ -50,7 +50,7 @@ class _DashBoardState extends State<DashBoard> with BaseUI {
                 height: Get.height - 100,
                 child: SafeArea(
                     child: ListView.builder(
-                        itemCount: eventList.length ?? 0,
+                        itemCount: eventList ?? 0,
                         itemBuilder: (BuildContext context, int index) {
                           return _eventRow(index);
                         })),
@@ -64,8 +64,8 @@ class _DashBoardState extends State<DashBoard> with BaseUI {
 
   ///Event row view in list-view
   _eventRow(int index) {
-    var item = eventList.elementAt(index);
-    String apiDate = item.eventDate.split(" ")[0];
+    var item = eventList;
+    String apiDate = item[index].eventDate.split(" ")[0];
     String year = "";
     String date = "";
     String month = "";
@@ -103,7 +103,7 @@ class _DashBoardState extends State<DashBoard> with BaseUI {
               borderRadius: BorderRadius.circular(8.0),
               child: Stack(children: [
                 Image.network(
-                  item.artworkPath,
+                  item[index].artworkPath,
                   width: Get.width,
                   height: 200,
                   fit: BoxFit.fill,
@@ -125,14 +125,14 @@ class _DashBoardState extends State<DashBoard> with BaseUI {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             FLText(
-                              displayText: item.eventName,
+                              displayText: item[index].eventName,
                               textColor: AppColors.kWhite,
                               setToWidth: false,
                               fontWeight: FontWeight.bold,
                               textSize: AppFonts.textFieldFontSize,
                             ),
                             FLText(
-                              displayText: item.hostName,
+                              displayText: item[index].hostName,
                               textColor: AppColors.kWhite,
                               setToWidth: false,
                               textSize: AppFonts.textFieldFontSize14,
@@ -152,7 +152,7 @@ class _DashBoardState extends State<DashBoard> with BaseUI {
                                   width: 5,
                                 ),
                                 FLText(
-                                  displayText: item.eventVenue,
+                                  displayText:item[index].eventVenue,
                                   textColor: AppColors.kWhite,
                                   setToWidth: false,
                                   textSize: AppFonts.textFieldFontSize12,
@@ -234,7 +234,7 @@ class _DashBoardState extends State<DashBoard> with BaseUI {
   }
 
   ///bottom view of the row
-  _rowBottom(EventResult item) {
+  _rowBottom(AllEventResponse item) {
     return Container(
       padding: const EdgeInsets.only(left: 10, right: 10, top: 10, bottom: 10),
       child: Row(
@@ -251,7 +251,7 @@ class _DashBoardState extends State<DashBoard> with BaseUI {
           ),
           FLText(
             textAlign: TextAlign.left,
-            displayText: item.speakers,
+            displayText: item.eventResourceObjectList[0].resName,
             textColor: AppColors.kTextDark,
             setToWidth: false,
             textSize: AppFonts.textFieldFontSize12,
@@ -303,35 +303,35 @@ class _DashBoardState extends State<DashBoard> with BaseUI {
     );
   }
 
-  ///view for price tag
-  priceTag(EventResult item) {
-    return Align(
-      alignment: Alignment.centerRight,
-      child: Container(
-        width: 100,
-        height: 30,
-        decoration: BoxDecoration(
-            color: item.isPaidEvent.toUpperCase() == "TRUE"
-                ? AppColors.kWhite
-                : AppColors.textGreenLight,
-            borderRadius: BorderRadius.only(
-              topRight: Radius.circular(8),
-              bottomLeft: Radius.circular(8),
-            ) // green shaped
-            ),
-        child: FLText(
-          displayText: item.isPaidEvent.toUpperCase() == "TRUE"
-              ? item.currencyName + " " + item.amount
-              : "FREE",
-          textColor: item.isPaidEvent.toUpperCase() == "TRUE"
-              ? AppColors.textRed
-              : AppColors.kWhite,
-          setToWidth: false,
-          textSize: AppFonts.textFieldFontSize14,
-        ),
-      ),
-    );
-  }
+  // ///view for price tag
+  // priceTag(AllEventResponse item) {
+  //   return Align(
+  //     alignment: Alignment.centerRight,
+  //     child: Container(
+  //       width: 100,
+  //       height: 30,
+  //       decoration: BoxDecoration(
+  //           color: item.isPaidEvent.toUpperCase() == "TRUE"
+  //               ? AppColors.kWhite
+  //               : AppColors.textGreenLight,
+  //           borderRadius: BorderRadius.only(
+  //             topRight: Radius.circular(8),
+  //             bottomLeft: Radius.circular(8),
+  //           ) // green shaped
+  //           ),
+  //       child: FLText(
+  //         displayText: item.isPaidEvent.toUpperCase() == "TRUE"
+  //             ? item.currencyName + " " + item.amount
+  //             : "FREE",
+  //         textColor: item.isPaidEvent.toUpperCase() == "TRUE"
+  //             ? AppColors.textRed
+  //             : AppColors.kWhite,
+  //         setToWidth: false,
+  //         textSize: AppFonts.textFieldFontSize14,
+  //       ),
+  //     ),
+  //   );
+  // }
 
   ///download all event from API
   void downloadAllEvent() {
@@ -343,14 +343,13 @@ class _DashBoardState extends State<DashBoard> with BaseUI {
           hideProgressbar(context);
 
           if (value.statusCode == 200) {
-            AllEventResponse responseData =
-                AllEventResponse.fromJson(json.decode(value.body));
+            List<dynamic> responseData = jsonDecode(value.body);
+            // AllEventResponse responseData = AllEventResponse.fromJson(json.decode(value.body));
             setState(() {
-              eventList = responseData.result;
+              eventList = responseData;
             });
           } else {
-            ErrorResponse responseData =
-                ErrorResponse.fromJson(json.decode(value.body));
+            ErrorResponse responseData = ErrorResponse.fromJson(json.decode(value.body));
             Get.snackbar('error'.tr, responseData.message,
                 colorText: AppColors.textRed,
                 snackPosition: SnackPosition.TOP,

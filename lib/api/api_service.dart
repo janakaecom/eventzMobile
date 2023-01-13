@@ -126,13 +126,12 @@ class APIService {
   }
 
 
-  ///Update User
-  Future<Response> changePassword(Map<dynamic, Object> params) async {
-    String nameString = jsonEncode(params);
+  ///Change password
+  Future<Response> changePassword(int userId, String oldPassword, String newPassword) async {
     Response setValue;
-    print('*** REQUEST **** ' + nameString);
-
-    await httpService.centsPostRequest(params, APIs.changePassword).then((value) {
+    await httpService
+        .centsPostRequest(null, APIs.changePassword + "?userId=$userId&oldPassword=$oldPassword&newPassword=$newPassword")
+        .then((value) {
       print("response received");
       print(value);
       setValue = value;
@@ -140,6 +139,22 @@ class APIService {
 
     return setValue;
   }
+
+
+  // ///Change password
+  // Future<Response> changePassword(Map<dynamic, Object> params) async {
+  //   String nameString = jsonEncode(params);
+  //   Response setValue;
+  //   print('*** REQUEST **** ' + nameString);
+  //
+  //   await httpService.centsPostRequest(params, APIs.changePassword).then((value) {
+  //     print("response received");
+  //     print(value.body);
+  //     setValue = value;
+  //   });
+  //
+  //   return setValue;
+  // }
 
 
   ///host registration API

@@ -1,4 +1,6 @@
 
+import 'dart:convert';
+
 import 'package:eventz/model/change_password_request.dart';
 import 'package:eventz/view/widget/imput_square_text_field.dart';
 import 'package:flutter/material.dart';
@@ -6,12 +8,13 @@ import 'package:intl/intl.dart';
 import '../../api/api_service.dart';
 import '../../configs/colors.dart';
 import '../../configs/fonts.dart';
-import 'package:eventz/view/BaseUI.dart';
 import '../../configs/images.dart';
 import 'package:get/get.dart';
 import 'package:eventz/view/BaseUI.dart';
+import '../../model/responses.dart';
 import '../../model/login_response.dart';
 import '../../model/payment_option_response.dart';
+import '../../model/register_error_response.dart';
 import '../../utils/constants.dart';
 import '../../utils/shared_storage.dart';
 import '../registrations/event_registration_step2.dart';
@@ -52,6 +55,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> with BaseUI
     _confirmPasswordFocusNode = FocusNode();
   }
 
+
   @override
   void dispose() {
     super.dispose();
@@ -64,7 +68,6 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> with BaseUI
     } catch (Excepetion) {
       print(Excepetion.toString());
     }
-
     print('ewddwde::::::::');
     print(profileData.result.userIdx);
   }
@@ -74,30 +77,31 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> with BaseUI
   ///host registration call
   void changePasswordCall() {
     apiService.check().then((check) {
-      ChangePasswordRequest request = ChangePasswordRequest(
-        userId: profileData.result.userIdx,
-          oldPassword: currentPasswordController.text,
-        newPassword: newPasswordController.text,
-
-      );
+      // ChangePasswordRequest request = ChangePasswordRequest(
+      //   userId: profileData.result.userIdx,
+      //   oldPassword: currentPasswordController.text,
+      //   newPassword: newPasswordController.text,
+      // );
       showProgressbar(context);
       if (check) {
-        apiService.changePassword(request.toJson()).then((value) {
+        apiService.changePassword(profileData.result.userIdx,currentPasswordController.text,newPasswordController.text).then((value) {
           hideProgressbar(context);
 
-          // if (value.statusCode == 200) {
-          //   HostRegistrationResponse responseData =
-          //   HostRegistrationResponse.fromJson(json.decode(value.body));
-          //   Get.snackbar("Success", responseData.error,
-          //       colorText: AppColors.textGreenLight,
-          //       backgroundColor: AppColors.kWhite);
-          //   // Get.off(LoginView());
-          // } else {
-          //   RegisterErrorResponse responseData = RegisterErrorResponse.fromJson(json.decode(value.body));
-          //   Get.snackbar('error'.tr, responseData.message,
-          //       colorText: AppColors.textRed,
-          //       backgroundColor: AppColors.kWhite);
-          // }
+          if (value.statusCode == 200) {
+            HostRegistrationResponse responseData =
+            HostRegistrationResponse.fromJson(json.decode(value.body));
+            Get.snackbar("Success", responseData.error,
+                colorText: AppColors.textGreenLight,
+                backgroundColor: AppColors.kWhite);
+            // Get.off(LoginView());
+          } else {
+            print("cdcd");
+            print(value.body);
+            RegisterErrorResponse responseData = RegisterErrorResponse.fromJson(json.decode(value.body));
+            Get.snackbar('error'.tr, responseData.message,
+                colorText: AppColors.textRed,
+                backgroundColor: AppColors.kWhite);
+          }
         });
       } else {
         hideProgressbar(context);
@@ -284,12 +288,6 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> with BaseUI
                               colorText: AppColors.textRed,
                               backgroundColor: AppColors.kWhite);
                           }
-                          // else if (!regex.hasMatch(currentPasswordController.text))
-                          //    {
-                          //     Get.snackbar('Error', 'Please enter a valid password',
-                          //         colorText: AppColors.textRed,
-                          //         backgroundColor: AppColors.kWhite);
-                          //   }
                           else if (newPasswordController.text == null || newPasswordController.text == "" ){
                             Get.snackbar('Error', 'Please enter a new password',
                                 colorText: AppColors.textRed,
@@ -309,9 +307,9 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> with BaseUI
                           }
                           else{
                             changePasswordCall();
-                            Get.snackbar("Success", "Successfully updated the password.",
-                                colorText: AppColors.textGreenLight,
-                                backgroundColor: AppColors.kWhite);
+                            // Get.snackbar("Success", "Successfully updated the password.",
+                            //     colorText: AppColors.textGreenLight,
+                            //     backgroundColor: AppColors.kWhite);
                           }
                         },
                         child: Container(

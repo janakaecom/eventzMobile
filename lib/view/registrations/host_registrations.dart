@@ -5,7 +5,7 @@ import 'package:eventz/model/host_register_request.dart';
 import 'package:eventz/view/widget/imput_square_text_field.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
-import 'package:eventz/view/BaseUI.dart';
+// import 'package:eventz/view/BaseUI.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'dart:io' as files;
 import '../../api/api_service.dart';
@@ -17,7 +17,7 @@ import 'package:image_picker/image_picker.dart';
 import '../../configs/images.dart';
 import '../../model/all_event_response.dart';
 import '../../model/error_response.dart';
-import '../../model/host_registration_response.dart';
+import '../../model/responses.dart';
 import '../../model/register_request.dart';
 import '../widget/fl_text.dart';
 import 'dart:convert';
@@ -116,48 +116,43 @@ class _HostRegistrationState extends State<HostRegistration> with BaseUI{
                 ),
                 InkWell(
                   onTap: (){
+                    // imagePickerWithCrop();
+                    uploadImage();
 
                   },
-                  child: InkWell(
-                    onTap: (){
-                      // imagePickerWithCrop();
-                      uploadImage();
-
-                    },
-                    child:
-                    imageUrl != null?
-                    ClipRRect(
-                      borderRadius: BorderRadius.circular(60),
-                      child: Image.network(
-                        imageUrl,
-                        width: 110,
-                        height: 110,
-                        fit: BoxFit.cover,
-                      ),
-                    ):
-                    Container(
-                      height: 110,
+                  child:
+                  imageUrl != null?
+                  ClipRRect(
+                    borderRadius: BorderRadius.circular(60),
+                    child: Image.network(
+                      imageUrl,
                       width: 110,
-                      decoration: BoxDecoration(
-                        color: Colors.blue.withOpacity(0.15),
-                        borderRadius: BorderRadius.circular(60)
-                      ),
-                      child: Center(
-                        child:
-                        // logo != null?
-                        // Image.file(
-                        //   files.File(logo),
-                        //   width: 100,
-                        //   height: 100,
-                        // ):
+                      height: 110,
+                      fit: BoxFit.cover,
+                    ),
+                  ):
+                  Container(
+                    height: 110,
+                    width: 110,
+                    decoration: BoxDecoration(
+                      color: Colors.blue.withOpacity(0.15),
+                      borderRadius: BorderRadius.circular(60)
+                    ),
+                    child: Center(
+                      child:
+                      // logo != null?
+                      // Image.file(
+                      //   files.File(logo),
+                      //   width: 100,
+                      //   height: 100,
+                      // ):
 
-                        Image.asset(
-                          menuUser,
-                          width: 28,
-                          height: 28,
-                          fit: BoxFit.cover,
-                        )
-                      ),
+                      Image.asset(
+                        menuUser,
+                        width: 28,
+                        height: 28,
+                        fit: BoxFit.cover,
+                      )
                     ),
                   ),
                 ),
@@ -301,7 +296,7 @@ class _HostRegistrationState extends State<HostRegistration> with BaseUI{
                                           print("val::::::::");
                                           print(val.countryName);
                                       _dropDownValue = val.countryName;
-                                          countryIdx = int.parse(val.countryIdx);
+                                          countryIdx = int.parse(val.eventVenue);
                                     },
                                   );
                                 },

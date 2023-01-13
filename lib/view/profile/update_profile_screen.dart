@@ -18,7 +18,7 @@ import '../../configs/images.dart';
 import '../../model/updateProfileResponse.dart';
 import '../../model/all_event_response.dart';
 import '../../model/error_response.dart';
-import '../../model/host_registration_response.dart';
+import '../../model/responses.dart';
 import '../../model/login_response.dart';
 import '../../model/register_request.dart';
 import '../../model/update_profile_request.dart';
@@ -639,7 +639,7 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> with BaseUI{
                                       print("val::::::::");
                                       print(val.countryName);
                                       _dropDownCountryValue = val.countryName;
-                                      countryIdx = int.parse(val.countryIdx);
+                                      countryIdx = int.parse(val.eventVenue);
                                     },
                                   );
                                 },

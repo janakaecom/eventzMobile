@@ -15,5 +15,5 @@ class APIs {
   static const String loadCountries = "$BASE_URL$apiVersion/Country/LoadCountry";
   static const String getPaymentOptions = "$BASE_URL$apiVersion/Paymode/LoadPaymode";
   static const String myEvents = "$BASE_URL$apiVersion/EventEnroll/LoadMyEvents";
-  static const String saveEvents = "$BASE_URL$apiVersion/EventEnroll/SaveEvent";
+  static const String saveEvents = "$BASE_URL$apiVersion/Event/SaveEvent";
 }

@@ -1,16 +1,20 @@
 
-import 'package:country_calling_code_picker/country.dart';
-import 'package:country_calling_code_picker/country_code_picker.dart';
 import 'package:eventz/view/widget/imput_square_text_field.dart';
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
-
 import '../../configs/colors.dart';
 import '../../configs/fonts.dart';
-import '../../configs/images.dart';
 import '../../model/payment_option_response.dart';
+import '../widget/app_bar.dart';
+import '../widget/app_drawer.dart';
 import '../widget/fl_text.dart';
+import 'package:get/get.dart';
 import 'event_registration_step2.dart';
+import 'package:eventz/view/BaseUI.dart';
+import 'package:firebase_storage/firebase_storage.dart';
+import 'package:permission_handler/permission_handler.dart';
+import 'dart:io' as files;
+import 'package:image_picker/image_picker.dart';
+
 
 class EventRegistrationStep1 extends StatefulWidget {
   static var routeName = "/event_registration_step_1";
@@ -21,25 +25,16 @@ class EventRegistrationStep1 extends StatefulWidget {
   State<StatefulWidget> createState() => _EventRegistrationStep1State();
 }
 
-class _EventRegistrationStep1State extends State<EventRegistrationStep1> {
+class _EventRegistrationStep1State extends State<EventRegistrationStep1>  with BaseUI{
 
-  final TextEditingController businessNameController = new TextEditingController();
-  final TextEditingController address1Controller = new TextEditingController();
-  final TextEditingController address2Controller = new TextEditingController();
-  final TextEditingController countryController = new TextEditingController();
-  final TextEditingController mobileNoController = new TextEditingController();
-  final TextEditingController emailController = new TextEditingController();
-  final TextEditingController userNameController = new TextEditingController();
-  final TextEditingController passwordController = new TextEditingController();
-  final TextEditingController confirmPasswordController = new TextEditingController();
-  final TextEditingController countryCodeController = new TextEditingController();
-  final TextEditingController dateController = new TextEditingController();
-  final TextEditingController hostByController = new TextEditingController();
+  final TextEditingController eventNameController = new TextEditingController();
+  final TextEditingController eventDescriptionController = new TextEditingController();
+  final TextEditingController eventTimeController = new TextEditingController();
+  final TextEditingController eventDateController = new TextEditingController();
+  final TextEditingController mapReferenceController = new TextEditingController();
 
-  FocusNode _passwordFocusNode;
-  FocusNode _confirmPasswordFocusNode;
-  Country _selectedCountry;
   Paymode selectedMode = Paymode();
+  String imageUrl;
   DateTime pickedDate = DateTime.now();
   List<Paymode> paymode = List();
   List<String> _locations = ['A', 'B', 'C', 'D']; // Option 2
@@ -48,7 +43,6 @@ class _EventRegistrationStep1State extends State<EventRegistrationStep1> {
   @override
   void initState() {
     super.initState();
-    _passwordFocusNode = FocusNode();
   }
 
   @override
@@ -57,6 +51,41 @@ class _EventRegistrationStep1State extends State<EventRegistrationStep1> {
   }
 
   String _dropDownValue;
+
+
+  uploadImage() async {
+    final _firebaseStorage = FirebaseStorage.instance;
+    final _imagePicker = ImagePicker();
+    PickedFile image;
+    //Check Permissions
+    await Permission.photos.request();
+
+    var permissionStatus = await Permission.photos.status;
+
+    if (permissionStatus.isGranted){
+      //Select Image
+      image = await _imagePicker.getImage(source: ImageSource.gallery);
+      var file = files.File(image.path);
+
+      if (image != null){
+        //Upload to Firebase
+        showProgressbar(context);
+        var snapshot = await _firebaseStorage.ref()
+            .child('images/imageName')
+            .putFile(file);
+        var downloadUrl = await snapshot.ref.getDownloadURL();
+        setState(() {
+          imageUrl = downloadUrl;
+        });
+        hideProgressbar(context);
+      } else {
+        print('No Image Path Received');
+        hideProgressbar(context);
+      }
+    } else {
+      print('Permission not granted. Try Again with permission access');
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -68,17 +97,20 @@ class _EventRegistrationStep1State extends State<EventRegistrationStep1> {
       //     menuList: [],
       //     isDrawerShow: true,
       //     isBackShow: false),
-      body: SingleChildScrollView(
-        child: Container(
-          height: 1000,
-          width: 1000,
-          decoration: const BoxDecoration(
-              color: AppColors.kWhite
-          ),
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 20,vertical: 60),
+      body: Container(
+        // height: 500,
+        // width: 1000,
+        decoration: const BoxDecoration(
+            color: AppColors.kWhite
+        ),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 20),
+          child: SingleChildScrollView(
             child: Column(
               children: [
+                SizedBox(
+                  height: 40,
+                ),
                 Row(
                   children: [
                     FLText(
@@ -94,23 +126,53 @@ class _EventRegistrationStep1State extends State<EventRegistrationStep1> {
                   height: 10,
                 ),
                 InkWell(
-                  onTap: (){},
-                  child: Container(
+                  onTap: (){
+                    // imagePickerWithCrop();
+                    uploadImage();
+
+                  },
+                  child:
+                  imageUrl != null?
+                  Image.network(
+                    imageUrl,
+                        height: 110,
+                        width: 320,
+                    fit: BoxFit.cover,
+                  ):
+                  Container(
                     height: 110,
                     width: 320,
                     decoration: BoxDecoration(
-                        color: Colors.blue.withOpacity(0.15),
+                      color: Colors.blue.withOpacity(0.15),
                     ),
                     child: Center(
                         child:
-                     Icon(
-                       Icons.photo,
-                       size: 40,
-                       color: Colors.grey,
-                     )
+                        Icon(
+                          Icons.photo,
+                          size: 40,
+                          color: Colors.grey,
+                        )
                     ),
                   ),
                 ),
+                // InkWell(
+                //   onTap: (){},
+                //   child: Container(
+                //     height: 110,
+                //     width: 320,
+                //     decoration: BoxDecoration(
+                //         color: Colors.blue.withOpacity(0.15),
+                //     ),
+                //     child: Center(
+                //         child:
+                //      Icon(
+                //        Icons.photo,
+                //        size: 40,
+                //        color: Colors.grey,
+                //      )
+                //     ),
+                //   ),
+                // ),
                 SizedBox(
                   height: 10,
                 ),
@@ -143,7 +205,7 @@ class _EventRegistrationStep1State extends State<EventRegistrationStep1> {
                     InputSquareTextField(
                       padding:const EdgeInsets.symmetric(vertical: 5),
                       readOnly: false,
-                      textController: businessNameController,
+                      textController: eventNameController,
                       inputType: TextInputType.number,
                       onChanged: (value) {
                       },
@@ -174,7 +236,7 @@ class _EventRegistrationStep1State extends State<EventRegistrationStep1> {
                     InputSquareTextField(
                       padding:const EdgeInsets.symmetric(vertical: 5),
                       readOnly: false,
-                      textController: businessNameController,
+                      textController: eventDescriptionController,
                       inputType: TextInputType.number,
                       onChanged: (value) {
                       },
@@ -276,7 +338,7 @@ class _EventRegistrationStep1State extends State<EventRegistrationStep1> {
                       child: InputSquareTextField(
                         padding:const EdgeInsets.symmetric(vertical: 5),
                         readOnly: false,
-                        textController: dateController,
+                        textController: eventDateController,
                         inputType: TextInputType.number,
                         onSuffixPress: (){
                           dateSelection();
@@ -308,7 +370,7 @@ class _EventRegistrationStep1State extends State<EventRegistrationStep1> {
                     InputSquareTextField(
                       padding:const EdgeInsets.symmetric(vertical: 5),
                       readOnly: false,
-                      textController: businessNameController,
+                      textController: eventTimeController,
                       inputType: TextInputType.number,
                       onChanged: (value) {
                       },
@@ -379,6 +441,36 @@ class _EventRegistrationStep1State extends State<EventRegistrationStep1> {
                     ),
                   ],
                 ),
+
+                SizedBox(
+                  height: 12,
+                ),
+                Column(
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: [
+                        FLText(
+                          displayText: "Map Reference",
+                          textColor: AppColors.kTextDark,
+                          setToWidth: false,
+                          textSize: AppFonts.textFieldFontSize14,
+                        ),
+                      ],
+                    ),
+                    SizedBox(
+                      height: 5,
+                    ),
+                    InputSquareTextField(
+                      padding:const EdgeInsets.symmetric(vertical: 5),
+                      readOnly: false,
+                      textController: mapReferenceController,
+                      inputType: TextInputType.text,
+                      onChanged: (value) {
+                      },
+                    ),
+                  ],
+                ),
                 SizedBox(
                   height: 30,
                 ),
@@ -389,14 +481,43 @@ class _EventRegistrationStep1State extends State<EventRegistrationStep1> {
                     children: [
                       InkWell(
                         onTap: () async {
-                          await Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) =>
-                               EventRegistrationStep2(
+
+                          if(eventNameController.text == '' || eventNameController.text == null) {
+                            Get.snackbar('error', "The Event Name Can't be empty.",
+                                colorText: AppColors.textRed,
+                                backgroundColor: AppColors.kWhite);
+                          }
+                          else if(eventDescriptionController.text == '' || eventDescriptionController.text == null) {
+                            Get.snackbar('error', "The Event Description Can't be empty.",
+                                colorText: AppColors.textRed,
+                                backgroundColor: AppColors.kWhite);
+                          }
+                          else if(eventDateController.text == '' || eventDateController.text == null) {
+                            Get.snackbar('error', "The Event Time Can't be empty.",
+                                colorText: AppColors.textRed,
+                                backgroundColor: AppColors.kWhite);
+                          }
+                          // else if(widget.venue == '' || widget.venue == null) {
+                          //   Get.snackbar('error', "The Event Name Can't be empty.",
+                          //       colorText: AppColors.textRed,
+                          //       backgroundColor: AppColors.kWhite);
+                          // }
+                          else {
+                            await Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) =>
+                                    EventRegistrationStep2(
+                                      eventName: eventNameController.text,
+                                      eventDescription: eventDescriptionController.text,
+                                      eventDate: eventDateController.text,
+                                      eventTime: eventTimeController.text,
+                                      posterUrl: imageUrl.toString(),
+                                      mapReference: mapReferenceController.text,
+                                    ),
                               ),
-                            ),
-                          );
+                            );
+                          }
                         },
                         child: Container(
                           decoration: BoxDecoration(
@@ -415,6 +536,9 @@ class _EventRegistrationStep1State extends State<EventRegistrationStep1> {
                             ),
                           ),
                         ),
+                      ),
+                      SizedBox(
+                        height: 40,
                       ),
                     ],
                   ),
@@ -435,7 +559,7 @@ class _EventRegistrationStep1State extends State<EventRegistrationStep1> {
         context: context,
         lastDate: DateTime(3000),
         initialDate: DateTime.now(),
-        firstDate: DateTime(1500));
+        firstDate: DateTime.now());
     date = pickedDate.toString();
 
     // var formatter = DateFormat('dd MMM yyyy');
@@ -443,7 +567,23 @@ class _EventRegistrationStep1State extends State<EventRegistrationStep1> {
     // date = formatted;
 
     setState(() {
-      dateController.text = "${pickedDate.year}-${pickedDate.month}-${pickedDate.day}";
+
+      if(pickedDate.month < 10 && pickedDate.day < 10){
+        eventDateController.text = "${pickedDate.year}-0${pickedDate.month}-0${pickedDate.day}";
+      }
+      else if(pickedDate.day < 10 && pickedDate.day > 10){
+        eventDateController.text = "${pickedDate.year}-0${pickedDate.month}-${pickedDate.day}";
+      }
+      else if(pickedDate.month > 10 && pickedDate.day < 10){
+        eventDateController.text = "${pickedDate.year}-${pickedDate.month}-0${pickedDate.day}";
+      }
+      else if(pickedDate.month < 10 && pickedDate.day < 10){
+        eventDateController.text = "${pickedDate.year}-${pickedDate.month}-${pickedDate.day}";
+      }
+      else {
+        eventDateController.text = "${pickedDate.year}-${pickedDate.month}-${pickedDate.day}";
+      }
+
     });
   }
 

@@ -34,7 +34,7 @@ class _EventDetailsState extends State<EventDetails> with BaseUI {
 
   List<Paymode> paymode = List();
   Paymode selectedMode = Paymode();
-  EventResult item = Get.arguments;
+  AllEventResponse item = Get.arguments;
   LoginResponse profileData;
 
   @override
@@ -218,7 +218,7 @@ class _EventDetailsState extends State<EventDetails> with BaseUI {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           dataBodyRow("Venue : ", item.eventVenue),
-          dataBodyRow("Resource Person : ", item.speakers),
+          dataBodyRow("Resource Person : ", item.eventResourceObjectList[0].resName),
           dataBodyRow("Organized By : ", "-"),
           Container(
             padding:
@@ -512,7 +512,7 @@ class _EventDetailsState extends State<EventDetails> with BaseUI {
 
       apiService.check().then((check) {
         SaveEventRequest request = SaveEventRequest(
-            eventId: int.parse(item.eventIdx),
+            eventId: int.parse(item.eventIdx.toString()),
             userId: profileData.result.userIdx,
             vehicleNo: vehicleNo,
             mealType: mealType,

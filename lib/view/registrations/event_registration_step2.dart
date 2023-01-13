@@ -8,12 +8,22 @@ import 'package:flutter/material.dart';
 import '../../configs/colors.dart';
 import '../../configs/fonts.dart';
 import '../../configs/images.dart';
+import '../../model/event_register_request.dart';
 import '../widget/fl_text.dart';
 
 class EventRegistrationStep2 extends StatefulWidget {
   static var routeName = "/event_registration";
 
-  const EventRegistrationStep2({Key key}) : super(key: key);
+  final String onlineLink;
+  final String eventName;
+  final String eventDescription;
+  final String eventDate;
+  final String eventTime;
+  final String posterUrl;
+  final String venue;
+  final String mapReference;
+
+  const EventRegistrationStep2({Key key, this.onlineLink, this.eventName, this.eventDescription, this.eventDate, this.eventTime, this.venue, this.posterUrl, this.mapReference}) : super(key: key);
 
   @override
   State<StatefulWidget> createState() => _EventRegistrationStep2State();
@@ -28,24 +38,30 @@ class _EventRegistrationStep2State extends State<EventRegistrationStep2> {
   final TextEditingController countryController = new TextEditingController();
   final TextEditingController mobileNoController = new TextEditingController();
   final TextEditingController emailController = new TextEditingController();
+  final TextEditingController onlineLinkController = new TextEditingController();
   final TextEditingController closingDateController = new TextEditingController();
   final TextEditingController userNameController = new TextEditingController();
   final TextEditingController passwordController = new TextEditingController();
+  final TextEditingController categoryController = new TextEditingController();
+  final TextEditingController namesController = new TextEditingController();
   final TextEditingController confirmPasswordController = new TextEditingController();
   final TextEditingController countryCodeController = new TextEditingController();
-  FocusNode _passwordFocusNode;
-  FocusNode _confirmPasswordFocusNode;
-  Country _selectedCountry;
-
   String _dropDownValue;
   bool isCheckedPhysical =  false;
   bool isCheckedOnline =  false;
 
+  List<EventResourceObjectList> eventResourceObjectList = [];
+
   @override
   void initState() {
     super.initState();
-    _passwordFocusNode = FocusNode();
+
+    eventResourceObjectList.add(EventResourceObjectList(categoryName: "Category",resouceName: "Name",isActive: true,eventId: 1, resourceId: 1));
+
   }
+
+
+
 
   @override
   void dispose() {
@@ -53,17 +69,6 @@ class _EventRegistrationStep2State extends State<EventRegistrationStep2> {
     super.dispose();
   }
 
-  void _onPressedShowBottomSheet() async {
-    final country = await showCountryPickerSheett(
-      context,
-    );
-    if (country != null) {
-      setState(() {
-        _selectedCountry = country;
-        countryCodeController.text = country.name.toString();
-      });
-    }
-  }
 
 
   Future<Country> showCountryPickerSheett(BuildContext context,
@@ -132,15 +137,25 @@ class _EventRegistrationStep2State extends State<EventRegistrationStep2> {
       //     menuList: [],
       //     isDrawerShow: true,
       //     isBackShow: false),
-      body: SingleChildScrollView(
-        child: Container(
-          height: 1000,
-          width: 1000,
-          decoration: const BoxDecoration(
-              color: AppColors.kWhite
-          ),
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 25,vertical: 100),
+      appBar: AppBar(
+        backgroundColor: AppColors.kWhite,
+        elevation: 0,
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back_ios,color: Colors.black,),
+          onPressed: () {
+            Navigator.of(context).pop(true);
+          },
+        ),
+      ),
+      body: Container(
+        // height: 800,
+        width: double.infinity,
+        decoration: const BoxDecoration(
+            color: AppColors.kWhite
+        ),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 25),
+          child: SingleChildScrollView(
             child: Column(
               children: [
                 Row(
@@ -290,6 +305,7 @@ class _EventRegistrationStep2State extends State<EventRegistrationStep2> {
                           child: TextFormField(
                               maxLength: 800,
                               maxLines: 5,
+                              controller: onlineLinkController,
                               style: TextStyle(color: AppColors.TextGray,fontSize: 13),
                               decoration: InputDecoration(
                                   filled: true,
@@ -368,9 +384,10 @@ class _EventRegistrationStep2State extends State<EventRegistrationStep2> {
                       child: InputSquareTextField(
                         padding:const EdgeInsets.symmetric(vertical: 5),
                         readOnly: false,
-                        textController: address1Controller,
-                        inputType: TextInputType.number,
+                        textController: categoryController,
+                        inputType: TextInputType.text,
                         onChanged: (value) {
+
                         },
                       ),
                     ),
@@ -397,42 +414,73 @@ class _EventRegistrationStep2State extends State<EventRegistrationStep2> {
                       child: InputSquareTextField(
                         padding:const EdgeInsets.symmetric(vertical: 5),
                         readOnly: false,
-                        textController: address1Controller,
-                        inputType: TextInputType.number,
+                        textController: namesController,
+                        inputType: TextInputType.text,
                         onChanged: (value) {
+
                         },
                       ),
                     ),
                   ],
                 ),
                 Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 12),
+                  padding: const EdgeInsets.symmetric(horizontal: 12,vertical: 12),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.end,
                     children: [
-                      Container(
-                        decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(3),
-                            color: Colors.blue
-                        ),
-                        child: Padding(
-                          padding: const EdgeInsets.symmetric(vertical: 6,horizontal: 12),
-                          child: FLText(
-                            displayText: "Add",
-                            textColor: Colors.white,
-                            setToWidth: false,
-                            textSize: AppFonts.textFieldFontSize14,
+                      InkWell(
+                        onTap: (){
+                          setState(() {
+                if(categoryController.text != '' || namesController.text != ''){
+                  // categoryList.add(categoryController.text);
+                  // namesList.add(namesController.text);
+                  eventResourceObjectList.add(EventResourceObjectList(categoryName: categoryController.text,resouceName:namesController.text,isActive: true,eventId: 1, resourceId: 1));
+
+                }
+                print("length:::::");
+                print(eventResourceObjectList.length);
+
+                            categoryController.text = '';
+                            namesController.text = '';
+                          });
+                        },
+                        child: Container(
+                          decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(3),
+                              color: Colors.blue
+                          ),
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(vertical: 6,horizontal: 12),
+                            child: FLText(
+                              displayText: "Add",
+                              textColor: Colors.white,
+                              setToWidth: false,
+                              textSize: AppFonts.textFieldFontSize14,
+                            ),
                           ),
                         ),
                       ),
                     ],
                   ),
                 ),
-                SizedBox(
-                  height: 30,
+                Visibility(
+                  visible: eventResourceObjectList.length > 1? false:true,
+                  child: SizedBox(
+                    height: 35,
+                  ),
                 ),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 12),
+
+                Visibility(
+                    visible: eventResourceObjectList.length > 1? true:false,
+                    child: tableView()),
+                Visibility(
+                  visible: eventResourceObjectList.length > 1? true:false,
+                  child: SizedBox(
+                    height: 35,
+                  ),
+                ),
+      Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 0),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.end,
                     children: [
@@ -443,6 +491,17 @@ class _EventRegistrationStep2State extends State<EventRegistrationStep2> {
                             MaterialPageRoute(
                               builder: (context) =>
                                   EventRegistrationStep3(
+                                    eventModeId: isCheckedPhysical == true ? 1: 2,
+                                    onlineLink: onlineLinkController.text,
+                                    closingDate: closingDateController.text,
+                                    list: eventResourceObjectList,
+                                    eventTime: widget.eventTime,
+                                    eventDate: widget.eventDate,
+                                    eventDescription: widget.eventDescription,
+                                    eventName: widget.eventName,
+                                    posterUrl: widget.posterUrl,
+                                    venue: widget.venue,
+                                    mapReference: widget.mapReference,
                                   ),
                             ),
                           );
@@ -455,7 +514,7 @@ class _EventRegistrationStep2State extends State<EventRegistrationStep2> {
                               )
                           ),
                           child: Padding(
-                            padding: const EdgeInsets.symmetric(vertical: 6,horizontal: 24),
+                            padding: const EdgeInsets.symmetric(vertical: 6,horizontal: 35),
                             child: FLText(
                               displayText: "Next",
                               textColor: Colors.deepPurpleAccent,
@@ -468,6 +527,9 @@ class _EventRegistrationStep2State extends State<EventRegistrationStep2> {
                     ],
                   ),
                 ),
+                SizedBox(
+                  height: 40,
+                )
               ],
             ),
           ),
@@ -476,6 +538,40 @@ class _EventRegistrationStep2State extends State<EventRegistrationStep2> {
     );
   }
 
+  Widget tableView(){
+    return Table(
+      border: TableBorder.all(color: Colors.black),
+      children: List<TableRow>.generate(
+        eventResourceObjectList.length,
+            (index) {
+          return TableRow(
+              children: [
+                Column(
+                    children:[
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 12,vertical: 5),
+                        child: Text(eventResourceObjectList[index].categoryName.toString(), style: TextStyle(fontSize: 15.0,fontWeight: index == 0? FontWeight.w600  : FontWeight.w500)),
+                      ),
+                    ],
+                  )]),
+                Column(children:[ Row(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 12,vertical: 5),
+                      child: Text(eventResourceObjectList[index].resouceName.toString(), style: TextStyle(fontSize: 15.0,fontWeight: index == 0? FontWeight.w600 : FontWeight.w500)),
+                    ),
+                  ],
+                )]),
+              ]);
+        },
+        growable: false,
+      ),
+    );
+  }
 
   Future<void> dateSelection() async {
     String date;
@@ -491,7 +587,23 @@ class _EventRegistrationStep2State extends State<EventRegistrationStep2> {
     // date = formatted;
 
     setState(() {
-      closingDateController.text = "${pickedDate.year}-${pickedDate.month}-${pickedDate.day}";
+
+      if(pickedDate.month < 10 && pickedDate.day < 10){
+        closingDateController.text = "${pickedDate.year}-0${pickedDate.month}-0${pickedDate.day}";
+      }
+      else if(pickedDate.day < 10 && pickedDate.day > 10){
+        closingDateController.text = "${pickedDate.year}-0${pickedDate.month}-${pickedDate.day}";
+      }
+      else if(pickedDate.month > 10 && pickedDate.day < 10){
+        closingDateController.text = "${pickedDate.year}-${pickedDate.month}-0${pickedDate.day}";
+      }
+      else if(pickedDate.month < 10 && pickedDate.day < 10){
+        closingDateController.text = "${pickedDate.year}-${pickedDate.month}-${pickedDate.day}";
+      }
+      else{
+        closingDateController.text = "${pickedDate.year}-${pickedDate.month}-${pickedDate.day}";
+      }
+
     });
   }
 }

@@ -31,28 +31,29 @@ class _SignUpViewState extends State<SignUpView> with BaseUI {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: SingleChildScrollView(
-          child: Container(
+      body: Container(
         width: Get.width,
         height: Get.height,
         child: Stack(
-          children: [
-            bgView(),
-            Column(
-              children: [
-                // Expanded(
-                //   flex: 1,
-                //   child: Container(),
-                // ),
-                Container(
-                  height: 200,
-                ),
-                registerForm(),
-              ],
-            ),
-          ],
+      children: [
+        bgView(),
+        SingleChildScrollView(
+          child: Column(
+            children: [
+              // Expanded(
+              //   flex: 1,
+              //   child: Container(),
+              // ),
+              Container(
+                height: 190,
+              ),
+              registerForm(),
+            ],
+          ),
         ),
-      )),
+      ],
+        ),
+      ),
     );
   }
 

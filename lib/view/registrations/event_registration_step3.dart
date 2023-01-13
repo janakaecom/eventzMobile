@@ -1,24 +1,49 @@
 
+import 'dart:convert';
+
 import 'package:country_calling_code_picker/country.dart';
 import 'package:country_calling_code_picker/country_code_picker.dart';
+import 'package:eventz/model/event_register_request.dart';
 import 'package:eventz/view/widget/imput_square_text_field.dart';
 import 'package:flutter/material.dart';
 
+import '../../api/api_service.dart';
 import '../../configs/colors.dart';
 import '../../configs/fonts.dart';
 import '../../configs/images.dart';
+import 'package:get/get.dart';
+import '../../model/responses.dart';
+import '../../model/register_error_response.dart';
+import '../BaseUI.dart';
+import '../widget/app_bar.dart';
+import '../widget/app_drawer.dart';
 import '../widget/fl_text.dart';
 
 class EventRegistrationStep3 extends StatefulWidget {
   static var routeName = "/event_registration_step3";
 
-  const EventRegistrationStep3({Key key}) : super(key: key);
+  final int eventModeId;
+  final String onlineLink;
+  final String closingDate;
+  final List<String> categoryList;
+  final List<String> namesList;
+  final List<EventResourceObjectList> list;
+  final String eventName;
+  final String eventDescription;
+  final String eventDate;
+  final String eventTime;
+  final String posterUrl;
+  final String venue;
+  final String mapReference;
+
+
+  const EventRegistrationStep3({Key key, this.eventModeId, this.onlineLink, this.closingDate, this.categoryList, this.namesList, this.eventName, this.eventDescription, this.eventDate, this.eventTime, this.posterUrl, this.venue, this.mapReference, this.list}) : super(key: key);
 
   @override
   State<StatefulWidget> createState() => _EventRegistrationStep3State();
 }
 
-class _EventRegistrationStep3State extends State<EventRegistrationStep3> {
+class _EventRegistrationStep3State extends State<EventRegistrationStep3> with BaseUI{
 
   DateTime pickedDate = DateTime.now();
   final TextEditingController priceCategoryController = new TextEditingController();
@@ -28,20 +53,22 @@ class _EventRegistrationStep3State extends State<EventRegistrationStep3> {
   final TextEditingController percentageController = new TextEditingController();
   final TextEditingController EBEndDateController = new TextEditingController();
   final TextEditingController EBStartDateController = new TextEditingController();
-  FocusNode _passwordFocusNode;
-  FocusNode _confirmPasswordFocusNode;
-  Country _selectedCountry;
 
-  String _dropDownValue;
+
   bool isCheckedBankTransfer =  false;
   bool isCheckedCashOnTheEventDay =  false;
   bool isCheckedCheque =  false;
   bool isCheckedOnlinePayment =  false;
+  APIService apiService = APIService();
+
+  List<EventFeeObjectList> eventFeeObjectList = [];
 
   @override
   void initState() {
     super.initState();
-    _passwordFocusNode = FocusNode();
+
+    eventFeeObjectList.add(EventFeeObjectList(category: "Category",amount: 0, maxQuantity: 0,eventFeeId: 1,eventIdx: 1));
+
   }
 
   @override
@@ -110,6 +137,16 @@ class _EventRegistrationStep3State extends State<EventRegistrationStep3> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        backgroundColor: AppColors.kWhite,
+        elevation: 0,
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back_ios,color: Colors.black,),
+          onPressed: () {
+            Navigator.of(context).pop(true);
+          },
+        ),
+      ),
       backgroundColor: AppColors.kWhite,
       // drawer: AppDrawer(),
       // appBar: BaseAppBar(
@@ -119,13 +156,13 @@ class _EventRegistrationStep3State extends State<EventRegistrationStep3> {
       //     isBackShow: false),
       body: SingleChildScrollView(
         child: Container(
-          height: 1000,
-          width: 1000,
+          // height: 1000,
+          // width: 1000,
           decoration: const BoxDecoration(
               color: AppColors.kWhite
           ),
           child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 18,vertical: 75),
+            padding: const EdgeInsets.symmetric(horizontal: 18),
             child: Column(
               children: [
                 Row(
@@ -215,21 +252,37 @@ class _EventRegistrationStep3State extends State<EventRegistrationStep3> {
                     ),
                     Padding(
                       padding: const EdgeInsets.only(top: 5,right: 8),
-                      child: Container(
-                        height: 45,
-                        width: 60,
-                        decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(3),
-                            color: Colors.blue
-                        ),
-                        child: Padding(
-                          padding: const EdgeInsets.symmetric(vertical: 6,horizontal: 12),
-                          child: FLText(
-                            displayText: "Add",
-                            textColor: Colors.white,
-                            setToWidth: false,
-                            fontWeight: FontWeight.w600,
-                            textSize: AppFonts.textFieldFontSize14,
+                      child: InkWell(
+                        onTap: (){
+                          setState(() {
+                            if(priceCategoryController.text != '' || eventPriceCategory.text != '' || quantityController.text != ""){
+                              // categoryList.add(priceCategoryController.text);
+                              // priceList.add(eventPriceCategory.text);
+                              // quantityList.add(quantityController.text);
+                              eventFeeObjectList.add(EventFeeObjectList(category: priceCategoryController.text,amount: int.parse(eventPriceCategory.text), maxQuantity: int.parse(quantityController.text),eventFeeId: 1,eventIdx: 1));
+                            }
+
+                            priceCategoryController.text = '';
+                            eventPriceCategory.text = '';
+                            quantityController.text = '';
+                          });
+                        },
+                        child: Container(
+                          height: 45,
+                          width: 60,
+                          decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(3),
+                              color: Colors.blue
+                          ),
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(vertical: 6,horizontal: 12),
+                            child: FLText(
+                              displayText: "Add",
+                              textColor: Colors.white,
+                              setToWidth: false,
+                              fontWeight: FontWeight.w600,
+                              textSize: AppFonts.textFieldFontSize14,
+                            ),
                           ),
                         ),
                       ),
@@ -237,10 +290,18 @@ class _EventRegistrationStep3State extends State<EventRegistrationStep3> {
                   ],
                 ),
                 SizedBox(
-                  height: 20,
+                  height: 10,
                 ),
 
-
+                Visibility(
+                  visible: eventFeeObjectList.length > 1? true:false,
+                    child: tableView()),
+                Visibility(
+                  visible: eventFeeObjectList.length > 1? true:false,
+                  child: SizedBox(
+                    height: 15,
+                  ),
+                ),
                 Row(
                   children: [
                     FLText(
@@ -352,9 +413,6 @@ class _EventRegistrationStep3State extends State<EventRegistrationStep3> {
                                 onChanged: (bool value) {
                                   setState(() {
                                     isCheckedBankTransfer = value;
-                                    isCheckedCashOnTheEventDay = false;
-                                    isCheckedCheque = false;
-                                    isCheckedOnlinePayment = false;
                                   });
                                 },
                               ),
@@ -377,9 +435,6 @@ class _EventRegistrationStep3State extends State<EventRegistrationStep3> {
                                   onChanged: (bool value) {
                                     setState(() {
                                       isCheckedCashOnTheEventDay = value;
-                                      isCheckedBankTransfer = false;
-                                      isCheckedCheque = false;
-                                      isCheckedOnlinePayment = false;
                                     });
                                   },
                                 ),
@@ -404,9 +459,7 @@ class _EventRegistrationStep3State extends State<EventRegistrationStep3> {
                                   onChanged: (bool value) {
                                     setState(() {
                                       isCheckedCheque = value;
-                                      isCheckedBankTransfer = false;
-                                      isCheckedCashOnTheEventDay = false;
-                                      isCheckedOnlinePayment = false;
+
                                     });
                                   },
                                 ),
@@ -430,9 +483,7 @@ class _EventRegistrationStep3State extends State<EventRegistrationStep3> {
                                   onChanged: (bool value) {
                                     setState(() {
                                       isCheckedOnlinePayment = value;
-                                      isCheckedBankTransfer = false;
-                                      isCheckedCashOnTheEventDay = false;
-                                      isCheckedCheque = false;
+
                                     });
                                   },
                                 ),
@@ -471,6 +522,7 @@ class _EventRegistrationStep3State extends State<EventRegistrationStep3> {
                     ),
                     TextFormField(
                         maxLength: 800,
+                        controller: termAndConditionsController,
                         maxLines: 5,
                         style: TextStyle(color: AppColors.TextGray,fontSize: 13),
                         decoration: InputDecoration(
@@ -496,14 +548,15 @@ class _EventRegistrationStep3State extends State<EventRegistrationStep3> {
                     children: [
                       InkWell(
                         onTap: () async {
-                          await Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) =>
-                                  EventRegistrationStep3(
-                                  ),
-                            ),
-                          );
+                          eventRegisterCall();
+                          // await Navigator.push(
+                          //   context,
+                          //   MaterialPageRoute(
+                          //     builder: (context) =>
+                          //         EventRegistrationStep3(
+                          //         ),
+                          //   ),
+                          // );
                         },
                         child: Container(
                           decoration: BoxDecoration(
@@ -523,6 +576,9 @@ class _EventRegistrationStep3State extends State<EventRegistrationStep3> {
                           ),
                         ),
                       ),
+                      SizedBox(
+                        height: 40,
+                      )
                     ],
                   ),
                 ),
@@ -535,6 +591,138 @@ class _EventRegistrationStep3State extends State<EventRegistrationStep3> {
     );
   }
 
+
+  Widget tableView(){
+    return Table(
+      border: TableBorder.all(color: Colors.black),
+      children: List<TableRow>.generate(
+        eventFeeObjectList.length,
+            (index) {
+          return    TableRow(
+              children: [
+                Column(children:[
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 12,vertical: 5),
+                        child: Text(eventFeeObjectList[index].category.toString(), style: TextStyle(fontSize: 15.0,fontWeight: index == 0? FontWeight.w600  : FontWeight.w500)),
+                      ),
+                    ],
+                  )]),
+                Column(children:[ Row(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 12,vertical: 5),
+                      child: Text(eventFeeObjectList[index].amount.toString(), style: TextStyle(fontSize: 15.0,fontWeight: index == 0? FontWeight.w600 : FontWeight.w500)),
+                    ),
+                  ],
+                )]),
+                Column(children:[ Row(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 12,vertical: 5),
+                      child: Text(eventFeeObjectList[index].maxQuantity.toString(), style: TextStyle(fontSize: 15.0,fontWeight: index == 0? FontWeight.w600 : FontWeight.w500)),
+                    ),
+                  ],
+                )]),
+              ]);
+        },
+        growable: false,
+      ),
+    );
+  }
+
+
+
+  ///event registration call
+  void eventRegisterCall() {
+
+    // setState(() {
+    //   for(int i = 0; i < widget.categoryList.length ; i++){
+    //     eventResourceObjectList.add(widget.categoryList);
+    //   }
+    //   for(int i = 0; i < widget.namesList.length ; i++){
+    //     eventResourceObjectList.resouceName = widget.namesList[i];
+    //   }
+    //
+    // });
+
+
+    if(isCheckedOnlinePayment == false && isCheckedCheque == false && isCheckedBankTransfer == false && isCheckedCashOnTheEventDay == false) {
+      Get.snackbar('error'.tr, "Payment method should be selected.",
+          colorText: AppColors.textRed,
+          backgroundColor: AppColors.kWhite);
+    }
+    else if(termAndConditionsController.text == '' ||termAndConditionsController.text == null) {
+      Get.snackbar('error'.tr, "Term and Conditions can't be empty.",
+          colorText: AppColors.textRed,
+          backgroundColor: AppColors.kWhite);
+    }
+    else {
+      apiService.check().then((check) {
+        EventRegisterRequest request = EventRegisterRequest(
+            isPaidEvent: true,
+            artWorkName: "de",
+            createdUserIdx: 1,
+            eBDiscountRate: 2,
+            eventIdx: 1,
+            eventStatusIdx: 1,
+            isSpeakerAvailable: true,
+            artworkPath: widget.posterUrl,
+            eventName: widget.eventName,
+            eventDescription: widget.eventDescription,
+            hostIdx: 1,
+            isEarlyBird: false,
+            eventDate: widget.eventDate,
+            eventTime: widget.eventTime,
+            eventVenue: "ed",
+            venueMapReference: widget.mapReference,
+            eventCatIdx: 1,
+            eventModeIdx: widget.eventModeId,
+            onlineLink: widget.onlineLink,
+            closingDate: widget.closingDate,
+            eventResourceObjectList: widget.list,
+            eventFeeObjectList: eventFeeObjectList,
+            // ebStartBirdEndDate :
+            earlyBirdEndDate: EBEndDateController.text,
+            // percentage:
+            bankTransferPayment: isCheckedBankTransfer,
+            cashOnPayment: isCheckedCashOnTheEventDay,
+            chequePayment: isCheckedCheque,
+            onlinePayment: isCheckedOnlinePayment,
+            termsCondition: termAndConditionsController.text
+        );
+
+        showProgressbar(context);
+        if (check) {
+          apiService.saveEvent(request.toJson()).then((value) {
+            hideProgressbar(context);
+
+            if (value.statusCode == 200) {
+              EventRegistrationResponse responseData =
+              EventRegistrationResponse.fromJson(json.decode(value.body));
+              Get.snackbar("Success", responseData.error,
+                  colorText: AppColors.textGreenLight,
+                  backgroundColor: AppColors.kWhite);
+              // Get.off(LoginView());
+            } else {
+              RegisterErrorResponse responseData = RegisterErrorResponse
+                  .fromJson(json.decode(value.body));
+              Get.snackbar('error'.tr, responseData.message,
+                  colorText: AppColors.textRed,
+                  backgroundColor: AppColors.kWhite);
+            }
+          });
+        } else {
+          hideProgressbar(context);
+          helper.showAlertView(context, 'no_internet'.tr, () {}, 'ok'.tr);
+        }
+      });
+    }
+  }
 
   Future<void> dateSelection(bool isStartDate) async {
     String date;
@@ -551,12 +739,39 @@ class _EventRegistrationStep3State extends State<EventRegistrationStep3> {
 
     setState(() {
       if(isStartDate == false) {
-        EBEndDateController.text =
-        "${pickedDate.year}-${pickedDate.month}-${pickedDate.day}";
+
+        if(pickedDate.month < 10 && pickedDate.day < 10){
+          EBEndDateController.text = "${pickedDate.year}-0${pickedDate.month}-0${pickedDate.day}";
+        }
+        else if(pickedDate.day < 10 && pickedDate.day > 10){
+          EBEndDateController.text = "${pickedDate.year}-0${pickedDate.month}-${pickedDate.day}";
+        }
+        else if(pickedDate.month > 10 && pickedDate.day < 10){
+          EBEndDateController.text = "${pickedDate.year}-${pickedDate.month}-0${pickedDate.day}";
+        }
+        else if(pickedDate.month < 10 && pickedDate.day < 10){
+          EBEndDateController.text = "${pickedDate.year}-${pickedDate.month}-${pickedDate.day}";
+        }
+        else{
+          EBEndDateController.text = "${pickedDate.year}-${pickedDate.month}-${pickedDate.day}";
+        }
       }
       else if(isStartDate == true){
-        EBStartDateController.text =
-        "${pickedDate.year}-${pickedDate.month}-${pickedDate.day}";
+        if(pickedDate.month < 10 && pickedDate.day < 10){
+          EBStartDateController.text = "${pickedDate.year}-0${pickedDate.month}-0${pickedDate.day}";
+        }
+        else if(pickedDate.day < 10 && pickedDate.day > 10){
+          EBStartDateController.text = "${pickedDate.year}-0${pickedDate.month}-${pickedDate.day}";
+        }
+        else if(pickedDate.month > 10 && pickedDate.day < 10){
+          EBStartDateController.text = "${pickedDate.year}-${pickedDate.month}-0${pickedDate.day}";
+        }
+        else if(pickedDate.month < 10 && pickedDate.day < 10){
+          EBStartDateController.text = "${pickedDate.year}-${pickedDate.month}-${pickedDate.day}";
+        }
+        else{
+          EBStartDateController.text = "${pickedDate.year}-${pickedDate.month}-${pickedDate.day}";
+        }
       }
     });
   }
