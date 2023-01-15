@@ -6,10 +6,10 @@ import 'package:eventz/view/myEvent/my_event_details.dart';
 import 'package:eventz/view/myEvent/my_event_qr_code.dart';
 import 'package:eventz/view/profile/change_password.dart';
 import 'package:eventz/view/profile/update_profile_screen.dart';
-import 'package:eventz/view/registrations/host_registrations.dart';
 import 'package:get/get.dart';
 
-import '../view/registrations/event_registration_step1.dart';
+import '../view/forms/event_registration_step1.dart';
+
 
 class Routers {
   static final route = [

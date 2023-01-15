@@ -9,12 +9,13 @@ import 'package:eventz/view/login/login_view.dart';
 import 'package:eventz/view/myEvent/my_event.dart';
 import 'package:eventz/view/profile/change_password.dart';
 import 'package:eventz/view/profile/update_profile_screen.dart';
-import 'package:eventz/view/registrations/event_registration_step1.dart';
-import 'package:eventz/view/registrations/host_registrations.dart';
 import 'package:eventz/view/widget/fl_text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:get/get.dart';
+
+import '../forms/event_registration_step1.dart';
+import '../forms/host_registrations.dart';
 
 class AppDrawer extends StatefulWidget {
   @override
@@ -178,6 +179,7 @@ class _AppDrawerState extends State<AppDrawer> {
             homeMenu("Password Change", "PASSWORD_CHANGE", password, context),
             homeMenu("Host Registration", "HOST_REG", userName, context),
             homeMenu("Event Registration", "EVENT_REG_STEP1", userName, context),
+            // homeMenu("Event Update", "UPDATE_EVENT", menuEvent, context),
             homeMenu("Logout", "LOGOUT", menuLogout, context),
           ],
         ),
@@ -214,6 +216,9 @@ class _AppDrawerState extends State<AppDrawer> {
           if (action == "PASSWORD_CHANGE") {
             Get.to(ChangePasswordScreen());
           }
+          // if (action == "UPDATE_EVENT") {
+          //   Get.to(ChangePasswordScreen());
+          // }
           if (action == "EVENT_REG_STEP1") {
             Get.to(EventRegistrationStep1());
           }

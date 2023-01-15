@@ -108,9 +108,28 @@
 
 
 
-
-
 class AllEventResponse {
+  List<EventsResult> result;
+
+  AllEventResponse({this.result});
+
+  AllEventResponse.fromJson(Map<String, dynamic> json) {
+      result = <EventsResult>[];
+      json['result'].forEach((v) {
+        result.add(new EventsResult.fromJson(v));
+      });
+  }
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = new Map<String, dynamic>();
+    if (this.result = null) {
+      data['result'] = this.result.map((v) => v.toJson()).toList();
+    }
+    return data;
+  }
+}
+
+class EventsResult {
   int eventIdx;
   int hostIdx;
   int eventCatIdx;
@@ -126,16 +145,16 @@ class AllEventResponse {
   bool isEarlyBird;
   String earlyBirdEndDate;
   bool isPaidEvent;
-  int ebDiscountRate;
+  double ebDiscountRate;
   bool isSpeakerAvailable;
-  Null venueMapReference;
+  String venueMapReference;
   int eventStatusIdx;
   int createdUserIdx;
   String termsCondition;
   String hostName;
-  Null categoryName;
+  String categoryName;
   String eventStatusName;
-  Null currencyName;
+  String currencyName;
   bool onlinePayment;
   bool chequePayment;
   bool cashOnPayment;
@@ -143,7 +162,7 @@ class AllEventResponse {
   List<EventResourceObjectList> eventResourceObjectList;
   List<EventFeeObjectList> eventFeeObjectList;
 
-  AllEventResponse(
+  EventsResult(
       {this.eventIdx,
         this.hostIdx,
         this.eventCatIdx,
@@ -176,7 +195,7 @@ class AllEventResponse {
         this.eventResourceObjectList,
         this.eventFeeObjectList});
 
-  AllEventResponse.fromJson(Map<String, dynamic> json) {
+  EventsResult.fromJson(Map<String, dynamic> json) {
     eventIdx = json['eventIdx'];
     hostIdx = json['hostIdx'];
     eventCatIdx = json['eventCatIdx'];
@@ -206,18 +225,18 @@ class AllEventResponse {
     chequePayment = json['chequePayment'];
     cashOnPayment = json['cashOnPayment'];
     bankTransferPayment = json['bankTransferPayment'];
-    if (json['eventResourceObjectList'] = null) {
+    // if (json['eventResourceObjectList'] = null) {
       eventResourceObjectList = <EventResourceObjectList>[];
       json['eventResourceObjectList'].forEach((v) {
         eventResourceObjectList.add(new EventResourceObjectList.fromJson(v));
       });
-    }
-    if (json['eventFeeObjectList'] = null) {
+    // }
+    // if (json['eventFeeObjectList'] = null) {
       eventFeeObjectList = <EventFeeObjectList>[];
       json['eventFeeObjectList'].forEach((v) {
         eventFeeObjectList.add(new EventFeeObjectList.fromJson(v));
       });
-    }
+    // }
   }
 
   Map<String, dynamic> toJson() {
@@ -303,7 +322,7 @@ class EventFeeObjectList {
   bool isFixed;
   String catName;
   int currencyIdx;
-  int amount;
+  double amount;
   int exchangeRate;
   int presantageRate;
   int maxQuantity;
@@ -348,4 +367,3 @@ class EventFeeObjectList {
     return data;
   }
 }
-

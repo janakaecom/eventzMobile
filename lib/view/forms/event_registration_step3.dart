@@ -702,9 +702,8 @@ class _EventRegistrationStep3State extends State<EventRegistrationStep3> with Ba
             hideProgressbar(context);
 
             if (value.statusCode == 200) {
-              EventRegistrationResponse responseData =
-              EventRegistrationResponse.fromJson(json.decode(value.body));
-              Get.snackbar("Success", responseData.error,
+              EventRegistrationResponse responseData = EventRegistrationResponse.fromJson(json.decode(value.body));
+              Get.snackbar("Success", responseData.result,
                   colorText: AppColors.textGreenLight,
                   backgroundColor: AppColors.kWhite);
               // Get.off(LoginView());
@@ -743,7 +742,7 @@ class _EventRegistrationStep3State extends State<EventRegistrationStep3> with Ba
         if(pickedDate.month < 10 && pickedDate.day < 10){
           EBEndDateController.text = "${pickedDate.year}-0${pickedDate.month}-0${pickedDate.day}";
         }
-        else if(pickedDate.day < 10 && pickedDate.day > 10){
+        else if(pickedDate.month < 10 && pickedDate.day > 10){
           EBEndDateController.text = "${pickedDate.year}-0${pickedDate.month}-${pickedDate.day}";
         }
         else if(pickedDate.month > 10 && pickedDate.day < 10){
@@ -760,7 +759,7 @@ class _EventRegistrationStep3State extends State<EventRegistrationStep3> with Ba
         if(pickedDate.month < 10 && pickedDate.day < 10){
           EBStartDateController.text = "${pickedDate.year}-0${pickedDate.month}-0${pickedDate.day}";
         }
-        else if(pickedDate.day < 10 && pickedDate.day > 10){
+        else if(pickedDate.month < 10 && pickedDate.day > 10){
           EBStartDateController.text = "${pickedDate.year}-0${pickedDate.month}-${pickedDate.day}";
         }
         else if(pickedDate.month > 10 && pickedDate.day < 10){

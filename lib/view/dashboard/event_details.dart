@@ -22,6 +22,10 @@ import 'package:get/get.dart';
 class EventDetails extends StatefulWidget {
   static var routeName = "/event_details";
 
+  final EventsResult eventsResult;
+
+  const EventDetails({Key key, this.eventsResult}) : super(key: key);
+
   @override
   _EventDetailsState createState() => _EventDetailsState();
 }
@@ -48,7 +52,7 @@ class _EventDetailsState extends State<EventDetails> with BaseUI {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: BaseAppBar(
-          title: item.eventName,
+          title: widget.eventsResult.eventName,
           menuList: [],
           isDrawerShow: false,
           isBackShow: true),
@@ -60,7 +64,7 @@ class _EventDetailsState extends State<EventDetails> with BaseUI {
               Stack(
                 children: [
                   Image.network(
-                    item.artworkPath,
+                    widget.eventsResult.artworkPath,
                     width: Get.width,
                     height: 200,
                     fit: BoxFit.fill,
@@ -97,7 +101,7 @@ class _EventDetailsState extends State<EventDetails> with BaseUI {
 
   ///show date view of event
   dateView() {
-    String apiDate = item.eventDate.split(" ")[0];
+    String apiDate = widget.eventsResult.eventDate.split(" ")[0];
     String year = "";
     String date = "";
     String month = "";
@@ -110,7 +114,8 @@ class _EventDetailsState extends State<EventDetails> with BaseUI {
     }
     return Container(
       margin: const EdgeInsets.only(top: 140, left: 30),
-      child: Row(children: [
+      child: Row(
+          children: [
         Container(
           width: 70,
           height: 70,
@@ -163,7 +168,7 @@ class _EventDetailsState extends State<EventDetails> with BaseUI {
               height: 40,
             ),
             FLText(
-              displayText: item.eventName,
+              displayText: widget.eventsResult.eventName,
               textColor: AppColors.kTextDark,
               setToWidth: false,
               fontWeight: FontWeight.w800,
@@ -173,7 +178,7 @@ class _EventDetailsState extends State<EventDetails> with BaseUI {
               height: 4,
             ),
             FLText(
-              displayText: item.hostName,
+              displayText: widget.eventsResult.hostName,
               textColor: AppColors.kTextLight,
               setToWidth: false,
               textSize: AppFonts.textFieldFontSize14,
@@ -217,8 +222,8 @@ class _EventDetailsState extends State<EventDetails> with BaseUI {
         mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          dataBodyRow("Venue : ", item.eventVenue),
-          dataBodyRow("Resource Person : ", item.eventResourceObjectList[0].resName),
+          dataBodyRow("Venue : ", widget.eventsResult.eventVenue),
+          dataBodyRow("Resource Person : ", widget.eventsResult.eventResourceObjectList[0].resName),
           dataBodyRow("Organized By : ", "-"),
           Container(
             padding:
@@ -490,7 +495,7 @@ class _EventDetailsState extends State<EventDetails> with BaseUI {
     String coupon = couponController.text;
     String amount = amountController.text;
     printInfo(info: "----------");
-    print("Event id : ${item.eventIdx}");
+    print("Event id : ${widget.eventsResult.eventIdx}");
     print("USer id : ${profileData.result.userIdx}");
     print("vehicleNo : ${vehicleNo}");
     print("mealType : ${mealType}");
@@ -512,7 +517,7 @@ class _EventDetailsState extends State<EventDetails> with BaseUI {
 
       apiService.check().then((check) {
         SaveEventRequest request = SaveEventRequest(
-            eventId: int.parse(item.eventIdx.toString()),
+            eventId: int.parse(widget.eventsResult.eventIdx.toString()),
             userId: profileData.result.userIdx,
             vehicleNo: vehicleNo,
             mealType: mealType,

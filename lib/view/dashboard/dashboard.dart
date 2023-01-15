@@ -22,7 +22,7 @@ class DashBoard extends StatefulWidget {
 }
 
 class _DashBoardState extends State<DashBoard> with BaseUI {
-  List<AllEventResponse> eventList;
+  List<EventsResult> eventList;
 
   @override
   void initState() {
@@ -49,8 +49,10 @@ class _DashBoardState extends State<DashBoard> with BaseUI {
               SizedBox(
                 height: Get.height - 100,
                 child: SafeArea(
-                    child: ListView.builder(
-                        itemCount: eventList ?? 0,
+                    child:
+                    eventList == null?Container():
+                    ListView.builder(
+                        itemCount: eventList.length ?? 0,
                         itemBuilder: (BuildContext context, int index) {
                           return _eventRow(index);
                         })),
@@ -91,7 +93,9 @@ class _DashBoardState extends State<DashBoard> with BaseUI {
             ),
           ],
           border: Border.all(color: AppColors.kWhite)),
-      child: Column(
+      child:
+
+      Column(
         children: [
           Container(
             decoration: BoxDecoration(
@@ -99,7 +103,8 @@ class _DashBoardState extends State<DashBoard> with BaseUI {
                 borderRadius: BorderRadius.all(Radius.circular(15)),
                 border: Border.all(color: AppColors.kWhite)),
             padding: const EdgeInsets.only(top: 0, left: 0.0, right: 0.0),
-            child: ClipRRect(
+            child:
+            ClipRRect(
               borderRadius: BorderRadius.circular(8.0),
               child: Stack(children: [
                 Image.network(
@@ -110,84 +115,89 @@ class _DashBoardState extends State<DashBoard> with BaseUI {
                 ),
 
                 Container(
-                  margin: const EdgeInsets.only(top: 00),
                   padding: const EdgeInsets.only(
-                      top: 120, left: 10, right: 10, bottom: 3),
+                      top: 120, left: 15, right: 10, bottom: 10),
                   width: Get.width,
                   height: 200,
                   color: AppColors.appDark.withOpacity(0.5),
                   child: Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
                     children: [
-                      Expanded(
-                        flex: 1,
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            FLText(
-                              displayText: item[index].eventName,
-                              textColor: AppColors.kWhite,
-                              setToWidth: false,
-                              fontWeight: FontWeight.bold,
-                              textSize: AppFonts.textFieldFontSize,
-                            ),
-                            FLText(
-                              displayText: item[index].hostName,
-                              textColor: AppColors.kWhite,
-                              setToWidth: false,
-                              textSize: AppFonts.textFieldFontSize14,
-                            ),
-                            SizedBox(
-                              height: 5,
-                            ),
-                            Row(
-                              children: [
-                                Image.asset(
-                                  mapIconWhite,
-                                  width: 15,
-                                  height: 15,
-                                  fit: BoxFit.fill,
-                                ),
-                                SizedBox(
-                                  width: 5,
-                                ),
-                                FLText(
-                                  displayText:item[index].eventVenue,
-                                  textColor: AppColors.kWhite,
-                                  setToWidth: false,
-                                  textSize: AppFonts.textFieldFontSize12,
-                                ),
-                              ],
-                            ),
-                          ],
-                        ),
-                      ),
+                      // Expanded(
+                      //   flex: 1,
+                      //   child: Column(
+                      //     mainAxisAlignment: MainAxisAlignment.center,
+                      //     crossAxisAlignment: CrossAxisAlignment.start,
+                      //     children: [
+                      //       FLText(
+                      //         displayText: item[index].eventName,
+                      //         textColor: AppColors.kWhite,
+                      //         setToWidth: false,
+                      //         fontWeight: FontWeight.bold,
+                      //         textSize: AppFonts.textFieldFontSize,
+                      //       ),
+                      //       FLText(
+                      //         displayText: item[index].hostName,
+                      //         textColor: AppColors.kWhite,
+                      //         setToWidth: false,
+                      //         textSize: AppFonts.textFieldFontSize14,
+                      //       ),
+                      //       SizedBox(
+                      //         height: 5,
+                      //       ),
+                      //       Row(
+                      //         children: [
+                      //           Image.asset(
+                      //             mapIconWhite,
+                      //             width: 15,
+                      //             height: 15,
+                      //             fit: BoxFit.fill,
+                      //           ),
+                      //           SizedBox(
+                      //             width: 5,
+                      //           ),
+                      //           FLText(
+                      //             displayText:item[index].eventVenue,
+                      //             textColor: AppColors.kWhite,
+                      //             setToWidth: false,
+                      //             textSize: AppFonts.textFieldFontSize12,
+                      //           ),
+                      //         ],
+                      //       ),
+                      //     ],
+                      //   ),
+                      // ),
                       // interestView(),
-                      Align(
-                        alignment: Alignment.centerRight,
-                        child: InkWell(
-                          onTap: (){
-                            Get.to(EventDetails(), arguments: item);
-                          },
-                          child: Container(
-                            margin: const EdgeInsets.only(top: 10, right: 10),
-                            decoration: BoxDecoration(
+                      InkWell(
+                        onTap: (){
+                          // Get.to(EventDetails(), arguments: item);
+                          // Navigator.push(
+                          //   context,
+                          //   MaterialPageRoute(
+                          //     builder: (context) => EventDetails(
+                          //       eventsResult: eventList[index],
+                          //     ),
+                          //   ),
+                          // );
+                        },
+                        child: Container(
+                          margin: const EdgeInsets.only(top: 10, right: 10),
+                          decoration: BoxDecoration(
+                              color: AppColors.kWhite,
+                              border: Border.all(
                                 color: AppColors.kWhite,
-                                border: Border.all(
-                                  color: AppColors.kWhite,
-                                ),
-                                borderRadius:
-                                    BorderRadius.all(Radius.circular(20))),
-                            alignment: Alignment.topRight,
-                            height: 30,
-                            width: 30,
-                            child: Center(
-                              child: Image.asset(
-                                imgNext,
-                                width: 15,
-                                height: 15,
-                                fit: BoxFit.fill,
                               ),
+                              borderRadius:
+                                  BorderRadius.all(Radius.circular(20))),
+                          alignment: Alignment.topRight,
+                          height: 30,
+                          width: 30,
+                          child: Center(
+                            child: Image.asset(
+                              imgNext,
+                              width: 15,
+                              height: 15,
+                              fit: BoxFit.fill,
                             ),
                           ),
                         ),
@@ -196,45 +206,104 @@ class _DashBoardState extends State<DashBoard> with BaseUI {
                   ),
                 ),
                 // priceTag(item),
-                Container(
-                  margin: const EdgeInsets.only(left: 10.0, top: 10.0),
-                  width: 65,
-                  height: 65,
-                  decoration: BoxDecoration(
-                      color: AppColors.buttonBlue.withOpacity(0.9),
-                      borderRadius: BorderRadius.all(Radius.circular(15)),
-                      border: Border.all(color: AppColors.buttonBlue)),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      FLText(
-                        displayText: month,
-                        textColor: AppColors.kWhite,
-                        setToWidth: false,
-                        textSize: AppFonts.textFieldFontSize12,
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Container(
+                      margin: const EdgeInsets.only(left: 10.0, top: 10.0),
+                      width: 65,
+                      height: 65,
+                      decoration: BoxDecoration(
+                          color: AppColors.buttonBlue.withOpacity(0.9),
+                          borderRadius: BorderRadius.all(Radius.circular(15)),
+                          border: Border.all(color: AppColors.buttonBlue)),
+                      child:
+                      Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          SizedBox(
+                            height: 10,
+                            width: double.infinity,
+                            child: FLText(
+                              displayText: month,
+                              textColor: AppColors.kWhite,
+                              setToWidth: false,
+                              textSize: AppFonts.textFieldFontSize12,
+                            ),
+                          ),
+                          SizedBox(
+                            height: 10,
+                            width: double.infinity,
+                            child: FLText(
+                              displayText: date,
+                              textColor: AppColors.kWhite,
+                              setToWidth: false,
+                              fontWeight: FontWeight.w800,
+                              textSize: AppFonts.textFieldFontLarge24,
+                            ),
+                          ),
+                        ],
                       ),
-                      FLText(
-                        displayText: date,
-                        textColor: AppColors.kWhite,
-                        setToWidth: false,
-                        fontWeight: FontWeight.w800,
-                        textSize: AppFonts.textFieldFontLarge24,
+                    ),
+
+                    Padding(
+                      padding: const EdgeInsets.only(left: 20,top: 45),
+                      child: Column(
+                        // mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          FLText(
+                            displayText: item[index].eventName,
+                            textColor: AppColors.kWhite,
+                            setToWidth: false,
+                            fontWeight: FontWeight.bold,
+                            textSize: AppFonts.textFieldFontSize,
+                          ),
+                          FLText(
+                            displayText: item[index].hostName,
+                            textColor: AppColors.kWhite,
+                            setToWidth: false,
+                            textSize: AppFonts.textFieldFontSize14,
+                          ),
+                          SizedBox(
+                            height: 5,
+                          ),
+                          Row(
+                            children: [
+                              Image.asset(
+                                mapIconWhite,
+                                width: 15,
+                                height: 15,
+                                fit: BoxFit.fill,
+                              ),
+                              SizedBox(
+                                width: 5,
+                              ),
+                              FLText(
+                                displayText:item[index].eventVenue,
+                                textColor: AppColors.kWhite,
+                                setToWidth: false,
+                                textSize: AppFonts.textFieldFontSize12,
+                              ),
+                            ],
+                          ),
+                        ],
                       ),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
               ]),
             ),
           ),
-          // _rowBottom(item),
+          // _rowBottom(item[index]),
         ],
       ),
     );
   }
 
   ///bottom view of the row
-  _rowBottom(AllEventResponse item) {
+  _rowBottom(EventsResult item) {
     return Container(
       padding: const EdgeInsets.only(left: 10, right: 10, top: 10, bottom: 10),
       child: Row(
@@ -249,13 +318,13 @@ class _DashBoardState extends State<DashBoard> with BaseUI {
           SizedBox(
             width: 10,
           ),
-          FLText(
-            textAlign: TextAlign.left,
-            displayText: item.eventResourceObjectList[0].resName,
-            textColor: AppColors.kTextDark,
-            setToWidth: false,
-            textSize: AppFonts.textFieldFontSize12,
-          ),
+          // FLText(
+          //   textAlign: TextAlign.left,
+          //   displayText: item.eventResourceObjectList[0].resName,
+          //   textColor: AppColors.kTextDark,
+          //   setToWidth: false,
+          //   textSize: AppFonts.textFieldFontSize12,
+          // ),
           Expanded(
             flex: 1,
             child: Container(),
@@ -264,7 +333,7 @@ class _DashBoardState extends State<DashBoard> with BaseUI {
             borderRadius: 20,
             title: "enroll".tr,
             onPressed: () {
-              Get.to(EventDetails(), arguments: item);
+              // Get.to(EventDetails(), arguments: item);
             },
             backgroundColor: AppColors.textGreenLight,
             titleFontColor: AppColors.kWhite,
@@ -343,10 +412,10 @@ class _DashBoardState extends State<DashBoard> with BaseUI {
           hideProgressbar(context);
 
           if (value.statusCode == 200) {
-            List<dynamic> responseData = jsonDecode(value.body);
-            // AllEventResponse responseData = AllEventResponse.fromJson(json.decode(value.body));
+            // List<dynamic> responseData = jsonDecode(value.body);
+            AllEventResponse responseData = AllEventResponse.fromJson(json.decode(value.body));
             setState(() {
-              eventList = responseData;
+              eventList = responseData.result;
             });
           } else {
             ErrorResponse responseData = ErrorResponse.fromJson(json.decode(value.body));

@@ -1,7 +1,6 @@
 
 import 'package:country_calling_code_picker/country.dart';
 import 'package:country_calling_code_picker/country_code_picker.dart';
-import 'package:eventz/view/registrations/event_registration_step3.dart';
 import 'package:eventz/view/widget/imput_square_text_field.dart';
 import 'package:flutter/material.dart';
 
@@ -10,6 +9,7 @@ import '../../configs/fonts.dart';
 import '../../configs/images.dart';
 import '../../model/event_register_request.dart';
 import '../widget/fl_text.dart';
+import 'event_registration_step3.dart';
 
 class EventRegistrationStep2 extends StatefulWidget {
   static var routeName = "/event_registration";
@@ -591,7 +591,7 @@ class _EventRegistrationStep2State extends State<EventRegistrationStep2> {
       if(pickedDate.month < 10 && pickedDate.day < 10){
         closingDateController.text = "${pickedDate.year}-0${pickedDate.month}-0${pickedDate.day}";
       }
-      else if(pickedDate.day < 10 && pickedDate.day > 10){
+      else if(pickedDate.month < 10 && pickedDate.day > 10){
         closingDateController.text = "${pickedDate.year}-0${pickedDate.month}-${pickedDate.day}";
       }
       else if(pickedDate.month > 10 && pickedDate.day < 10){

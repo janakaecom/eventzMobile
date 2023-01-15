@@ -1,4 +1,5 @@
 
+
 import 'package:country_calling_code_picker/country_code_picker.dart';
 import 'package:eventz/model/countries_response.dart';
 import 'package:eventz/model/host_register_request.dart';
@@ -35,16 +36,16 @@ import 'package:eventz/view/widget/fl_text.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
-class HostRegistration extends StatefulWidget {
+class MyEvents extends StatefulWidget {
   static var routeName = "/host_registration";
 
-  const HostRegistration({Key key}) : super(key: key);
+  const MyEvents({Key key}) : super(key: key);
 
   @override
-  State<StatefulWidget> createState() => _HostRegistrationState();
+  State<StatefulWidget> createState() => _MyEventsState();
 }
 
-class _HostRegistrationState extends State<HostRegistration> with BaseUI{
+class _MyEventsState extends State<MyEvents> with BaseUI{
 
   final TextEditingController businessNameController = new TextEditingController();
   final TextEditingController address1Controller = new TextEditingController();
@@ -95,7 +96,7 @@ class _HostRegistrationState extends State<HostRegistration> with BaseUI{
           height: 1000,
           width: 1000,
           decoration: const BoxDecoration(
-          color: AppColors.kWhite
+              color: AppColors.kWhite
           ),
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 20,vertical: 60),
@@ -135,24 +136,24 @@ class _HostRegistrationState extends State<HostRegistration> with BaseUI{
                     height: 110,
                     width: 110,
                     decoration: BoxDecoration(
-                      color: Colors.blue.withOpacity(0.15),
-                      borderRadius: BorderRadius.circular(60)
+                        color: Colors.blue.withOpacity(0.15),
+                        borderRadius: BorderRadius.circular(60)
                     ),
                     child: Center(
-                      child:
-                      // logo != null?
-                      // Image.file(
-                      //   files.File(logo),
-                      //   width: 100,
-                      //   height: 100,
-                      // ):
+                        child:
+                        // logo != null?
+                        // Image.file(
+                        //   files.File(logo),
+                        //   width: 100,
+                        //   height: 100,
+                        // ):
 
-                      Image.asset(
-                        menuUser,
-                        width: 28,
-                        height: 28,
-                        fit: BoxFit.cover,
-                      )
+                        Image.asset(
+                          menuUser,
+                          width: 28,
+                          height: 28,
+                          fit: BoxFit.cover,
+                        )
                     ),
                   ),
                 ),
@@ -168,29 +169,29 @@ class _HostRegistrationState extends State<HostRegistration> with BaseUI{
                 SizedBox(
                   height: 10,
                 ),
-                 Row(
-                   children: [
-                     FLText(
-                       displayText: "Business \nName",
-                       textColor: AppColors.kTextDark,
-                       setToWidth: false,
-                       textSize: AppFonts.textFieldFontSize14,
-                     ),
-                     SizedBox(
-                       width: 23,
-                     ),
-                     Expanded(
-                       child: InputSquareTextField(
-                         padding:const EdgeInsets.symmetric(vertical: 5),
-                         readOnly: false,
-                         textController: businessNameController,
-                         inputType: TextInputType.text,
-                         onChanged: (value) {
-                         },
-                       ),
-                     ),
-                   ],
-                 ),
+                Row(
+                  children: [
+                    FLText(
+                      displayText: "Business \nName",
+                      textColor: AppColors.kTextDark,
+                      setToWidth: false,
+                      textSize: AppFonts.textFieldFontSize14,
+                    ),
+                    SizedBox(
+                      width: 23,
+                    ),
+                    Expanded(
+                      child: InputSquareTextField(
+                        padding:const EdgeInsets.symmetric(vertical: 5),
+                        readOnly: false,
+                        textController: businessNameController,
+                        inputType: TextInputType.text,
+                        onChanged: (value) {
+                        },
+                      ),
+                    ),
+                  ],
+                ),
                 SizedBox(
                   height: 8,
                 ),
@@ -263,11 +264,11 @@ class _HostRegistrationState extends State<HostRegistration> with BaseUI{
                         child: Container(
                           height: 40,
                           decoration: BoxDecoration(
-                            border: Border.all(
-                              color: AppColors.TextGray.withOpacity(0.5),
+                              border: Border.all(
+                                color: AppColors.TextGray.withOpacity(0.5),
                                 width: 1.5,
-                            ),
-                            borderRadius: BorderRadius.circular(5)
+                              ),
+                              borderRadius: BorderRadius.circular(5)
                           ),
                           child: Padding(
                             padding: const EdgeInsets.symmetric(horizontal: 10,vertical: 0),
@@ -293,10 +294,10 @@ class _HostRegistrationState extends State<HostRegistration> with BaseUI{
                                 onChanged: (val) {
                                   setState(
                                         () {
-                                          print("val::::::::");
-                                          print(val.countryName);
+                                      print("val::::::::");
+                                      print(val.countryName);
                                       _dropDownValue = val.countryName;
-                                          countryIdx = int.parse(val.eventVenue);
+                                      countryIdx = int.parse(val.eventVenue);
                                     },
                                   );
                                 },
@@ -499,16 +500,16 @@ class _HostRegistrationState extends State<HostRegistration> with BaseUI{
   void hostRegisterCall() {
     apiService.check().then((check) {
       HostRegisterRequest request = HostRegisterRequest(
-        businessName: businessNameController.text,
-        logoName: "edde.jpeg",
-        logoPath: imageUrl,
-        address1: address1Controller.text,
-        address2: address2Controller.text,
-        contactPerson: "Shanuka",
-        countryIdx: countryIdx,
-        emailAddress: emailController.text,
-        hostIdx: 3,
-        telephone: mobileNoController.text
+          businessName: businessNameController.text,
+          logoName: "edde.jpeg",
+          logoPath: imageUrl,
+          address1: address1Controller.text,
+          address2: address2Controller.text,
+          contactPerson: "Shanuka",
+          countryIdx: countryIdx,
+          emailAddress: emailController.text,
+          hostIdx: 3,
+          telephone: mobileNoController.text
       );
       showProgressbar(context);
       if (check) {
