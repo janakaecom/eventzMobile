@@ -15,6 +15,7 @@ import 'package:eventz/configs/images.dart';
 import 'package:eventz/model/error_response.dart';
 import 'package:eventz/model/login_response.dart';
 import 'package:eventz/model/my_event_response.dart';
+import 'package:eventz/model/venues_response.dart' as venues;
 import 'package:eventz/utils/constants.dart';
 import 'package:eventz/view/BaseUI.dart';
 import 'package:eventz/view/myEvent/my_event_details.dart';
@@ -35,6 +36,7 @@ import '../../model/host_register_request.dart';
 import '../../model/payment_option_response.dart';
 import '../../model/register_error_response.dart';
 import '../../model/responses.dart';
+import '../../model/venues_response.dart';
 import '../../utils/shared_storage.dart';
 import '../widget/imput_square_text_field.dart';
 import 'event_registration_step2.dart';
@@ -56,14 +58,16 @@ class _EventRegistrationStep1State extends State<EventRegistrationStep1> with Ba
 
   Paymode selectedMode = Paymode();
   String imageUrl;
+  int venueIdx;
   DateTime pickedDate = DateTime.now();
-  List<Paymode> paymode = List();
-  List<String> _locations = ['A', 'B', 'C', 'D']; // Option 2
-  String _selectedLocation;
+  List<Paymode> paymode =  [];
+  List<EventVenue> venuesList = [];
+  List<String> venuesListNames = [];
 
   @override
   void initState() {
     super.initState();
+    getAllVenues();
   }
 
   @override
@@ -71,6 +75,7 @@ class _EventRegistrationStep1State extends State<EventRegistrationStep1> with Ba
     super.dispose();
   }
 
+  String _hostDropDownValue;
   String _dropDownValue;
 
 
@@ -285,10 +290,10 @@ class _EventRegistrationStep1State extends State<EventRegistrationStep1> with Ba
                             padding: const EdgeInsets.symmetric(horizontal: 10),
                             child: DropdownButtonHideUnderline(
                               child: DropdownButton(
-                                hint: _dropDownValue == null
+                                hint: _hostDropDownValue == null
                                     ? Text('Dropdown')
                                     : Text(
-                                  _dropDownValue,
+                                  _hostDropDownValue,
                                   style: TextStyle(color: Colors.black,fontFamily: AppFonts.circularStd),
                                 ),
                                 isExpanded: true,
@@ -305,7 +310,7 @@ class _EventRegistrationStep1State extends State<EventRegistrationStep1> with Ba
                                 onChanged: (val) {
                                   setState(
                                         () {
-                                      _dropDownValue = val;
+                                          _hostDropDownValue = val;
                                     },
                                   );
                                 },
@@ -420,7 +425,7 @@ class _EventRegistrationStep1State extends State<EventRegistrationStep1> with Ba
                             child: DropdownButtonHideUnderline(
                               child: DropdownButton(
                                 hint: _dropDownValue == null
-                                    ? Text('Dropdown')
+                                    ? Text('Select a venue')
                                     : Text(
                                   _dropDownValue,
                                   style: TextStyle(color: Colors.black,fontFamily: AppFonts.circularStd),
@@ -428,18 +433,19 @@ class _EventRegistrationStep1State extends State<EventRegistrationStep1> with Ba
                                 isExpanded: true,
                                 iconSize: 30.0,
                                 style: TextStyle(color: Colors.black,fontFamily: AppFonts.circularStd),
-                                items: ['One', 'Two', 'Three'].map(
+                                items: venuesList.map(
                                       (val) {
-                                    return DropdownMenuItem<String>(
+                                    return DropdownMenuItem<EventVenue>(
                                       value: val,
-                                      child: Text(val),
+                                      child: Text(val.eventVenue.toString()),
                                     );
                                   },
                                 ).toList(),
                                 onChanged: (val) {
                                   setState(
                                         () {
-                                      _dropDownValue = val;
+                                      _dropDownValue = val.eventVenue;
+                                      venueIdx = int.parse(val.venueIdx);
                                     },
                                   );
                                 },
@@ -519,6 +525,7 @@ class _EventRegistrationStep1State extends State<EventRegistrationStep1> with Ba
                                           eventName: eventNameController.text,
                                           eventDescription: eventDescriptionController.text,
                                           eventDate: eventDateController.text,
+                                          venue: _dropDownValue.toString(),
                                           eventTime: eventTimeController.text,
                                           posterUrl: imageUrl.toString(),
                                           mapReference: mapReferenceController.text,
@@ -559,6 +566,48 @@ class _EventRegistrationStep1State extends State<EventRegistrationStep1> with Ba
           ),
         ));
   }
+
+
+  ///get all venues from API
+  void getAllVenues() {
+    print("venues load");
+    apiService.check().then((check) {
+      showProgressbar(context);
+      if (check) {
+        apiService.getAllVenues().then((value) {
+          hideProgressbar(context);
+          if (value.statusCode == 200) {
+            VenueResponse responseData = VenueResponse.fromJson(json.decode(value.body));
+            setState(() {
+              venuesList = responseData.eventVenue;
+              print("venueList::::::::");
+              print(responseData.eventVenue);
+              for(int i = 0; i < venuesList.length; i++){
+                venuesListNames.add(venuesList[i].eventVenue);
+              }
+              print("venueListNames:::::::");
+              print(venuesListNames);
+            });
+          } else {
+            ErrorResponse responseData =
+            ErrorResponse.fromJson(json.decode(value.body));
+            Get.snackbar('error'.tr, responseData.message,
+                colorText: AppColors.textRed,
+                snackPosition: SnackPosition.TOP,
+                borderRadius: 0,
+                borderWidth: 2,
+                margin: EdgeInsets.only(left: 20, right: 20, top: 30),
+                backgroundColor: AppColors.bgGreyLight);
+          }
+        });
+      } else {
+        hideProgressbar(context);
+        helper.showAlertView(context, 'no_internet'.tr, () {}, 'ok'.tr);
+      }
+    });
+  }
+
+
   Future<void> dateSelection() async {
     String date;
     pickedDate = await showDatePicker(

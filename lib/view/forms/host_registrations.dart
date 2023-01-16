@@ -62,8 +62,8 @@ class _HostRegistrationState extends State<HostRegistration> with BaseUI {
   String imageUrl;
   FocusNode _confirmPasswordFocusNode;
   APIService apiService = APIService();
-  List<Country> countryList = new List();
-  List<String> countryListNames = new List();
+  List<Country> countryList = [];
+  List<String> countryListNames = [];
 
   @override
   void initState() {

@@ -30,6 +30,7 @@ import 'package:permission_handler/permission_handler.dart';
 
 import '../../api/api_service.dart';
 import '../../model/countries_response.dart';
+import '../../model/get_user_response.dart';
 import '../../model/host_register_request.dart';
 import '../../model/register_error_response.dart';
 import '../../model/responses.dart';
@@ -73,15 +74,61 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> with BaseUI {
   List<Country> countryList = new List();
   List<String> countryListNames = new List();
   SharedPref sharedPref = SharedPref();
-  LoginResponse profileData;
+  LoginResponse loginResponse ;
+  GetUserResponse profileData;
 
   @override
   void initState() {
-    getProfileInfo();
     super.initState();
     _passwordFocusNode = FocusNode();
+    getProfileInfo();
     getAllCountries();
   }
+
+  getProfileInfo() async {
+    try {
+      loginResponse = LoginResponse.fromJson(await sharedPref.read(ShardPrefKey.USER));
+    } catch (Excepetion) {
+      print(Excepetion.toString());
+    }
+    getUser(loginResponse.result.userIdx);
+  }
+
+
+
+  ///get my profile details from API
+  void getUser(int userIdx) {
+    apiService.check().then((check) {
+      showProgressbar(context);
+      if (check) {
+        apiService.getUserProfile(userIdx).then((value) {
+          hideProgressbar(context);
+
+          if (value.statusCode == 200) {
+            GetUserResponse responseData =
+            GetUserResponse.fromJson(json.decode(value.body));
+            setState(() {
+              profileData = responseData;
+            });
+          } else {
+            ErrorResponse responseData = ErrorResponse.fromJson(json.decode(value.body));
+            // hideProgressbar(context);
+            Get.snackbar('error'.tr, responseData.message,
+                colorText: AppColors.textRed,
+                snackPosition: SnackPosition.TOP,
+                borderRadius: 0,
+                borderWidth: 2,
+                margin: EdgeInsets.only(left: 20, right: 20, top: 30),
+                backgroundColor: AppColors.bgGreyLight);
+          }
+        });
+      } else {
+        hideProgressbar(context);
+        helper.showAlertView(context, 'no_internet'.tr, () {}, 'ok'.tr);
+      }
+    });
+  }
+
 
   Future<void> initialization() async {
     print("profileData.result.firstName::::::");
@@ -97,16 +144,6 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> with BaseUI {
   }
 
 
-  getProfileInfo() async {
-    try {
-      profileData =
-          LoginResponse.fromJson(await sharedPref.read(ShardPrefKey.USER));
-    } catch (Excepetion) {
-      print(Excepetion.toString());
-    }
-
-    initialization();
-  }
 
   ///host registration call
   void updateProfileCall() {
@@ -123,7 +160,7 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> with BaseUI {
           emgContactName: emgContactNumberController.text,
           emgContactNo: emgContactNumberController.text,
           profilePicURL: imageUrl,
-          userTypeIdx: profileData.result.userTypeIdx,
+          userTypeIdx: loginResponse.result.userTypeIdx,
           firstName: firstNameController.text,
           lastName: lastNameController.text,
           mobileNo: mobileNoController.text,

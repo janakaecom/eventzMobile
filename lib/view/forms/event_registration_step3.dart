@@ -250,6 +250,7 @@ class _EventRegistrationStep3State extends State<EventRegistrationStep3> with Ba
                     SizedBox(
                       width: 10,
                     ),
+
                     Padding(
                       padding: const EdgeInsets.only(top: 5,right: 8),
                       child: InkWell(
@@ -678,7 +679,7 @@ class _EventRegistrationStep3State extends State<EventRegistrationStep3> with Ba
             isEarlyBird: false,
             eventDate: widget.eventDate,
             eventTime: widget.eventTime,
-            eventVenue: "ed",
+            eventVenue: widget.venue,
             venueMapReference: widget.mapReference,
             eventCatIdx: 1,
             eventModeIdx: widget.eventModeId,

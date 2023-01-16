@@ -66,6 +66,20 @@ class APIService {
     return setValue;
   }
 
+  ///get all venues
+  Future<Response> getAllVenues() async {
+    Response setValue;
+    await httpService
+        .centsPostRequest(null, APIs.loadVenues, method: HttpMethod.GET)
+        .then((value) {
+      print("====response received====");
+      print(value);
+      setValue = value;
+    });
+
+    return setValue;
+  }
+
   ///get payment options from API initiate
   Future<Response> getPaymentOptions() async {
     Response setValue;
@@ -86,6 +100,21 @@ class APIService {
     await httpService
         .centsPostRequest(null, APIs.myEvents + "?userId=$id",
             method: HttpMethod.GET)
+        .then((value) {
+      print("====response received====");
+      print(value);
+      setValue = value;
+    });
+
+    return setValue;
+  }
+
+  ///get all event from API initiate
+  Future<Response> getUserProfile(int id) async {
+    Response setValue;
+    await httpService
+        .centsPostRequest(null, APIs.getUserProfile + "?selectedUserId=$id",
+        method: HttpMethod.GET)
         .then((value) {
       print("====response received====");
       print(value);
