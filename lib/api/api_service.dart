@@ -52,11 +52,43 @@ class APIService {
     return setValue;
   }
 
+
+  ///get all event from API initiate
+  Future<Response> getAllEventsCreatedByHost(int id) async {
+    Response setValue;
+    await httpService
+        .centsPostRequest(null, APIs.getAllEventsCreatedByHost + "?hostId=$id", method: HttpMethod.GET)
+        .then((value) {
+      print("====response received====");
+      print(value);
+      setValue = value;
+    });
+
+    return setValue;
+  }
+
   ///get all countries
   Future<Response> getAllCountries() async {
     Response setValue;
     await httpService
         .centsPostRequest(null, APIs.loadCountries, method: HttpMethod.GET)
+        .then((value) {
+      print("====response received====");
+      print(value);
+      setValue = value;
+    });
+
+    return setValue;
+  }
+
+
+  ///get all hosts
+  Future<Response> getAllHosts(int id) async {
+    print("id:::::");
+    print(id);
+    Response setValue;
+    await httpService
+        .centsPostRequest(null, APIs.loadHosts + "?userIdx=$id", method: HttpMethod.GET)
         .then((value) {
       print("====response received====");
       print(value);
@@ -208,6 +240,21 @@ class APIService {
     print('*** REQUEST **** ' + nameString);
 
     await httpService.centsPostRequest(params, APIs.saveEvents).then((value) {
+      print("response received");
+      print(value);
+      setValue = value;
+    });
+
+    return setValue;
+  }
+
+  ///Update event to API
+  Future<Response> updateEvent(Map<dynamic, Object> params) async {
+    String nameString = jsonEncode(params);
+    Response setValue;
+    print('*** REQUEST **** ' + nameString);
+
+    await httpService.centsPostRequest(params, APIs.updateEvents).then((value) {
       print("response received");
       print(value);
       setValue = value;

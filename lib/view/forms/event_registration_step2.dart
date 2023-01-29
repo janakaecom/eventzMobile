@@ -3,11 +3,13 @@ import 'package:country_calling_code_picker/country.dart';
 import 'package:country_calling_code_picker/country_code_picker.dart';
 import 'package:eventz/view/widget/imput_square_text_field.dart';
 import 'package:flutter/material.dart';
-
+import 'package:intl/intl.dart';
+import '../../model/all_event_response.dart' as all;
 import '../../configs/colors.dart';
 import '../../configs/fonts.dart';
 import '../../configs/images.dart';
-import '../../model/event_register_request.dart';
+import '../../model/all_event_response.dart';
+import '../../model/event_register_request.dart' as rr;
 import '../widget/fl_text.dart';
 import 'event_registration_step3.dart';
 
@@ -18,12 +20,15 @@ class EventRegistrationStep2 extends StatefulWidget {
   final String eventName;
   final String eventDescription;
   final String eventDate;
+  final int hostId;
+  final bool isUpdate;
+  final all.EventsResult event;
   final String eventTime;
   final String posterUrl;
   final String venue;
   final String mapReference;
 
-  const EventRegistrationStep2({Key key, this.onlineLink, this.eventName, this.eventDescription, this.eventDate, this.eventTime, this.venue, this.posterUrl, this.mapReference}) : super(key: key);
+  const EventRegistrationStep2({Key key, this.onlineLink, this.eventName, this.eventDescription, this.eventDate, this.eventTime, this.venue, this.posterUrl, this.mapReference, this.hostId, this.event, this.isUpdate}) : super(key: key);
 
   @override
   State<StatefulWidget> createState() => _EventRegistrationStep2State();
@@ -50,16 +55,55 @@ class _EventRegistrationStep2State extends State<EventRegistrationStep2> {
   bool isCheckedPhysical =  false;
   bool isCheckedOnline =  false;
 
-  List<EventResourceObjectList> eventResourceObjectList = [];
+  List<all.EventResourceObjectList> eventResourceObjectList = [];
+
+  List<all.EventResourceObjectList> eventResourceObjectListUpdate = [];
 
   @override
   void initState() {
     super.initState();
 
-    eventResourceObjectList.add(EventResourceObjectList(categoryName: "Category",resouceName: "Name",isActive: true,eventId: 1, resourceId: 1));
+    eventResourceObjectList.add(all.EventResourceObjectList(resCategory: "Category",resName: "Name",isActive: true,eventIdx: "1", eventResourceIdx: "1"));
+   if (widget.isUpdate == true){
+
+     for(int i = 0; i < widget.event.eventResourceObjectList.length; i++) {
+       eventResourceObjectListUpdate.add(all.EventResourceObjectList(
+           resCategory: "Category",
+           resName: "Name",
+           isActive: true,
+           eventIdx: widget.event.eventIdx.toString(),
+           eventResourceIdx: widget.event.eventResourceObjectList[i].eventResourceIdx));
+
+       eventResourceObjectListUpdate.add(widget.event.eventResourceObjectList[i]);
+     }
+     initialisation();
+   }
+
+
+
+    // eventFeeObjectList.add(er.EventFeeObjectList(catName: "Category",amount: "Amount", maxQuantity: "Quantity",eventFeeIdx: "0",eventIdx: "0"));
+    //
+    // if (widget.isUpdate == true){
+    //
+    //   for(int i = 0; i < widget.event.eventFeeObjectList.length; i++) {
+    //     eventFeeObjectListUpdate.add(er.EventFeeObjectList(catName: "Category",amount: "Amount", maxQuantity: "Quantity",eventFeeIdx: widget.event.eventFeeObjectList[i].eventFeeIdx.toString(),eventIdx: widget.event.eventIdx.toString()));
+    //     eventFeeObjectListUpdate.add(widget.event.eventFeeObjectList[i]);
+    //   }
+    //   initialisation();
+    // }
 
   }
 
+
+  void initialisation(){
+
+    var ed  = DateFormat("yyyy-MM-dd").format(DateTime.parse(widget.event.closingDate));
+    isCheckedPhysical = widget.event.eventModeIdx == 1? true:false;
+    isCheckedOnline= widget.event.eventModeIdx == 2? true:false;
+    onlineLinkController.text = widget.event.onlineLink.toString();
+    closingDateController.text = ed;
+
+  }
 
 
 
@@ -339,7 +383,7 @@ class _EventRegistrationStep2State extends State<EventRegistrationStep2> {
                     Expanded(
                       child: InputSquareTextField(
                         padding:const EdgeInsets.symmetric(vertical: 5),
-                        readOnly: false,
+                        readOnly: true,
                         textController: closingDateController,
                         inputType: TextInputType.number,
                         onSuffixPress: (){
@@ -434,7 +478,22 @@ class _EventRegistrationStep2State extends State<EventRegistrationStep2> {
                 if(categoryController.text != '' || namesController.text != ''){
                   // categoryList.add(categoryController.text);
                   // namesList.add(namesController.text);
-                  eventResourceObjectList.add(EventResourceObjectList(categoryName: categoryController.text,resouceName:namesController.text,isActive: true,eventId: 1, resourceId: 1));
+
+                  if(widget.isUpdate == true) {
+
+                      eventResourceObjectListUpdate.add(
+                          all.EventResourceObjectList(
+                              resCategory: categoryController.text,
+                              resName: namesController.text,
+                              isActive: true,
+                              eventIdx: "0",
+                              eventResourceIdx:"0"));
+
+
+                  }
+                  else{
+                    eventResourceObjectList.add(all.EventResourceObjectList(resCategory: categoryController.text,resName:namesController.text,isActive: true,eventIdx: "0", eventResourceIdx: "0"));
+                  }
 
                 }
                 print("length:::::");
@@ -463,22 +522,31 @@ class _EventRegistrationStep2State extends State<EventRegistrationStep2> {
                     ],
                   ),
                 ),
+
+
                 Visibility(
-                  visible: eventResourceObjectList.length > 1? false:true,
+                  visible: eventResourceObjectList.length > 1 || eventResourceObjectListUpdate.length > 1? false:true,
                   child: SizedBox(
                     height: 35,
                   ),
                 ),
 
+
                 Visibility(
-                    visible: eventResourceObjectList.length > 1? true:false,
-                    child: tableView()),
+                    visible:  eventResourceObjectList.length > 1 ? true:false,
+                    child: tableViewInsert()),
+
+                widget.isUpdate == true ?
                 Visibility(
-                  visible: eventResourceObjectList.length > 1? true:false,
-                  child: SizedBox(
-                    height: 35,
-                  ),
+                    visible:  eventResourceObjectListUpdate.length > 1 ? true:false,
+                    child: tableViewUpdate()
+                ):SizedBox(),
+
+                SizedBox(
+                  height: 35,
                 ),
+
+
       Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 0),
                   child: Row(
@@ -496,12 +564,16 @@ class _EventRegistrationStep2State extends State<EventRegistrationStep2> {
                                     closingDate: closingDateController.text,
                                     list: eventResourceObjectList,
                                     eventTime: widget.eventTime,
+                                    isUpdate: widget.isUpdate,
+                                    hostId: widget.hostId,
                                     eventDate: widget.eventDate,
                                     eventDescription: widget.eventDescription,
                                     eventName: widget.eventName,
                                     posterUrl: widget.posterUrl,
                                     venue: widget.venue,
                                     mapReference: widget.mapReference,
+                                    event: widget.event,
+                                      eventResourceObjectListUpdateUpdate: eventResourceObjectListUpdate
                                   ),
                             ),
                           );
@@ -538,8 +610,53 @@ class _EventRegistrationStep2State extends State<EventRegistrationStep2> {
     );
   }
 
-  Widget tableView(){
-    return Table(
+  Widget tableViewUpdate(){
+    return
+      Table(
+        border: TableBorder.all(color: Colors.black),
+        children: List<TableRow>.generate(
+          eventResourceObjectListUpdate.length,
+              (index) {
+            return TableRow(
+                children: [
+                  Column(
+                      children:[
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          children: [
+                            Padding(
+                              padding: const EdgeInsets.symmetric(horizontal: 12,vertical: 5),
+                              child:
+
+                              SizedBox(
+                                  width: 160,
+                                  child: Text( eventResourceObjectListUpdate[index].resCategory, style: TextStyle(fontSize: 15.0,fontWeight: index == 0? FontWeight.w600  : FontWeight.w500))),
+                            ),
+                          ],
+                        )]),
+                  Column(children:[ Row(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 12,vertical: 5),
+                        child:
+
+                        SizedBox(
+                            width: 160,
+                            child: Text(eventResourceObjectListUpdate[index].resName, style: TextStyle(fontSize: 15.0,fontWeight: index == 0? FontWeight.w600 : FontWeight.w500))),
+                      ),
+                    ],
+                  )]),
+                ]);
+          },
+          growable: false,
+        ),
+      );
+  }
+
+  Widget tableViewInsert(){
+    return
+      Table(
       border: TableBorder.all(color: Colors.black),
       children: List<TableRow>.generate(
         eventResourceObjectList.length,
@@ -553,7 +670,11 @@ class _EventRegistrationStep2State extends State<EventRegistrationStep2> {
                     children: [
                       Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 12,vertical: 5),
-                        child: Text(eventResourceObjectList[index].categoryName.toString(), style: TextStyle(fontSize: 15.0,fontWeight: index == 0? FontWeight.w600  : FontWeight.w500)),
+                        child:
+
+                        SizedBox(
+                            width: 160,
+                            child: Text( eventResourceObjectList[index].resCategory , style: TextStyle(fontSize: 15.0,fontWeight: index == 0? FontWeight.w600  : FontWeight.w500))),
                       ),
                     ],
                   )]),
@@ -562,7 +683,11 @@ class _EventRegistrationStep2State extends State<EventRegistrationStep2> {
                   children: [
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 12,vertical: 5),
-                      child: Text(eventResourceObjectList[index].resouceName.toString(), style: TextStyle(fontSize: 15.0,fontWeight: index == 0? FontWeight.w600 : FontWeight.w500)),
+                      child:
+
+                      SizedBox(
+                        width: 160,
+                          child: Text(eventResourceObjectList[index].resName.toString(), style: TextStyle(fontSize: 15.0,fontWeight: index == 0? FontWeight.w600 : FontWeight.w500))),
                     ),
                   ],
                 )]),

@@ -13,6 +13,7 @@ import 'package:eventz/configs/colors.dart';
 import 'package:eventz/configs/fonts.dart';
 import 'package:eventz/configs/images.dart';
 import 'package:eventz/model/error_response.dart';
+import 'package:eventz/model/hosts_response.dart';
 import 'package:eventz/model/login_response.dart';
 import 'package:eventz/model/my_event_response.dart';
 import 'package:eventz/model/venues_response.dart' as venues;
@@ -28,9 +29,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:intl/intl.dart';
 import 'package:permission_handler/permission_handler.dart';
 
 import '../../api/api_service.dart';
+import '../../model/all_event_response.dart';
 import '../../model/countries_response.dart';
 import '../../model/host_register_request.dart';
 import '../../model/payment_option_response.dart';
@@ -42,7 +45,13 @@ import '../widget/imput_square_text_field.dart';
 import 'event_registration_step2.dart';
 
 class EventRegistrationStep1 extends StatefulWidget {
+
+  final bool isUpdate;
+  final EventsResult event;
+
   static var routeName = "/my_event";
+
+  const EventRegistrationStep1({Key key, this.isUpdate, this.event}) : super(key: key);
 
   @override
   _EventRegistrationStep1State createState() => _EventRegistrationStep1State();
@@ -59,15 +68,37 @@ class _EventRegistrationStep1State extends State<EventRegistrationStep1> with Ba
   Paymode selectedMode = Paymode();
   String imageUrl;
   int venueIdx;
+  int hostIdx;
   DateTime pickedDate = DateTime.now();
   List<Paymode> paymode =  [];
   List<EventVenue> venuesList = [];
+  List<Host> hostsList = [];
   List<String> venuesListNames = [];
+  List<String> hostListNames = [];
+  LoginResponse loginResponse ;
 
   @override
   void initState() {
     super.initState();
+    getProfileInfo();
+     getAllHosts();
     getAllVenues();
+    if(widget.isUpdate == true) {
+      initialisation();
+    }
+  }
+
+
+  void initialisation(){
+
+      var ed  = DateFormat("yyyy-MM-dd").format(DateTime.parse(widget.event.eventDate));
+      eventNameController.text = widget.event.eventName.toString() ;
+      eventDescriptionController.text = widget.event.eventDescription.toString();
+      eventTimeController.text = widget.event.eventTime.toString();
+      eventDateController.text = ed;
+      mapReferenceController.text = widget.event.venueMapReference ?? "";
+      imageUrl = widget.event.artworkPath.toString();
+
   }
 
   @override
@@ -76,7 +107,7 @@ class _EventRegistrationStep1State extends State<EventRegistrationStep1> with Ba
   }
 
   String _hostDropDownValue;
-  String _dropDownValue;
+  String dropDownValue;
 
 
   uploadImage() async {
@@ -291,7 +322,7 @@ class _EventRegistrationStep1State extends State<EventRegistrationStep1> with Ba
                             child: DropdownButtonHideUnderline(
                               child: DropdownButton(
                                 hint: _hostDropDownValue == null
-                                    ? Text('Dropdown')
+                                    ? Text('Select a host')
                                     : Text(
                                   _hostDropDownValue,
                                   style: TextStyle(color: Colors.black,fontFamily: AppFonts.circularStd),
@@ -299,18 +330,19 @@ class _EventRegistrationStep1State extends State<EventRegistrationStep1> with Ba
                                 isExpanded: true,
                                 iconSize: 30.0,
                                 style: TextStyle(color: Colors.black,fontFamily: AppFonts.circularStd),
-                                items: ['One', 'Two', 'Three'].map(
+                                items: hostsList.map(
                                       (val) {
-                                    return DropdownMenuItem<String>(
+                                    return DropdownMenuItem<Host>(
                                       value: val,
-                                      child: Text(val),
+                                      child: Text(val.hostName.toString()),
                                     );
                                   },
                                 ).toList(),
                                 onChanged: (val) {
                                   setState(
                                         () {
-                                          _hostDropDownValue = val;
+                                          _hostDropDownValue = val.hostName;
+                                      hostIdx = int.parse(val.hostIdx);
                                     },
                                   );
                                 },
@@ -350,7 +382,7 @@ class _EventRegistrationStep1State extends State<EventRegistrationStep1> with Ba
                         Expanded(
                           child: InputSquareTextField(
                             padding:const EdgeInsets.symmetric(vertical: 5),
-                            readOnly: false,
+                            readOnly: true,
                             textController: eventDateController,
                             inputType: TextInputType.number,
                             onSuffixPress: (){
@@ -424,10 +456,10 @@ class _EventRegistrationStep1State extends State<EventRegistrationStep1> with Ba
                             padding: const EdgeInsets.symmetric(horizontal: 10),
                             child: DropdownButtonHideUnderline(
                               child: DropdownButton(
-                                hint: _dropDownValue == null
+                                hint: dropDownValue == null
                                     ? Text('Select a venue')
                                     : Text(
-                                  _dropDownValue,
+                                  dropDownValue,
                                   style: TextStyle(color: Colors.black,fontFamily: AppFonts.circularStd),
                                 ),
                                 isExpanded: true,
@@ -444,7 +476,7 @@ class _EventRegistrationStep1State extends State<EventRegistrationStep1> with Ba
                                 onChanged: (val) {
                                   setState(
                                         () {
-                                      _dropDownValue = val.eventVenue;
+                                      dropDownValue = val.eventVenue;
                                       venueIdx = int.parse(val.venueIdx);
                                     },
                                   );
@@ -478,7 +510,7 @@ class _EventRegistrationStep1State extends State<EventRegistrationStep1> with Ba
                         InputSquareTextField(
                           padding:const EdgeInsets.symmetric(vertical: 5),
                           readOnly: false,
-                          textController: mapReferenceController,
+                          textController: mapReferenceController ?? "",
                           inputType: TextInputType.text,
                           onChanged: (value) {
                           },
@@ -506,8 +538,19 @@ class _EventRegistrationStep1State extends State<EventRegistrationStep1> with Ba
                                     colorText: AppColors.textRed,
                                     backgroundColor: AppColors.kWhite);
                               }
-                              else if(eventDateController.text == '' || eventDateController.text == null) {
+                              else if(eventTimeController.text == '' || eventTimeController.text == null) {
                                 Get.snackbar('error', "The Event Time Can't be empty.",
+                                    colorText: AppColors.textRed,
+                                    backgroundColor: AppColors.kWhite);
+                              }
+
+                              else if(hostIdx == null || hostIdx == 0) {
+                                Get.snackbar('error', "The Host should be selected.",
+                                    colorText: AppColors.textRed,
+                                    backgroundColor: AppColors.kWhite);
+                              }
+                              else if(venueIdx == null || venueIdx == 0) {
+                                Get.snackbar('error', "The Venue should be selected.",
                                     colorText: AppColors.textRed,
                                     backgroundColor: AppColors.kWhite);
                               }
@@ -525,10 +568,14 @@ class _EventRegistrationStep1State extends State<EventRegistrationStep1> with Ba
                                           eventName: eventNameController.text,
                                           eventDescription: eventDescriptionController.text,
                                           eventDate: eventDateController.text,
-                                          venue: _dropDownValue.toString(),
+                                          venue: dropDownValue.toString(),
+                                          hostId: hostIdx,
+                                          isUpdate: widget.isUpdate,
                                           eventTime: eventTimeController.text,
                                           posterUrl: imageUrl.toString(),
                                           mapReference: mapReferenceController.text,
+                                          event: widget.event,
+
                                         ),
                                   ),
                                 );
@@ -565,6 +612,56 @@ class _EventRegistrationStep1State extends State<EventRegistrationStep1> with Ba
             ),
           ),
         ));
+  }
+
+  getProfileInfo() async {
+    try {
+      loginResponse = LoginResponse.fromJson(await sharedPref.read(ShardPrefKey.USER));
+    } catch (Excepetion) {
+      print(Excepetion.toString());
+    }
+
+  }
+
+
+  ///get all hosts from API
+  void getAllHosts() {
+    print("hosts load");
+    apiService.check().then((check) {
+      showProgressbar(context);
+      if (check) {
+        apiService.getAllHosts(loginResponse.result.userIdx).then((value) {
+          hideProgressbar(context);
+          if (value.statusCode == 200) {
+            HostsResponse responseData = HostsResponse.fromJson(json.decode(value.body));
+            setState(() {
+              hostsList = responseData.host;
+              print("hostsList::::::::");
+              print(responseData.host);
+              for(int i = 0; i < hostsList.length; i++){
+                hostListNames.add(hostsList[i].hostName);
+              }
+              print("hostsListNames:::::::");
+              print(hostsList);
+            });
+          } else {
+            hideProgressbar(context);
+            ErrorResponse responseData =
+            ErrorResponse.fromJson(json.decode(value.body));
+            Get.snackbar('error'.tr, responseData.message,
+                colorText: AppColors.textRed,
+                snackPosition: SnackPosition.TOP,
+                borderRadius: 0,
+                borderWidth: 2,
+                margin: EdgeInsets.only(left: 20, right: 20, top: 30),
+                backgroundColor: AppColors.bgGreyLight);
+          }
+        });
+      } else {
+        hideProgressbar(context);
+        helper.showAlertView(context, 'no_internet'.tr, () {}, 'ok'.tr);
+      }
+    });
   }
 
 

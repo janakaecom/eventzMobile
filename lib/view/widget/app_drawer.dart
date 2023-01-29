@@ -16,6 +16,7 @@ import 'package:get/get.dart';
 
 import '../forms/event_registration_step1.dart';
 import '../forms/host_registrations.dart';
+import '../forms/update_events.dart';
 
 class AppDrawer extends StatefulWidget {
   @override
@@ -179,7 +180,7 @@ class _AppDrawerState extends State<AppDrawer> {
             homeMenu("Password Change", "PASSWORD_CHANGE", password, context),
             homeMenu("Host Registration", "HOST_REG", userName, context),
             homeMenu("Event Registration", "EVENT_REG_STEP1", userName, context),
-            // homeMenu("Event Update", "UPDATE_EVENT", menuEvent, context),
+            homeMenu("Event Update", "UPDATE_EVENT", menuEvent, context),
             homeMenu("Logout", "LOGOUT", menuLogout, context),
           ],
         ),
@@ -216,9 +217,9 @@ class _AppDrawerState extends State<AppDrawer> {
           if (action == "PASSWORD_CHANGE") {
             Get.to(ChangePasswordScreen());
           }
-          // if (action == "UPDATE_EVENT") {
-          //   Get.to(ChangePasswordScreen());
-          // }
+          if (action == "UPDATE_EVENT") {
+            Get.to(UpdateEvents());
+          }
           if (action == "EVENT_REG_STEP1") {
             Get.to(EventRegistrationStep1());
           }

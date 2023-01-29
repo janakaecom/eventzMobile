@@ -40,7 +40,8 @@ class FLText extends StatelessWidget {
                 fontWeight: fontWeight,
                 color: textColor,
                 fontFamily: AppFonts.circularStd,
-                fontSize: textSize),
+                fontSize: textSize
+        ),
       ),
     );
   }

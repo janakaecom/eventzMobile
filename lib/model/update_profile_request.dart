@@ -1,12 +1,10 @@
-import 'dart:math';
-
 class ProfileUpdateRequest {
-
+  int userIdx;
   String title;
-  String dob;
+  String dOB;
   int genderId;
-  String NIC;
-  String passportNo;
+  String nIC;
+  String passport;
   String address;
   String occupation;
   String workPlace;
@@ -15,18 +13,15 @@ class ProfileUpdateRequest {
   String profilePicURL;
   String firstName;
   String lastName;
-  String mobileNo;
-  int userTypeIdx;
-  int countryID;
-  String password;
+  int countryId;
 
   ProfileUpdateRequest(
-      {
+      {this.userIdx,
         this.title,
-        this.dob,
+        this.dOB,
         this.genderId,
-        this.NIC,
-        this.passportNo,
+        this.nIC,
+        this.passport,
         this.address,
         this.occupation,
         this.workPlace,
@@ -35,37 +30,34 @@ class ProfileUpdateRequest {
         this.profilePicURL,
         this.firstName,
         this.lastName,
-        this.mobileNo,
-        this.countryID,
-        this.userTypeIdx,
-      });
+        this.countryId});
 
   ProfileUpdateRequest.fromJson(Map<String, dynamic> json) {
+    userIdx = json['UserIdx'];
     title = json['Title'];
-    dob = json['DOB'];
+    dOB = json['DOB'];
     genderId = json['GenderId'];
-    NIC = json['NIC'];
-    passportNo = json['PassportNo'];
+    nIC = json['NIC'];
+    passport = json['Passport'];
     address = json['Address'];
     occupation = json['Occupation'];
     workPlace = json['WorkPlace'];
-    userTypeIdx = json['UserTypeIdx'];
     emgContactName = json['EmgContactName'];
     emgContactNo = json['EmgContactNo'];
     profilePicURL = json['ProfilePicURL'];
     firstName = json['FirstName'];
     lastName = json['LastName'];
-    mobileNo = json['MobileNo'];
-    countryID = json['CountryId'];
+    countryId = json['CountryId'];
   }
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = new Map<String, dynamic>();
+    data['UserIdx'] = this.userIdx;
     data['Title'] = this.title;
-    data['DOB'] = this.dob;
+    data['DOB'] = this.dOB;
     data['GenderId'] = this.genderId;
-    data['NIC'] = this.NIC;
-    data['PassportNo'] = this.passportNo;
+    data['NIC'] = this.nIC;
+    data['Passport'] = this.passport;
     data['Address'] = this.address;
     data['Occupation'] = this.occupation;
     data['WorkPlace'] = this.workPlace;
@@ -74,9 +66,7 @@ class ProfileUpdateRequest {
     data['ProfilePicURL'] = this.profilePicURL;
     data['FirstName'] = this.firstName;
     data['LastName'] = this.lastName;
-    data['UserTypeIdx'] = this.userTypeIdx;
-    data['MobileNo'] = this.mobileNo;
-    data['CountryId'] = this.countryID;
+    data['CountryId'] = this.countryId;
     return data;
   }
 }

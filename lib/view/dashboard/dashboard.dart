@@ -13,6 +13,7 @@ import 'package:eventz/view/widget/fl_text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
+import 'package:intl/intl.dart';
 
 class DashBoard extends StatefulWidget {
   static var routeName = "/dashboard_view";
@@ -55,7 +56,8 @@ class _DashBoardState extends State<DashBoard> with BaseUI {
                         itemCount: eventList.length ?? 0,
                         itemBuilder: (BuildContext context, int index) {
                           return _eventRow(index);
-                        })),
+                        })
+                ),
               )
             ],
           ),
@@ -71,6 +73,7 @@ class _DashBoardState extends State<DashBoard> with BaseUI {
     String year = "";
     String date = "";
     String month = "";
+    var val  = DateFormat("yyyy-MM-dd").format(DateTime.parse(item[index].eventDate));
     try {
       year = apiDate.split("/")[2];
       date = apiDate.split("/")[1];
@@ -211,7 +214,7 @@ class _DashBoardState extends State<DashBoard> with BaseUI {
                   children: [
                     Container(
                       margin: const EdgeInsets.only(left: 10.0, top: 10.0),
-                      width: 65,
+                      width: 200,
                       height: 65,
                       decoration: BoxDecoration(
                           color: AppColors.buttonBlue.withOpacity(0.9),
@@ -222,43 +225,48 @@ class _DashBoardState extends State<DashBoard> with BaseUI {
                         mainAxisAlignment: MainAxisAlignment.center,
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
-                          SizedBox(
-                            height: 10,
-                            width: double.infinity,
-                            child: FLText(
-                              displayText: month,
-                              textColor: AppColors.kWhite,
-                              setToWidth: false,
-                              textSize: AppFonts.textFieldFontSize12,
-                            ),
-                          ),
-                          SizedBox(
-                            height: 10,
-                            width: double.infinity,
-                            child: FLText(
-                              displayText: date,
-                              textColor: AppColors.kWhite,
-                              setToWidth: false,
-                              fontWeight: FontWeight.w800,
-                              textSize: AppFonts.textFieldFontLarge24,
+                          // SizedBox(
+                          //   height: 10,
+                          //   width: double.infinity,
+                          //   child: FLText(
+                          //     displayText: month,
+                          //     textColor: AppColors.kWhite,
+                          //     setToWidth: false,
+                          //     textSize: AppFonts.textFieldFontSize12,
+                          //   ),
+                          // ),
+                          Padding(
+                            padding: const EdgeInsets.only(left: 0),
+                            child: SizedBox(
+                              height: 10,
+                              width: double.infinity,
+                              child: FLText(
+                                displayText: val.toString(),
+                                textColor: AppColors.kWhite,
+                                setToWidth: false,
+                                fontWeight: FontWeight.w800,
+                                textSize: AppFonts.textFieldFontLarge24,
+                              ),
                             ),
                           ),
                         ],
                       ),
                     ),
-
                     Padding(
                       padding: const EdgeInsets.only(left: 20,top: 45),
                       child: Column(
                         // mainAxisAlignment: MainAxisAlignment.center,
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          FLText(
-                            displayText: item[index].eventName,
-                            textColor: AppColors.kWhite,
-                            setToWidth: false,
-                            fontWeight: FontWeight.bold,
-                            textSize: AppFonts.textFieldFontSize,
+                          Text(
+                            item[index].eventName,
+                            overflow: TextOverflow.ellipsis,
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              color: AppColors.kWhite,
+                              fontFamily: AppFonts.circularStd,
+                              fontSize: AppFonts.textFieldFontSize,
+                            ),
                           ),
                           FLText(
                             displayText: item[index].hostName,

@@ -30,6 +30,7 @@ import 'package:permission_handler/permission_handler.dart';
 
 import '../../api/api_service.dart';
 import '../../model/countries_response.dart';
+import '../../model/get_user_response.dart' as ur;
 import '../../model/get_user_response.dart';
 import '../../model/host_register_request.dart';
 import '../../model/register_error_response.dart';
@@ -64,9 +65,9 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> with BaseUI {
   String logo;
   DateTime pickedDate = DateTime.now();
   String _userName = "";
-  String _dropDownTitleValue;
-  String _dropDownGenderValue;
-  String _dropDownCountryValue;
+  String dropDownTitleValue;
+  String dropDownGenderValue;
+  String dropDownCountryValue;
   int countryIdx;
   String imageUrl;
   FocusNode _confirmPasswordFocusNode;
@@ -75,14 +76,17 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> with BaseUI {
   List<String> countryListNames = new List();
   SharedPref sharedPref = SharedPref();
   LoginResponse loginResponse ;
-  GetUserResponse profileData;
+  ur.Result profileData;
+  int genderIdx;
 
   @override
   void initState() {
     super.initState();
     _passwordFocusNode = FocusNode();
     getProfileInfo();
+   // initialization();
     getAllCountries();
+
   }
 
   getProfileInfo() async {
@@ -91,24 +95,40 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> with BaseUI {
     } catch (Excepetion) {
       print(Excepetion.toString());
     }
-    getUser(loginResponse.result.userIdx);
+    await getUser(loginResponse.result.userIdx);
+
   }
 
 
 
   ///get my profile details from API
-  void getUser(int userIdx) {
-    apiService.check().then((check) {
+  Future getUser(int userIdx) async {
+   await apiService.check().then((check) {
       showProgressbar(context);
       if (check) {
-        apiService.getUserProfile(userIdx).then((value) {
+        apiService.getUserProfile(userIdx).then((value) async {
           hideProgressbar(context);
 
           if (value.statusCode == 200) {
-            GetUserResponse responseData =
-            GetUserResponse.fromJson(json.decode(value.body));
+            GetUserResponse responseData = GetUserResponse.fromJson(json.decode(value.body));
             setState(() {
-              profileData = responseData;
+              profileData = responseData.result;
+              imageUrl = profileData.profilePicURL;
+              dropDownTitleValue = profileData.title;
+              dropDownGenderValue = profileData.genderId == 1 ? "Female":"Male";
+              firstNameController.text = profileData.firstName;
+              lastNameController.text = profileData.lastName;
+              mobileNoController.text = profileData.mobileNo;
+              nicController.text = profileData.nic;
+              dateController.text = profileData.dob;
+              passportNoController.text = profileData.passport;
+              addressController.text = profileData.address;
+              countryIdx = profileData.countryId;
+              occupationController.text = profileData.occupation;
+              workPlaceController.text = profileData.workPlace;
+              emgContactNameController.text = profileData.emgContactName;
+              emgContactNumberController.text = profileData.emgContactNo;
+              countryIdx = profileData.countryId;
             });
           } else {
             ErrorResponse responseData = ErrorResponse.fromJson(json.decode(value.body));
@@ -129,14 +149,15 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> with BaseUI {
     });
   }
 
-
-  Future<void> initialization() async {
-    print("profileData.result.firstName::::::");
-    print(profileData.result.firstName);
-    firstNameController.text = profileData.result.firstName;
-    lastNameController.text = profileData.result.lastName;
-    passportNoController.text = profileData.result.mobileNo;
-  }
+  //
+  // Future initialization() async {
+  //   print("profileData.result.firstName::::::");
+  //   print(profileData.ur.result.firstName);
+  //   firstNameController.text = profileData.result.firstName;
+  //   lastNameController.text = profileData.result.lastName;
+  //   passportNoController.text = profileData.result.mobileNo;
+  // }
+  //
 
   @override
   void dispose() {
@@ -147,50 +168,81 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> with BaseUI {
 
   ///host registration call
   void updateProfileCall() {
-    apiService.check().then((check) {
-      ProfileUpdateRequest request = ProfileUpdateRequest(
-          title: _dropDownTitleValue.toString(),
-          genderId: _dropDownGenderValue.toString() == "Male" ? 1 : 2,
-          NIC: nicController.text,
-          passportNo: passportNoController.text,
-          address: addressController.text,
-          dob: dateController.text,
-          occupation: occupationController.text,
-          workPlace: workPlaceController.text,
-          emgContactName: emgContactNumberController.text,
-          emgContactNo: emgContactNumberController.text,
-          profilePicURL: imageUrl,
-          userTypeIdx: loginResponse.result.userTypeIdx,
-          firstName: firstNameController.text,
-          lastName: lastNameController.text,
-          mobileNo: mobileNoController.text,
-          countryID: countryIdx
-      );
-      showProgressbar(context);
-      if (check) {
-        apiService.userUpdate(request.toJson()).then((value) {
-          hideProgressbar(context);
 
-          if (value.statusCode == 200) {
-            UpdateProfileResponse responseData =
-            UpdateProfileResponse.fromJson(json.decode(value.body));
-            Get.snackbar("Success", responseData.result,
-                colorText: AppColors.textGreenLight,
-                backgroundColor: AppColors.kWhite);
-            // Get.off(LoginView());
-          } else {
-            RegisterErrorResponse responseData =
-            RegisterErrorResponse.fromJson(json.decode(value.body));
-            Get.snackbar('error'.tr, responseData.message,
-                colorText: AppColors.textRed,
-                backgroundColor: AppColors.kWhite);
-          }
-        });
-      } else {
-        hideProgressbar(context);
-        helper.showAlertView(context, 'no_internet'.tr, () {}, 'ok'.tr);
-      }
+    setState(() {
+      genderIdx = dropDownGenderValue == "Male" ? 1 : dropDownGenderValue == "Female" ? 2 : 0;
+      print("dropDownGenderValue");
+      print(genderIdx);
     });
+    if(dropDownTitleValue == null || dropDownTitleValue == "") {
+      Get.snackbar('error'.tr, "The Title should be selected",
+          colorText: AppColors.textRed,
+          backgroundColor: AppColors.kWhite);
+    }
+    else if(firstNameController.text == "" || firstNameController.text == null) {
+      Get.snackbar('error'.tr, "First name can't be empty",
+          colorText: AppColors.textRed,
+          backgroundColor: AppColors.kWhite);
+    }
+    else if(lastNameController.text == "" || lastNameController.text == null) {
+      Get.snackbar('error'.tr, "Last name can't be empty",
+          colorText: AppColors.textRed,
+          backgroundColor: AppColors.kWhite);
+    }
+    else if(genderIdx == null) {
+      Get.snackbar('error'.tr, "Gender should be selected",
+          colorText: AppColors.textRed,
+          backgroundColor: AppColors.kWhite);
+    }
+    else if(countryIdx == null) {
+      Get.snackbar('error'.tr, "Country should be selected",
+          colorText: AppColors.textRed,
+          backgroundColor: AppColors.kWhite);
+    }
+    else {
+      apiService.check().then((check) {
+        ProfileUpdateRequest request = ProfileUpdateRequest(
+            title: dropDownTitleValue.toString(),
+            genderId: dropDownGenderValue.toString() == "Male" ? 1 : 2,
+            nIC: nicController.text,
+            passport: passportNoController.text,
+            address: addressController.text,
+            dOB: dateController.text,
+            occupation: occupationController.text,
+            workPlace: workPlaceController.text,
+            emgContactName: emgContactNumberController.text,
+            emgContactNo: emgContactNumberController.text,
+            profilePicURL: imageUrl,
+            userIdx: loginResponse.result.userIdx,
+            firstName: firstNameController.text,
+            lastName: lastNameController.text,
+            countryId: countryIdx
+        );
+        showProgressbar(context);
+        if (check) {
+          apiService.userUpdate(request.toJson()).then((value) {
+            hideProgressbar(context);
+            if (value.statusCode == 200) {
+              UpdateProfileResponse responseData =
+              UpdateProfileResponse.fromJson(json.decode(value.body));
+              Get.snackbar("Success", responseData.result,
+                  colorText: AppColors.textGreenLight,
+                  backgroundColor: AppColors.kWhite);
+              // Get.off(LoginView());
+            } else {
+              RegisterErrorResponse responseData =
+              RegisterErrorResponse.fromJson(json.decode(value.body));
+              Get.snackbar('error'.tr, responseData.message,
+                  colorText: AppColors.textRed,
+                  backgroundColor: AppColors.kWhite);
+            }
+          });
+        } else {
+          hideProgressbar(context);
+          helper.showAlertView(context, 'no_internet'.tr, () {}, 'ok'.tr);
+        }
+      });
+    }
   }
 
 
@@ -277,306 +329,201 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> with BaseUI {
                   Row(
                     children: [
                       FLText(
-                        displayText: "Title :",
+                        displayText: "Title",
                         textColor: AppColors.kTextDark,
                         setToWidth: false,
                         textSize: AppFonts.textFieldFontSize14,
                       ),
-                      SizedBox(
-                        width: 23,
-                      ),
-                      Expanded(
-                        child: Padding(
-                          padding: const EdgeInsets.only(right: 38),
-                          child: Container(
-                            height: 40,
-                            decoration: BoxDecoration(
-                                border: Border.all(
-                                  color: AppColors.TextGray.withOpacity(0.5),
-                                  width: 1.5,
-                                ),
-                                borderRadius: BorderRadius.circular(5)
-                            ),
-                            child: Padding(
-                              padding: const EdgeInsets.symmetric(
-                                  horizontal: 10, vertical: 0),
-                              child: DropdownButtonHideUnderline(
-                                child: DropdownButton(
-                                  hint: _dropDownTitleValue == null
-                                      ? Text("Mr")
-                                      : Text(
-                                    _dropDownTitleValue,
-                                    style: TextStyle(color: Colors.black,
-                                        fontFamily: AppFonts.circularStd),
-                                  ),
-                                  isExpanded: true,
-                                  iconSize: 30.0,
-                                  style: TextStyle(color: Colors.black,
-                                      fontFamily: AppFonts.circularStd),
-                                  items: ["Mr", "Mrs"].map(
-                                        (val) {
-                                      return DropdownMenuItem<String>(
-                                        value: val,
-                                        child: Text(val),
-                                      );
-                                    },
-                                  ).toList(),
-                                  onChanged: (val) {
-                                    setState(
-                                          () {
-                                        _dropDownTitleValue = val;
-                                      },
-                                    );
-                                  },
-                                ),
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                  SizedBox(
-                    height: 8,
-                  ),
-                  Row(
-                    children: [
-                      FLText(
-                        displayText: "First Name :",
-                        textColor: AppColors.kTextDark,
-                        setToWidth: false,
-                        textSize: AppFonts.textFieldFontSize14,
-                      ),
-                      SizedBox(
-                        width: 22,
-                      ),
-                      Expanded(
-                        child: InputSquareTextField(
-                          padding: const EdgeInsets.symmetric(vertical: 5),
-                          readOnly: false,
-                          textController: firstNameController,
-                          inputType: TextInputType.text,
-                          onChanged: (value) {},
-                        ),
-                      ),
-                    ],
-                  ),
-                  SizedBox(
-                    height: 8,
-                  ),
-                  Row(
-                    children: [
-                      FLText(
-                        displayText: "Last Name :",
-                        textColor: AppColors.kTextDark,
-                        setToWidth: false,
-                        textSize: AppFonts.textFieldFontSize14,
-                      ),
-                      SizedBox(
-                        width: 20,
-                      ),
-                      Expanded(
-                        child: InputSquareTextField(
-                          padding: const EdgeInsets.symmetric(vertical: 5),
-                          readOnly: false,
-                          textController: lastNameController,
-                          inputType: TextInputType.text,
-                          onChanged: (value) {},
-                        ),
-                      ),
-                    ],
-                  ),
-                  SizedBox(
-                    height: 8,
-                  ),
-                  Row(
-                    children: [
-                      FLText(
-                        displayText: "Gender :",
-                        textColor: AppColors.kTextDark,
-                        setToWidth: false,
-                        textSize: AppFonts.textFieldFontSize14,
-                      ),
-                      SizedBox(
-                        width: 26,
-                      ),
-                      Expanded(
-                        child: Padding(
-                          padding: const EdgeInsets.only(right: 38),
-                          child: Container(
-                            height: 40,
-                            decoration: BoxDecoration(
-                                border: Border.all(
-                                  color: AppColors.TextGray.withOpacity(0.5),
-                                  width: 1.5,
-                                ),
-                                borderRadius: BorderRadius.circular(5)
-                            ),
-                            child: Padding(
-                              padding: const EdgeInsets.symmetric(
-                                  horizontal: 10, vertical: 0),
-                              child: DropdownButtonHideUnderline(
-                                child: DropdownButton(
-                                  hint: _dropDownGenderValue == null
-                                      ? Text("Male")
-                                      : Text(
-                                    _dropDownGenderValue,
-                                    style: TextStyle(color: Colors.black,
-                                        fontFamily: AppFonts.circularStd),
-                                  ),
-                                  isExpanded: true,
-                                  iconSize: 30.0,
-                                  style: TextStyle(color: Colors.black,
-                                      fontFamily: AppFonts.circularStd),
-                                  items: ["Male", "Female"].map(
-                                        (val) {
-                                      return DropdownMenuItem<String>(
-                                        value: val,
-                                        child: Text(val),
-                                      );
-                                    },
-                                  ).toList(),
-                                  onChanged: (val) {
-                                    setState(
-                                          () {
-                                        _dropDownGenderValue = val;
-                                      },
-                                    );
-                                  },
-                                ),
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
-                      // Expanded(
-                      //   child: InputSquareTextField(
-                      //     hint: "E",
-                      //     hintColor: AppColors.TextGray,
-                      //     padding:const EdgeInsets.symmetric(vertical: 5),
-                      //     readOnly: true,
-                      //     textController: countryCodeController,
-                      //     inputType: TextInputType.number,
-                      //     onSuffixPress: _onPressedShowBottomSheet,
-                      //     suffixIcon: Icon(Icons.chevron_right),
-                      //   ),
-                      // ),
-                    ],
-                  ),
-                  SizedBox(
-                    height: 8,
-                  ),
-                  Row(
-                    children: [
-                      FLText(
-                        displayText: "Mobile No :",
-                        textColor: AppColors.kTextDark,
-                        setToWidth: false,
-                        textSize: AppFonts.textFieldFontSize14,
-                      ),
-                      SizedBox(
-                        width: 20,
-                      ),
-                      Expanded(
-                        child: InputSquareTextField(
-                          padding: const EdgeInsets.symmetric(vertical: 5),
-                          readOnly: false,
-                          textController: mobileNoController,
-                          inputType: TextInputType.text,
-                          onChanged: (value) {},
-                        ),
-                      ),
-                    ],
-                  ),
-                  SizedBox(
-                    height: 8,
-                  ),
-                  Row(
-                    children: [
-                      FLText(
-                        displayText: "NIC :",
-                        textColor: AppColors.kTextDark,
-                        setToWidth: false,
-                        textSize: AppFonts.textFieldFontSize14,
-                      ),
-                      SizedBox(
-                        width: 20,
-                      ),
-                      Expanded(
-                        child: InputSquareTextField(
-                          padding: const EdgeInsets.symmetric(vertical: 5),
-                          readOnly: false,
-                          textController: nicController,
-                          inputType: TextInputType.text,
-                          onChanged: (value) {},
-                        ),
-                      ),
-                    ],
-                  ),
-                  SizedBox(
-                    height: 8,
-                  ),
 
-                  Row(
-                    children: [
-                      FLText(
-                        displayText: "DOB :",
-                        textColor: AppColors.kTextDark,
-                        setToWidth: false,
-                        textSize: AppFonts.textFieldFontSize14,
-                      ),
-                      SizedBox(
-                        width: 10,
-                      ),
-                      Image.asset(
-                        "assets/images/my_events.png",
-                        height: 30,
-                        width: 30,
-                        color: AppColors.TextGray,
-                      ),
-                      SizedBox(
-                        width: 10,
-                      ),
-                      Expanded(
-                        child: InputSquareTextField(
-                          padding: const EdgeInsets.symmetric(vertical: 5),
-                          readOnly: false,
-                          textController: dateController,
-                          inputType: TextInputType.number,
-                          onSuffixPress: () {
-                            dateSelection();
+                    ],
+                  ),
+                  SizedBox(
+                    height: 8,
+                  ),
+                  Container(
+                    height: 40,
+                    decoration: BoxDecoration(
+                        border: Border.all(
+                          color: AppColors.TextGray.withOpacity(0.5),
+                          width: 1.5,
+                        ),
+                        borderRadius: BorderRadius.circular(5)
+                    ),
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 10, vertical: 0),
+                      child: DropdownButtonHideUnderline(
+                        child: DropdownButton(
+                          hint: dropDownTitleValue == null
+                              ? Text("Mr")
+                              : Text(
+                            dropDownTitleValue,
+                            style: TextStyle(color: Colors.black,
+                                fontFamily: AppFonts.circularStd),
+                          ),
+                          isExpanded: true,
+                          iconSize: 30.0,
+                          style: TextStyle(color: Colors.black,
+                              fontFamily: AppFonts.circularStd),
+                          items: ["Mr", "Mrs"].map(
+                                (val) {
+                              return DropdownMenuItem<String>(
+                                value: val,
+                                child: Text(val),
+                              );
+                            },
+                          ).toList(),
+                          onChanged: (val) {
+                            setState(
+                                  () {
+                                dropDownTitleValue = val;
+                              },
+                            );
                           },
-                          suffixIcon: Icon(Icons.chevron_right),
                         ),
                       ),
-                    ],
+                    ),
                   ),
-
                   SizedBox(
-                    height: 8,
+                    height: 20,
                   ),
-
                   Row(
                     children: [
                       FLText(
-                        displayText: "Passport No :",
+                        displayText: "First Name",
                         textColor: AppColors.kTextDark,
                         setToWidth: false,
                         textSize: AppFonts.textFieldFontSize14,
                       ),
-                      SizedBox(
-                        width: 16,
+
+                    ],
+                  ),
+                  SizedBox(
+                    height: 8,
+                  ),
+                  InputSquareTextField(
+                    readOnly: false,
+                    textController: firstNameController,
+                    inputType: TextInputType.text,
+                    onChanged: (value) {},
+                  ),
+                  SizedBox(
+                    height: 20,
+                  ),
+                  Row(
+                    children: [
+                      FLText(
+                        displayText: "Last Name",
+                        textColor: AppColors.kTextDark,
+                        setToWidth: false,
+                        textSize: AppFonts.textFieldFontSize14,
                       ),
-                      Expanded(
-                        child: InputSquareTextField(
-                          // hint: "E",
-                          hintColor: AppColors.TextGray,
-                          padding: const EdgeInsets.symmetric(vertical: 5),
-                          readOnly: false,
-                          textController: passportNoController,
-                          inputType: TextInputType.number,
-                          onChanged: (value) {},
+
+                    ],
+                  ),
+                  SizedBox(
+                    height: 8,
+                  ),
+                  InputSquareTextField(
+                    readOnly: false,
+                    textController: lastNameController,
+                    inputType: TextInputType.text,
+                    onChanged: (value) {},
+                  ),
+
+                  SizedBox(
+                    height: 20,
+                  ),
+                  Row(
+                    children: [
+                      FLText(
+                        displayText: "Gender",
+                        textColor: AppColors.kTextDark,
+                        setToWidth: false,
+                        textSize: AppFonts.textFieldFontSize14,
+                      ),
+
+                    ],
+                  ),
+                  SizedBox(
+                    height: 8,
+                  ),
+                  Container(
+                    height: 40,
+                    decoration: BoxDecoration(
+                        border: Border.all(
+                          color: AppColors.TextGray.withOpacity(0.5),
+                          width: 1.5,
                         ),
+                        borderRadius: BorderRadius.circular(5)
+                    ),
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 10, vertical: 0),
+                      child: DropdownButtonHideUnderline(
+                        child: DropdownButton(
+                          hint: dropDownGenderValue == null
+                              ? Text("Male")
+                              : Text(
+                            dropDownGenderValue,
+                            style: TextStyle(color: Colors.black,
+                                fontFamily: AppFonts.circularStd),
+                          ),
+                          isExpanded: true,
+                          iconSize: 30.0,
+                          style: TextStyle(color: Colors.black,
+                              fontFamily: AppFonts.circularStd),
+                          items: ["Male", "Female"].map(
+                                (val) {
+                              return DropdownMenuItem<String>(
+                                value: val,
+                                child: Text(val),
+                              );
+                            },
+                          ).toList(),
+                          onChanged: (val) {
+                            setState(
+                                  () {
+                                dropDownGenderValue = val;
+                              },
+                            );
+                          },
+                        ),
+                      ),
+                    ),
+                  ),
+                  SizedBox(
+                    height: 20,
+                  ),
+                  Row(
+                    children: [
+                      FLText(
+                        displayText: "NIC",
+                        textColor: AppColors.kTextDark,
+                        setToWidth: false,
+                        textSize: AppFonts.textFieldFontSize14,
+                      ),
+                    ],
+                  ),
+                  SizedBox(
+                    height: 8,
+                  ),
+                  InputSquareTextField(
+                    readOnly: false,
+                    textController: nicController,
+                    inputType: TextInputType.text,
+                    onChanged: (value) {},
+                  ),
+                  SizedBox(
+                    height: 20,
+                  ),
+                  Row(
+                    children: [
+                      FLText(
+                        displayText: "DOB",
+                        textColor: AppColors.kTextDark,
+                        setToWidth: false,
+                        textSize: AppFonts.textFieldFontSize14,
                       ),
                     ],
                   ),
@@ -584,7 +531,43 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> with BaseUI {
                   SizedBox(
                     height: 8,
                   ),
+                  InputSquareTextField(
+                    readOnly: false,
+                    textController: dateController,
+                    inputType: TextInputType.number,
+                    onSuffixPress: () {
+                      dateSelection();
+                    },
+                    suffixIcon: Icon(Icons.chevron_right),
+                  ),
+                  SizedBox(
+                    height: 20,
+                  ),
+                  Row(
+                    children: [
+                      FLText(
+                        displayText: "Passport No",
+                        textColor: AppColors.kTextDark,
+                        setToWidth: false,
+                        textSize: AppFonts.textFieldFontSize14,
+                      ),
+                    ],
+                  ),
 
+                  SizedBox(
+                    height: 8,
+                  ),
+                  InputSquareTextField(
+                    // hint: "E",
+                    hintColor: AppColors.TextGray,
+                    readOnly: false,
+                    textController: passportNoController,
+                    inputType: TextInputType.number,
+                    onChanged: (value) {},
+                  ),
+                  SizedBox(
+                    height: 20,
+                  ),
                   Row(
                     children: [
                       FLText(
@@ -593,18 +576,30 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> with BaseUI {
                         setToWidth: false,
                         textSize: AppFonts.textFieldFontSize14,
                       ),
-                      SizedBox(
-                        width: 27,
-                      ),
-                      Expanded(
-                        child: InputSquareTextField(
-                          hintColor: AppColors.TextGray,
-                          padding: const EdgeInsets.symmetric(vertical: 5),
-                          readOnly: false,
-                          textController: addressController,
-                          inputType: TextInputType.number,
-                          onChanged: (value) {},
-                        ),
+
+                    ],
+                  ),
+                  SizedBox(
+                    height: 8,
+                  ),
+                  InputSquareTextField(
+                    hintColor: AppColors.TextGray,
+                    readOnly: false,
+                    textController: addressController,
+                    inputType: TextInputType.number,
+                    onChanged: (value) {},
+                  ),
+                  SizedBox(
+                    height: 20,
+                  ),
+
+                  Row(
+                    children: [
+                      FLText(
+                        displayText: "Country",
+                        textColor: AppColors.kTextDark,
+                        setToWidth: false,
+                        textSize: AppFonts.textFieldFontSize14,
                       ),
                     ],
                   ),
@@ -614,190 +609,156 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> with BaseUI {
                     height: 8,
                   ),
 
-                  Row(
-                    children: [
-                      FLText(
-                        displayText: "Country :",
-                        textColor: AppColors.kTextDark,
-                        setToWidth: false,
-                        textSize: AppFonts.textFieldFontSize14,
-                      ),
-                      SizedBox(
-                        width: 27,
-                      ),
-                      Expanded(
-                        child: Padding(
-                          padding: const EdgeInsets.only(right: 38),
-                          child: Container(
-                            height: 40,
-                            decoration: BoxDecoration(
-                                border: Border.all(
-                                  color: AppColors.TextGray.withOpacity(0.5),
-                                  width: 1.5,
-                                ),
-                                borderRadius: BorderRadius.circular(5)
-                            ),
-                            child: Padding(
-                              padding: const EdgeInsets.symmetric(
-                                  horizontal: 10, vertical: 0),
-                              child: DropdownButtonHideUnderline(
-                                child: DropdownButton(
-                                  hint: _dropDownCountryValue == null
-                                      ? Text('Select a country')
-                                      : Text(
-                                    _dropDownCountryValue,
-                                    style: TextStyle(color: Colors.black,
-                                        fontFamily: AppFonts.circularStd),
-                                  ),
-                                  isExpanded: true,
-                                  iconSize: 30.0,
-                                  style: TextStyle(color: Colors.black,
-                                      fontFamily: AppFonts.circularStd),
-                                  items: countryList.map(
-                                        (val) {
-                                      return DropdownMenuItem<Country>(
-                                        value: val,
-                                        child: Text(val.countryName.toString()),
-                                      );
-                                    },
-                                  ).toList(),
-                                  onChanged: (val) {
-                                    setState(
-                                          () {
-                                        print("val::::::::");
-                                        print(val.countryName);
-                                        _dropDownCountryValue = val.countryName;
-                                        countryIdx = int.parse(val.countryIdx);
-                                      },
-                                    );
-                                  },
-                                ),
-                              ),
-                            ),
+                  Container(
+                    height: 40,
+                    decoration: BoxDecoration(
+                        border: Border.all(
+                          color: AppColors.TextGray.withOpacity(0.5),
+                          width: 1.5,
+                        ),
+                        borderRadius: BorderRadius.circular(5)
+                    ),
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 10, vertical: 0),
+                      child: DropdownButtonHideUnderline(
+                        child: DropdownButton(
+                          hint: dropDownCountryValue == null
+                              ? Text('Select a country')
+                              : Text(
+                            dropDownCountryValue,
+                            style: TextStyle(color: Colors.black,
+                                fontFamily: AppFonts.circularStd),
                           ),
+                          isExpanded: true,
+                          iconSize: 30.0,
+                          style: TextStyle(color: Colors.black,
+                              fontFamily: AppFonts.circularStd),
+                          items: countryList.map(
+                                (val) {
+                              return DropdownMenuItem<Country>(
+                                value: val,
+                                child: Text(val.countryName.toString()),
+                              );
+                            },
+                          ).toList(),
+                          onChanged: (val) {
+                            setState(
+                                  () {
+                                print("val::::::::");
+                                print(val.countryName);
+                                dropDownCountryValue = val.countryName;
+                                countryIdx = int.parse(val.countryIdx);
+                              },
+                            );
+                          },
                         ),
+                      ),
+                    ),
+                  ),
+                  SizedBox(
+                    height: 20,
+                  ),
+                  Row(
+                    children: [
+                      FLText(
+                        displayText: "Occupation",
+                        textColor: AppColors.kTextDark,
+                        setToWidth: false,
+                        textSize: AppFonts.textFieldFontSize14,
                       ),
                     ],
                   ),
-
-
                   SizedBox(
                     height: 8,
+                  ),
+
+                  InputSquareTextField(
+                    hintColor: AppColors.TextGray,
+                    readOnly: false,
+                    textController: occupationController,
+                    inputType: TextInputType.number,
+                    onChanged: (value) {},
+                  ),
+
+                  SizedBox(
+                    height: 20,
                   ),
 
                   Row(
                     children: [
                       FLText(
-                        displayText: "Occupation :",
+                        displayText: "Work Place",
                         textColor: AppColors.kTextDark,
                         setToWidth: false,
                         textSize: AppFonts.textFieldFontSize14,
                       ),
-                      SizedBox(
-                        width: 27,
-                      ),
-                      Expanded(
-                        child: InputSquareTextField(
-                          hintColor: AppColors.TextGray,
-                          padding: const EdgeInsets.symmetric(vertical: 5),
-                          readOnly: false,
-                          textController: occupationController,
-                          inputType: TextInputType.number,
-                          onChanged: (value) {},
-                        ),
-                      ),
+
                     ],
                   ),
-
-
                   SizedBox(
                     height: 8,
+                  ),
+                  InputSquareTextField(
+                    hintColor: AppColors.TextGray,
+                    readOnly: false,
+                    textController: workPlaceController,
+                    inputType: TextInputType.number,
+                    onChanged: (value) {},
+                  ),
+                  SizedBox(
+                    height: 20,
                   ),
 
                   Row(
                     children: [
                       FLText(
-                        displayText: "Work Place :",
+                        displayText: "Emg Contact Name",
                         textColor: AppColors.kTextDark,
                         setToWidth: false,
                         textSize: AppFonts.textFieldFontSize14,
                       ),
-                      SizedBox(
-                        width: 27,
-                      ),
-                      Expanded(
-                        child: InputSquareTextField(
-                          hintColor: AppColors.TextGray,
-                          padding: const EdgeInsets.symmetric(vertical: 5),
-                          readOnly: false,
-                          textController: workPlaceController,
-                          inputType: TextInputType.number,
-                          onChanged: (value) {},
-                        ),
+
+                    ],
+                  ),
+                  SizedBox(
+                    height: 8,
+                  ),
+                  InputSquareTextField(
+                    hintColor: AppColors.TextGray,
+                    readOnly: false,
+                    textController: emgContactNameController,
+                    inputType: TextInputType.number,
+                    onChanged: (value) {},
+                  ),
+
+                  SizedBox(
+                    height: 20,
+                  ),
+                  Row(
+                    children: [
+                      FLText(
+                        displayText: "Emg Contact Number",
+                        textColor: AppColors.kTextDark,
+                        setToWidth: false,
+                        textSize: AppFonts.textFieldFontSize14,
                       ),
                     ],
                   ),
-
-
                   SizedBox(
                     height: 8,
                   ),
 
-                  Row(
-                    children: [
-                      FLText(
-                        displayText: "Emg Contact \nname :",
-                        textColor: AppColors.kTextDark,
-                        setToWidth: false,
-                        textSize: AppFonts.textFieldFontSize14,
-                      ),
-                      SizedBox(
-                        width: 27,
-                      ),
+                  InputSquareTextField(
+                    hintColor: AppColors.TextGray,
 
-                      Expanded(
-                        child: InputSquareTextField(
-                          hintColor: AppColors.TextGray,
-                          padding: const EdgeInsets.symmetric(vertical: 5),
-                          readOnly: false,
-                          textController: emgContactNameController,
-                          inputType: TextInputType.number,
-                          onChanged: (value) {},
-                        ),
-                      ),
-                    ],
+                    readOnly: false,
+                    textController: emgContactNumberController,
+                    inputType: TextInputType.number,
+                    onChanged: (value) {},
                   ),
-
                   SizedBox(
-                    height: 8,
-                  ),
-
-                  Row(
-                    children: [
-                      FLText(
-                        displayText: "Emg Contact \nnumber :",
-                        textColor: AppColors.kTextDark,
-                        setToWidth: false,
-                        textSize: AppFonts.textFieldFontSize14,
-                      ),
-                      SizedBox(
-                        width: 27,
-                      ),
-                      Expanded(
-                        child: InputSquareTextField(
-                          hintColor: AppColors.TextGray,
-                          padding: const EdgeInsets.symmetric(vertical: 5),
-                          readOnly: false,
-                          textController: emgContactNumberController,
-                          inputType: TextInputType.number,
-                          onChanged: (value) {},
-                        ),
-                      ),
-                    ],
-                  ),
-
-                  SizedBox(
-                    height: 10,
+                    height: 12,
                   ),
 
                   Row(
@@ -831,7 +792,9 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> with BaseUI {
                       ),
                     ],
                   ),
-
+                  SizedBox(
+                    height: 20,
+                  ),
                 ],
               ),
             ),

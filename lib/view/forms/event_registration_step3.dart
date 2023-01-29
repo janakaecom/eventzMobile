@@ -3,15 +3,16 @@ import 'dart:convert';
 
 import 'package:country_calling_code_picker/country.dart';
 import 'package:country_calling_code_picker/country_code_picker.dart';
-import 'package:eventz/model/event_register_request.dart';
+import 'package:eventz/model/event_register_request.dart' as rr;
 import 'package:eventz/view/widget/imput_square_text_field.dart';
 import 'package:flutter/material.dart';
-
+import '../../model/all_event_response.dart' as er;
 import '../../api/api_service.dart';
 import '../../configs/colors.dart';
 import '../../configs/fonts.dart';
 import '../../configs/images.dart';
 import 'package:get/get.dart';
+import '../../model/all_event_response.dart';
 import '../../model/responses.dart';
 import '../../model/register_error_response.dart';
 import '../BaseUI.dart';
@@ -27,17 +28,22 @@ class EventRegistrationStep3 extends StatefulWidget {
   final String closingDate;
   final List<String> categoryList;
   final List<String> namesList;
-  final List<EventResourceObjectList> list;
+  final bool isUpdate;
+  final List<er.EventResourceObjectList> list;
   final String eventName;
   final String eventDescription;
   final String eventDate;
   final String eventTime;
+  final EventsResult event;
+  final int hostId;
   final String posterUrl;
   final String venue;
   final String mapReference;
+  final List<er.EventResourceObjectList> eventResourceObjectListUpdate;
+  final List<er.EventResourceObjectList> eventResourceObjectListUpdateUpdate;
 
 
-  const EventRegistrationStep3({Key key, this.eventModeId, this.onlineLink, this.closingDate, this.categoryList, this.namesList, this.eventName, this.eventDescription, this.eventDate, this.eventTime, this.posterUrl, this.venue, this.mapReference, this.list}) : super(key: key);
+  const EventRegistrationStep3({Key key, this.eventModeId, this.onlineLink, this.closingDate, this.categoryList, this.namesList, this.eventName, this.eventDescription, this.eventDate, this.eventTime, this.posterUrl, this.venue, this.mapReference, this.list, this.hostId, this.event, this.isUpdate, this.eventResourceObjectListUpdate, this.eventResourceObjectListUpdateUpdate}) : super(key: key);
 
   @override
   State<StatefulWidget> createState() => _EventRegistrationStep3State();
@@ -60,21 +66,46 @@ class _EventRegistrationStep3State extends State<EventRegistrationStep3> with Ba
   bool isCheckedCheque =  false;
   bool isCheckedOnlinePayment =  false;
   APIService apiService = APIService();
+  List<er.EventFeeObjectList> eventFeeObjectList = [];
+  List<er.EventFeeObjectList> eventFeeObjectListUpdate = [];
+  EventsResult singleEventResult;
 
-  List<EventFeeObjectList> eventFeeObjectList = [];
 
   @override
   void initState() {
     super.initState();
 
-    eventFeeObjectList.add(EventFeeObjectList(category: "Category",amount: 0, maxQuantity: 0,eventFeeId: 1,eventIdx: 1));
+    eventFeeObjectList.add(er.EventFeeObjectList(catName: "Category",amount: "Amount", maxQuantity: "Quantity",eventFeeIdx: "0",eventIdx: "0"));
 
+    if (widget.isUpdate == true){
+
+      for(int i = 0; i < widget.event.eventFeeObjectList.length; i++) {
+        eventFeeObjectListUpdate.add(er.EventFeeObjectList(catName: "Category",amount: "Amount", maxQuantity: "Quantity",eventFeeIdx: widget.event.eventFeeObjectList[i].eventFeeIdx.toString(),eventIdx: widget.event.eventIdx.toString()));
+        eventFeeObjectListUpdate.add(widget.event.eventFeeObjectList[i]);
+      }
+      initialisation();
+    }
   }
+
 
   @override
   void dispose() {
-
     super.dispose();
+  }
+
+
+
+  void initialisation(){
+
+    print(widget.event.cashOnPayment);
+    print("widget.event.cashOnPayment::::::");
+    EBEndDateController.text = '';
+    isCheckedBankTransfer = widget.event.bankTransferPayment;
+    isCheckedCashOnTheEventDay = widget.event.cashOnPayment;
+    isCheckedCheque = widget.event.chequePayment;
+    isCheckedOnlinePayment = widget.event.onlinePayment;
+    termAndConditionsController.text = widget.event.termsCondition.toString();
+
   }
 
 
@@ -260,13 +291,27 @@ class _EventRegistrationStep3State extends State<EventRegistrationStep3> with Ba
                               // categoryList.add(priceCategoryController.text);
                               // priceList.add(eventPriceCategory.text);
                               // quantityList.add(quantityController.text);
-                              eventFeeObjectList.add(EventFeeObjectList(category: priceCategoryController.text,amount: int.parse(eventPriceCategory.text), maxQuantity: int.parse(quantityController.text),eventFeeId: 1,eventIdx: 1));
+                              if(widget.isUpdate == true) {
+
+                                  eventFeeObjectListUpdate.add(
+                                      er.EventFeeObjectList(
+                                          catName: priceCategoryController.text,
+                                          amount: eventPriceCategory.text,
+                                          maxQuantity: quantityController.text,
+                                          eventFeeIdx: '0',eventIdx: widget.event.eventIdx.toString()));
+
+                              }
+                              else{
+                                eventFeeObjectList.add(er.EventFeeObjectList(catName: priceCategoryController.text,amount: eventPriceCategory.text, maxQuantity: quantityController.text,eventFeeIdx: "0",eventIdx: "0"));
+                              }
+
                             }
 
                             priceCategoryController.text = '';
                             eventPriceCategory.text = '';
                             quantityController.text = '';
                           });
+
                         },
                         child: Container(
                           height: 45,
@@ -293,16 +338,30 @@ class _EventRegistrationStep3State extends State<EventRegistrationStep3> with Ba
                 SizedBox(
                   height: 10,
                 ),
+                // tableView(),
+
+                // Visibility(
+                //     visible:  eventResourceObjectList.length > 1 ? true:false,
+                //     child: tableViewInsert()),
+                //
+                widget.isUpdate == true ?
+
+                Visibility(
+                    visible:  eventFeeObjectListUpdate.length > 1 ? true:false,
+                    child: updateTableView()
+                ):SizedBox(),
 
                 Visibility(
                   visible: eventFeeObjectList.length > 1? true:false,
                     child: tableView()),
+
                 Visibility(
                   visible: eventFeeObjectList.length > 1? true:false,
                   child: SizedBox(
                     height: 15,
                   ),
                 ),
+
                 Row(
                   children: [
                     FLText(
@@ -317,7 +376,7 @@ class _EventRegistrationStep3State extends State<EventRegistrationStep3> with Ba
                     Expanded(
                       child: InputSquareTextField(
                         padding:const EdgeInsets.symmetric(vertical: 5),
-                        readOnly: false,
+                        readOnly: true,
                         textController: EBStartDateController,
                         inputType: TextInputType.number,
                         onSuffixPress: (){
@@ -343,7 +402,7 @@ class _EventRegistrationStep3State extends State<EventRegistrationStep3> with Ba
                     Expanded(
                       child: InputSquareTextField(
                         padding:const EdgeInsets.symmetric(vertical: 5),
-                        readOnly: false,
+                        readOnly: true,
                         textController: EBEndDateController,
                         inputType: TextInputType.number,
                         onSuffixPress: (){
@@ -593,13 +652,140 @@ class _EventRegistrationStep3State extends State<EventRegistrationStep3> with Ba
   }
 
 
+  Widget updateTableView(){
+    return
+      // DataTable(
+      //   // datatable widget
+      //   columns: [
+      //     // column to set the name
+      //     DataColumn(label: Text('Col1'),),
+      //     DataColumn(label: Text('Col2'),),
+      //     DataColumn(label: Text('Col2'),),
+      //     DataColumn(label: Text('Col2'),),
+      //   ],
+      //
+      //   rows: eventFeeObjectList
+      //       .map((e) => DataRow(
+      //     cells: [
+      //       DataCell(
+      //         Text("ewfe"),
+      //
+      //       ),
+      //       DataCell(
+      //         Text("edw"),
+      //
+      //       ),
+      //       DataCell(
+      //         Text("dsssd"),
+      //         onTap: () {},
+      //       ),
+      //       DataCell(
+      //         Container(
+      //           padding: const EdgeInsets.symmetric(
+      //               horizontal: 6, vertical: 3),
+      //           decoration: ShapeDecoration(
+      //             color: Colors.red,
+      //             shape: const StadiumBorder(),
+      //           ),
+      //           child: Text(("r").toUpperCase(),
+      //
+      //               )),
+      //         ),
+      //     ],
+      //   ))
+      //       .toList()
+      // );
+      Table(
+        border: TableBorder.all(color: Colors.black),
+        children: List<TableRow>.generate(
+          eventFeeObjectListUpdate.length,
+              (index) {
+            return TableRow(
+                children: [
+                  Column(children:[
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 12,vertical: 5),
+                          child: Text(eventFeeObjectListUpdate[index].catName.toString(), style: TextStyle(fontSize: 15.0,fontWeight: index == 0? FontWeight.w600  : FontWeight.w500)),
+                        ),
+                      ],
+                    )]),
+                  Column(children:[ Row(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 12,vertical: 5),
+                        child: Text(eventFeeObjectListUpdate[index].amount.toString(), style: TextStyle(fontSize: 15.0,fontWeight: index == 0? FontWeight.w600 : FontWeight.w500)),
+                      ),
+                    ],
+                  )]),
+                  Column(children:[ Row(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 12,vertical: 5),
+                        child: Text(eventFeeObjectListUpdate[index].maxQuantity.toString(), style: TextStyle(fontSize: 15.0,fontWeight: index == 0? FontWeight.w600 : FontWeight.w500)),
+                      ),
+                    ],
+                  )]),
+                ]);
+          },
+          growable: false,
+        ),
+      );
+  }
+
   Widget tableView(){
-    return Table(
+    return
+      // DataTable(
+      //   // datatable widget
+      //   columns: [
+      //     // column to set the name
+      //     DataColumn(label: Text('Col1'),),
+      //     DataColumn(label: Text('Col2'),),
+      //     DataColumn(label: Text('Col2'),),
+      //     DataColumn(label: Text('Col2'),),
+      //   ],
+      //
+      //   rows: eventFeeObjectList
+      //       .map((e) => DataRow(
+      //     cells: [
+      //       DataCell(
+      //         Text("ewfe"),
+      //
+      //       ),
+      //       DataCell(
+      //         Text("edw"),
+      //
+      //       ),
+      //       DataCell(
+      //         Text("dsssd"),
+      //         onTap: () {},
+      //       ),
+      //       DataCell(
+      //         Container(
+      //           padding: const EdgeInsets.symmetric(
+      //               horizontal: 6, vertical: 3),
+      //           decoration: ShapeDecoration(
+      //             color: Colors.red,
+      //             shape: const StadiumBorder(),
+      //           ),
+      //           child: Text(("r").toUpperCase(),
+      //
+      //               )),
+      //         ),
+      //     ],
+      //   ))
+      //       .toList()
+      // );
+      Table(
       border: TableBorder.all(color: Colors.black),
       children: List<TableRow>.generate(
         eventFeeObjectList.length,
             (index) {
-          return    TableRow(
+          return TableRow(
               children: [
                 Column(children:[
                   Row(
@@ -607,7 +793,7 @@ class _EventRegistrationStep3State extends State<EventRegistrationStep3> with Ba
                     children: [
                       Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 12,vertical: 5),
-                        child: Text(eventFeeObjectList[index].category.toString(), style: TextStyle(fontSize: 15.0,fontWeight: index == 0? FontWeight.w600  : FontWeight.w500)),
+                        child: Text(eventFeeObjectList[index].catName.toString(), style: TextStyle(fontSize: 15.0,fontWeight: index == 0? FontWeight.w600  : FontWeight.w500)),
                       ),
                     ],
                   )]),
@@ -641,15 +827,12 @@ class _EventRegistrationStep3State extends State<EventRegistrationStep3> with Ba
   ///event registration call
   void eventRegisterCall() {
 
-    // setState(() {
-    //   for(int i = 0; i < widget.categoryList.length ; i++){
-    //     eventResourceObjectList.add(widget.categoryList);
-    //   }
-    //   for(int i = 0; i < widget.namesList.length ; i++){
-    //     eventResourceObjectList.resouceName = widget.namesList[i];
-    //   }
-    //
-    // });
+    setState(() {
+      widget.list.removeWhere((item) => item.resCategory == "Category");
+      widget.eventResourceObjectListUpdateUpdate.removeWhere((item) => item.resCategory == "Category");
+      eventFeeObjectList.removeWhere((item) => item.catName == "Category");
+      eventFeeObjectListUpdate.removeWhere((item) => item.catName == "Category");
+    });
 
 
     if(isCheckedOnlinePayment == false && isCheckedCheque == false && isCheckedBankTransfer == false && isCheckedCashOnTheEventDay == false) {
@@ -664,58 +847,131 @@ class _EventRegistrationStep3State extends State<EventRegistrationStep3> with Ba
     }
     else {
       apiService.check().then((check) {
-        EventRegisterRequest request = EventRegisterRequest(
-            isPaidEvent: true,
-            artWorkName: "de",
-            createdUserIdx: 1,
-            eBDiscountRate: 2,
-            eventIdx: 1,
-            eventStatusIdx: 1,
-            isSpeakerAvailable: true,
-            artworkPath: widget.posterUrl,
-            eventName: widget.eventName,
-            eventDescription: widget.eventDescription,
-            hostIdx: 1,
-            isEarlyBird: false,
-            eventDate: widget.eventDate,
-            eventTime: widget.eventTime,
-            eventVenue: widget.venue,
-            venueMapReference: widget.mapReference,
-            eventCatIdx: 1,
-            eventModeIdx: widget.eventModeId,
-            onlineLink: widget.onlineLink,
-            closingDate: widget.closingDate,
-            eventResourceObjectList: widget.list,
-            eventFeeObjectList: eventFeeObjectList,
-            // ebStartBirdEndDate :
-            earlyBirdEndDate: EBEndDateController.text,
-            // percentage:
-            bankTransferPayment: isCheckedBankTransfer,
-            cashOnPayment: isCheckedCashOnTheEventDay,
-            chequePayment: isCheckedCheque,
-            onlinePayment: isCheckedOnlinePayment,
-            termsCondition: termAndConditionsController.text
-        );
+        rr.EventRegisterRequest request;
+        print("widget.isUpdate::::::::");
+        print(widget.isUpdate);
+        bool update = true;
+        if(widget.isUpdate == true){
+          setState(() {
+            update = true;
+          });
+        }
+        else{
+          setState(() {
+            update = false;
+          });
+        }
+        if(update == false) {
+          request = rr.EventRegisterRequest(
+              isPaidEvent: true,
+              artWorkName: "de",
+              createdUserIdx:  0,
+              eBDiscountRate: 2,
+              eventIdx: 0,
+              eventStatusIdx: 1,
+              isSpeakerAvailable: true,
+              artworkPath: widget.posterUrl,
+              eventName: widget.eventName,
+              eventDescription: widget.eventDescription,
+              hostIdx: widget.hostId,
+              isEarlyBird: false,
+              eventDate: widget.eventDate,
+              eventTime: widget.eventTime,
+              eventVenue: widget.venue,
+              venueMapReference: widget.mapReference,
+              eventCatIdx: 1,
+              eventModeIdx: widget.eventModeId,
+              onlineLink: widget.onlineLink,
+              closingDate: widget.closingDate,
+              eventResourceObjectList:  widget.list,
+              eventFeeObjectList: eventFeeObjectList,
+              // // ebStartBirdEndDate :
+              earlyBirdEndDate: EBEndDateController.text,
+              // percentage:
+              bankTransferPayment: isCheckedBankTransfer,
+              cashOnPayment: isCheckedCashOnTheEventDay,
+              chequePayment: isCheckedCheque,
+              onlinePayment: isCheckedOnlinePayment,
+              termsCondition: termAndConditionsController.text
+          );
+        }
+        else{
+          request = rr.EventRegisterRequest(
+              isPaidEvent: true,
+              artWorkName: "de",
+              createdUserIdx: widget.event.createdUserIdx ?? 0,
+              eBDiscountRate: 2,
+              eventIdx:  widget.event.eventIdx,
+              eventStatusIdx: 1,
+              isSpeakerAvailable: true,
+              artworkPath: widget.posterUrl,
+              eventName: widget.eventName,
+              eventDescription: widget.eventDescription,
+              hostIdx: widget.hostId,
+              isEarlyBird: false,
+              eventDate: widget.eventDate,
+              eventTime: widget.eventTime,
+              eventVenue: widget.venue,
+              venueMapReference: widget.mapReference,
+              eventCatIdx: 1,
+              eventModeIdx: widget.eventModeId,
+              onlineLink: widget.onlineLink,
+              closingDate: widget.closingDate,
+              eventResourceObjectList: widget.eventResourceObjectListUpdateUpdate,
+              eventFeeObjectList: eventFeeObjectListUpdate,
+              // // ebStartBirdEndDate :
+              earlyBirdEndDate: EBEndDateController.text,
+              // percentage:
+              bankTransferPayment: isCheckedBankTransfer,
+              cashOnPayment: isCheckedCashOnTheEventDay,
+              chequePayment: isCheckedCheque,
+              onlinePayment: isCheckedOnlinePayment,
+              termsCondition: termAndConditionsController.text
+          );
+        }
 
         showProgressbar(context);
         if (check) {
-          apiService.saveEvent(request.toJson()).then((value) {
-            hideProgressbar(context);
+          if(update == false) {
+            apiService.saveEvent(request.toJson()).then((value) {
+              hideProgressbar(context);
 
-            if (value.statusCode == 200) {
-              EventRegistrationResponse responseData = EventRegistrationResponse.fromJson(json.decode(value.body));
-              Get.snackbar("Success", responseData.result,
-                  colorText: AppColors.textGreenLight,
-                  backgroundColor: AppColors.kWhite);
-              // Get.off(LoginView());
-            } else {
-              RegisterErrorResponse responseData = RegisterErrorResponse
-                  .fromJson(json.decode(value.body));
-              Get.snackbar('error'.tr, responseData.message,
-                  colorText: AppColors.textRed,
-                  backgroundColor: AppColors.kWhite);
-            }
-          });
+              if (value.statusCode == 200) {
+                EventRegistrationResponse responseData = EventRegistrationResponse
+                    .fromJson(json.decode(value.body));
+                Get.snackbar("Success", responseData.result,
+                    colorText: AppColors.textGreenLight,
+                    backgroundColor: AppColors.kWhite);
+                // Get.off(LoginView());
+              } else {
+                // RegisterErrorResponse responseData = RegisterErrorResponse
+                //     .fromJson(json.decode(value.body));
+                // Get.snackbar('error'.tr, responseData.message,
+                //     colorText: AppColors.textRed,
+                //     backgroundColor: AppColors.kWhite);
+              }
+            });
+          }
+          else{
+            apiService.updateEvent(request.toJson()).then((value) {
+              hideProgressbar(context);
+
+              if (value.statusCode == 200) {
+                EventRegistrationResponse responseData = EventRegistrationResponse
+                    .fromJson(json.decode(value.body));
+                Get.snackbar("Success", responseData.result,
+                    colorText: AppColors.textGreenLight,
+                    backgroundColor: AppColors.kWhite);
+                // Get.off(LoginView());
+              } else {
+                // RegisterErrorResponse responseData = RegisterErrorResponse
+                //     .fromJson(json.decode(value.body));
+                // Get.snackbar('error'.tr, responseData.message,
+                //     colorText: AppColors.textRed,
+                //     backgroundColor: AppColors.kWhite);
+              }
+            });
+          }
         } else {
           hideProgressbar(context);
           helper.showAlertView(context, 'no_internet'.tr, () {}, 'ok'.tr);
