@@ -287,22 +287,22 @@ class _EventRegistrationStep3State extends State<EventRegistrationStep3> with Ba
                       child: InkWell(
                         onTap: (){
                           setState(() {
-                            if(priceCategoryController.text != '' || eventPriceCategory.text != '' || quantityController.text != ""){
-                              // categoryList.add(priceCategoryController.text);
-                              // priceList.add(eventPriceCategory.text);
-                              // quantityList.add(quantityController.text);
+                            if((priceCategoryController.text == '' || eventPriceCategory.text == '' || quantityController.text == '') || (priceCategoryController.text == null || eventPriceCategory.text == null || quantityController.text == null)){
+
+                          }
+                            else{
                               if(widget.isUpdate == true) {
 
                                   eventFeeObjectListUpdate.add(
                                       er.EventFeeObjectList(
-                                          catName: priceCategoryController.text,
-                                          amount: eventPriceCategory.text,
-                                          maxQuantity: quantityController.text,
+                                          catName: priceCategoryController.text ?? "-",
+                                          amount: eventPriceCategory.text ?? "-",
+                                          maxQuantity: quantityController.text ?? "-",
                                           eventFeeIdx: '0',eventIdx: widget.event.eventIdx.toString()));
 
                               }
                               else{
-                                eventFeeObjectList.add(er.EventFeeObjectList(catName: priceCategoryController.text,amount: eventPriceCategory.text, maxQuantity: quantityController.text,eventFeeIdx: "0",eventIdx: "0"));
+                                eventFeeObjectList.add(er.EventFeeObjectList(catName: priceCategoryController.text ?? "-",amount: eventPriceCategory.text ?? "-", maxQuantity: quantityController.text ?? "-",eventFeeIdx: "0",eventIdx: "0"));
                               }
 
                             }
@@ -608,6 +608,7 @@ class _EventRegistrationStep3State extends State<EventRegistrationStep3> with Ba
                     children: [
                       InkWell(
                         onTap: () async {
+
                           eventRegisterCall();
                           // await Navigator.push(
                           //   context,
@@ -835,7 +836,12 @@ class _EventRegistrationStep3State extends State<EventRegistrationStep3> with Ba
     });
 
 
-    if(isCheckedOnlinePayment == false && isCheckedCheque == false && isCheckedBankTransfer == false && isCheckedCashOnTheEventDay == false) {
+    if(EBEndDateController.text == null || EBEndDateController.text == "") {
+      Get.snackbar('error'.tr, "Early bird end date can't be empty.",
+          colorText: AppColors.textRed,
+          backgroundColor: AppColors.kWhite);
+    }
+    else if(isCheckedOnlinePayment == false && isCheckedCheque == false && isCheckedBankTransfer == false && isCheckedCashOnTheEventDay == false) {
       Get.snackbar('error'.tr, "Payment method should be selected.",
           colorText: AppColors.textRed,
           backgroundColor: AppColors.kWhite);
