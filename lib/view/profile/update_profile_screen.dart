@@ -278,16 +278,7 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> with BaseUI {
                         uploadImage();
                       },
                       child:
-                      imageUrl != null ?
-                      ClipRRect(
-                        borderRadius: BorderRadius.circular(60),
-                        child: Image.network(
-                          imageUrl,
-                          width: 110,
-                          height: 110,
-                          fit: BoxFit.cover,
-                        ),
-                      ) :
+                      imageUrl == null || imageUrl == "" ?
                       Container(
                         height: 110,
                         width: 110,
@@ -297,19 +288,21 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> with BaseUI {
                         ),
                         child: Center(
                             child:
-                            // logo != null?
-                            // Image.file(
-                            //   files.File(logo),
-                            //   width: 100,
-                            //   height: 100,
-                            // ):
-
                             Image.asset(
                               menuUser,
                               width: 28,
                               height: 28,
                               fit: BoxFit.cover,
                             )
+                        ),
+                      ):
+                      ClipRRect(
+                        borderRadius: BorderRadius.circular(60),
+                        child: Image.network(
+                          imageUrl,
+                          width: 110,
+                          height: 110,
+                          fit: BoxFit.cover,
                         ),
                       ),
                     ),
