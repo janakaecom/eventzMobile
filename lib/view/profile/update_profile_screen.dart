@@ -860,7 +860,7 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> with BaseUI {
         //Upload to Firebase
         showProgressbar(context);
         var snapshot = await _firebaseStorage.ref()
-            .child('images/imageName')
+            .child('images/${DateTime.now()}')
             .putFile(file);
         var downloadUrl = await snapshot.ref.getDownloadURL();
         setState(() {

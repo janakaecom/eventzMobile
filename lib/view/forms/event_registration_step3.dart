@@ -584,6 +584,7 @@ class _EventRegistrationStep3State extends State<EventRegistrationStep3> with Ba
                         maxLength: 800,
                         controller: termAndConditionsController,
                         maxLines: 5,
+
                         style: TextStyle(color: AppColors.TextGray,fontSize: 13),
                         decoration: InputDecoration(
                           filled: true,
