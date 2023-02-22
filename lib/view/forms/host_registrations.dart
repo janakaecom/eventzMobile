@@ -368,38 +368,41 @@ class _HostRegistrationState extends State<HostRegistration> with BaseUI {
 
 
 
-                  SizedBox(
-                    height: 180,
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 12),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.end,
-                      children: [
-                        InkWell(
-                          onTap: (){
-                            hostRegisterCall();
-                          },
-                          child: Container(
-                            decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(3),
-                                border: Border.all(
-                                    color:  Colors.deepPurpleAccent
-                                )
-                            ),
-                            child: Padding(
-                              padding: const EdgeInsets.symmetric(vertical: 6,horizontal: 12),
-                              child: FLText(
-                                displayText: "Submit",
-                                textColor: Colors.deepPurpleAccent,
-                                setToWidth: false,
-                                textSize: AppFonts.textFieldFontSize14,
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      SizedBox(
+                        height: 30,
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 12),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Center(
+                              child: Container(
+                                margin: const EdgeInsets.only(top: 20),
+                                height: 50,
+                                width: 250,
+                                child: FLButton(
+                                  borderRadius: 20,
+                                  title: "Submit".tr,
+                                  onPressed: () async {
+                                    hostRegisterCall();
+                                  },
+                                  backgroundColor: AppColors.buttonBlue,
+                                  titleFontColor: AppColors.kWhite,
+                                  borderColor: AppColors.buttonBlue,
+                                  minWidth: 100,
+                                  height: 40,
+                                ),
                               ),
                             ),
-                          ),
+                          ],
                         ),
-                      ],
-                    ),
+                      ),
+
+                    ],
                   ),
 
                 ],

@@ -23,12 +23,21 @@ class _ForgetPwViewState extends State<ForgetPwView> with BaseUI {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: SingleChildScrollView(
-        child: Container(
-          color: AppColors.kBackgroundWhite,
-          child: Stack(
-            children: [bgView(), mainView()],
-          ),
+      appBar: AppBar(
+        backgroundColor: AppColors.kWhite,
+        elevation: 0,
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back_ios,color: Colors.black,),
+          onPressed: () {
+            Navigator.of(context).pop(true);
+          },
+        ),
+      ),
+      body: Container(
+        color: AppColors.kBackgroundWhite,
+        child: Stack(
+          children: [
+            bgView(), mainView()],
         ),
       ),
     );
@@ -147,7 +156,7 @@ class _ForgetPwViewState extends State<ForgetPwView> with BaseUI {
     return Column(
       children: [
         SizedBox(
-          height: Get.height / 3,
+          height: Get.height / 4,
         ),
         submitForm(),
       ],

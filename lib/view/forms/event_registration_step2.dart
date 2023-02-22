@@ -10,6 +10,7 @@ import '../../configs/fonts.dart';
 import '../../configs/images.dart';
 import '../../model/all_event_response.dart';
 import '../../model/event_register_request.dart' as rr;
+import '../widget/fl_button.dart';
 import '../widget/fl_text.dart';
 import 'event_registration_step3.dart';
 
@@ -115,12 +116,11 @@ class _EventRegistrationStep2State extends State<EventRegistrationStep2> {
   }
 
   void initialisation() {
-    var ed = DateFormat("yyyy-MM-dd")
-        .format(DateTime.parse(widget.event.closingDate));
+    var cd = DateFormat("yyyy-MM-dd").format(DateTime.parse(widget.event.closingDate));
     isCheckedPhysical = widget.event.eventModeIdx == 1 ? true : false;
     isCheckedOnline = widget.event.eventModeIdx == 2 ? true : false;
     onlineLinkController.text = widget.event.onlineLink.toString();
-    closingDateController.text = ed;
+    closingDateController.text = cd;
   }
 
   @override
@@ -571,60 +571,76 @@ class _EventRegistrationStep2State extends State<EventRegistrationStep2> {
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.end,
                     children: [
-                      InkWell(
-                        onTap: () async {
+
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          SizedBox(
+                            height: 30,
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.only(bottom: 70),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Center(
+                                  child: Container(
+                                    margin: const EdgeInsets.only(top: 20),
+                                    height: 50,
+                                    width: 100,
+                                    child: FLButton(
+                                      borderRadius: 20,
+                                      title: "Next".tr,
+                                      onPressed: () async {
 
 
-                           if(closingDateController.text == '' || closingDateController.text == null) {
-                          Get.snackbar('error', "The Closing date can't be empty.",
-                          colorText: AppColors.textRed,
-                          backgroundColor: AppColors.kWhite);
-                          }
-                           else {
-                             await Navigator.push(
-                               context,
-                               MaterialPageRoute(
-                                 builder: (context) =>
-                                     EventRegistrationStep3(
-                                         eventModeId:
-                                         isCheckedPhysical == true ? 1 : 2,
-                                         onlineLink: onlineLinkController.text,
-                                         closingDate: closingDateController
-                                             .text,
-                                         list: eventResourceObjectList,
-                                         eventTime: widget.eventTime,
-                                         isUpdate: widget.isUpdate,
-                                         hostId: widget.hostId,
-                                         eventDate: widget.eventDate,
-                                         eventDescription: widget
-                                             .eventDescription,
-                                         eventName: widget.eventName,
-                                         posterUrl: widget.posterUrl,
-                                         venue: widget.venue,
-                                         mapReference: widget.mapReference,
-                                         event: widget.event,
-                                         eventResourceObjectListUpdateUpdate:
-                                         eventResourceObjectListUpdate),
-                               ),
-                             );
-                           }
-                        },
-                        child: Container(
-                          decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(3),
-                              border:
-                                  Border.all(color: Colors.deepPurpleAccent)),
-                          child: Padding(
-                            padding: const EdgeInsets.symmetric(
-                                vertical: 6, horizontal: 35),
-                            child: FLText(
-                              displayText: "Next",
-                              textColor: Colors.deepPurpleAccent,
-                              setToWidth: false,
-                              textSize: AppFonts.textFieldFontSize14,
+                                        if(closingDateController.text == '' || closingDateController.text == null) {
+                                          Get.snackbar('error', "The Closing date can't be empty.",
+                                              colorText: AppColors.textRed,
+                                              backgroundColor: AppColors.kWhite);
+                                        }
+                                        else {
+                                          await Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                              builder: (context) =>
+                                                  EventRegistrationStep3(
+                                                      eventModeId:
+                                                      isCheckedPhysical == true ? 1 : 2,
+                                                      onlineLink: onlineLinkController.text,
+                                                      closingDate: closingDateController
+                                                          .text,
+                                                      list: eventResourceObjectList,
+                                                      eventTime: widget.eventTime,
+                                                      isUpdate: widget.isUpdate,
+                                                      hostId: widget.hostId,
+                                                      eventDate: widget.eventDate,
+                                                      eventDescription: widget
+                                                          .eventDescription,
+                                                      eventName: widget.eventName,
+                                                      posterUrl: widget.posterUrl,
+                                                      venue: widget.venue,
+                                                      mapReference: widget.mapReference,
+                                                      event: widget.event,
+                                                      eventResourceObjectListUpdateUpdate:
+                                                      eventResourceObjectListUpdate),
+                                            ),
+                                          );
+                                        }
+                                      },
+                                      backgroundColor: AppColors.buttonBlue,
+                                      titleFontColor: AppColors.kWhite,
+                                      borderColor: AppColors.buttonBlue,
+                                      minWidth: 100,
+                                      height: 40,
+                                    ),
+                                  ),
+                                ),
+                              ],
                             ),
                           ),
-                        ),
+
+                        ],
                       ),
                     ],
                   ),
@@ -709,7 +725,7 @@ class _EventRegistrationStep2State extends State<EventRegistrationStep2> {
                     padding:
                         const EdgeInsets.symmetric(horizontal: 12, vertical: 5),
                     child: SizedBox(
-                        width: 160,
+                        // width: 160,
                         child: Text(eventResourceObjectList[index].resCategory,
                             style: TextStyle(
                                 fontSize: 15.0,
@@ -728,7 +744,7 @@ class _EventRegistrationStep2State extends State<EventRegistrationStep2> {
                     padding:
                         const EdgeInsets.symmetric(horizontal: 12, vertical: 5),
                     child: SizedBox(
-                        width: 160,
+                        // width: 160,
                         child: Text(
                             eventResourceObjectList[index].resName.toString(),
                             style: TextStyle(

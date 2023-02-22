@@ -26,6 +26,7 @@ class AppDrawer extends StatefulWidget {
 class _AppDrawerState extends State<AppDrawer> {
   SharedPref sharedPref = SharedPref();
   String _userName = "";
+  LoginResponse loginResponse ;
 
   @override
   void initState() {
@@ -68,6 +69,7 @@ class _AppDrawerState extends State<AppDrawer> {
       ),
     );
   }
+
 
 
   getProfileInfo() async {
@@ -139,18 +141,33 @@ class _AppDrawerState extends State<AppDrawer> {
               ),
               Padding(
                 padding: EdgeInsets.only(right: 0, top: 10),
-                child: FLText(
-                  // displayText: "dd",
-                  displayText: _userName != null
-                      ? _userName != ''
-                          ? _userName
-                          : "-"
-                      : "-",
-                  textColor: AppColors.kWhite,
-                  setToWidth: false,
-                  textSize: AppFonts.textFieldFontSize16,
-                  textAlign: TextAlign.center,
+                child:
+                SizedBox(
+                  width: 250,
+                  child: Text(
+                    _userName != null
+                        ? _userName != ''
+                        ? _userName
+                        : "-"
+                        : "-",
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 16
+                    ),
+                  ),
                 ),
+                // FLText(
+                //   // displayText: "dd",
+                //   displayText: _userName != null
+                //       ? _userName != ''
+                //           ? _userName
+                //           : "-"
+                //       : "-",
+                //   textColor: AppColors.kWhite,
+                //   setToWidth: false,
+                //   textSize: AppFonts.textFieldFontSize16,
+                //   textAlign: TextAlign.center,
+                // ),
               ),
               Expanded(
                 child: Container(),

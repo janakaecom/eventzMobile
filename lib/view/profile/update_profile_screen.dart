@@ -1,11 +1,3 @@
-
-
-
-
-
-
-
-
 import 'dart:convert';
 import 'dart:io' as files;
 import 'package:eventz/configs/colors.dart';
@@ -755,32 +747,36 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> with BaseUI {
                   ),
 
                   Row(
-                    mainAxisAlignment: MainAxisAlignment.end,
+                    mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Row(
                         mainAxisAlignment: MainAxisAlignment.end,
                         children: [
-                          InkWell(
-                            onTap: () {
-                              updateProfileCall();
-                            },
-                            child: Container(
-                              decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(3),
-                                  color: Colors.blue
-                              ),
-                              child: Padding(
-                                padding: const EdgeInsets.symmetric(
-                                    vertical: 6, horizontal: 12),
-                                child: FLText(
-                                  displayText: "Update Profile",
-                                  textColor: Colors.white,
-                                  setToWidth: false,
-                                  textSize: AppFonts.textFieldFontSize14,
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Center(
+                                child: Container(
+                                  margin: const EdgeInsets.only(top: 20,bottom: 50),
+                                  height: 50,
+                                  width: 250,
+                                  child: FLButton(
+                                    borderRadius: 20,
+                                    title: "Update Profile".tr,
+                                    onPressed: () async {
+                                      updateProfileCall();
+                                    },
+                                    backgroundColor: AppColors.buttonBlue,
+                                    titleFontColor: AppColors.kWhite,
+                                    borderColor: AppColors.buttonBlue,
+                                    minWidth: 100,
+                                    height: 40,
+                                  ),
                                 ),
                               ),
-                            ),
+                            ],
                           ),
+
                         ],
                       ),
                     ],

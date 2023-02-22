@@ -28,9 +28,20 @@ class _SignUpViewState extends State<SignUpView> with BaseUI {
   bool obscurePassword = true;
   bool obscureConfirmPassword = true;
 
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        backgroundColor: AppColors.kWhite,
+        elevation: 0,
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back_ios,color: Colors.black,),
+          onPressed: () {
+            Navigator.of(context).pop(true);
+          },
+        ),
+      ),
       body: Container(
         width: Get.width,
         height: Get.height,
@@ -45,7 +56,7 @@ class _SignUpViewState extends State<SignUpView> with BaseUI {
               //   child: Container(),
               // ),
               Container(
-                height: 190,
+                height: 140,
               ),
               registerForm(),
             ],

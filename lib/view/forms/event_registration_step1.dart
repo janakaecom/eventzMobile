@@ -394,7 +394,7 @@ class _EventRegistrationStep1State extends State<EventRegistrationStep1>
                           padding: const EdgeInsets.symmetric(vertical: 5),
                           readOnly: false,
                           textController: eventTimeController,
-                          inputType: TextInputType.number,
+                          inputType: TextInputType.text,
                           onChanged: (value) {},
                         ),
                       ],
@@ -500,82 +500,101 @@ class _EventRegistrationStep1State extends State<EventRegistrationStep1>
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.end,
                         children: [
-                          InkWell(
-                            onTap: () async {
-                              if (eventNameController.text == '' ||
-                                  eventNameController.text == null) {
-                                Get.snackbar(
-                                    'error', "The Event Name Can't be empty.",
-                                    colorText: AppColors.textRed,
-                                    backgroundColor: AppColors.kWhite);
-                              } else if (eventDescriptionController.text ==
-                                      '' ||
-                                  eventDescriptionController.text == null) {
-                                Get.snackbar('error',
-                                    "The Event Description Can't be empty.",
-                                    colorText: AppColors.textRed,
-                                    backgroundColor: AppColors.kWhite);
-                              } else if (eventTimeController.text == '' ||
-                                  eventTimeController.text == null) {
-                                Get.snackbar(
-                                    'error', "The Event Time Can't be empty.",
-                                    colorText: AppColors.textRed,
-                                    backgroundColor: AppColors.kWhite);
-                              } else if (hostIdx == null || hostIdx == 0) {
-                                Get.snackbar(
-                                    'error', "The Host should be selected.",
-                                    colorText: AppColors.textRed,
-                                    backgroundColor: AppColors.kWhite);
-                              } else if (venueIdx == null || venueIdx == 0) {
-                                Get.snackbar(
-                                    'error', "The Venue should be selected.",
-                                    colorText: AppColors.textRed,
-                                    backgroundColor: AppColors.kWhite);
-                              }
-                              // else if(widget.venue == '' || widget.venue == null) {
-                              //   Get.snackbar('error', "The Event Name Can't be empty.",
-                              //       colorText: AppColors.textRed,
-                              //       backgroundColor: AppColors.kWhite);
-                              // }
-                              else {
-                                await Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) =>
-                                        EventRegistrationStep2(
-                                      eventName: eventNameController.text,
-                                      eventDescription:
-                                          eventDescriptionController.text,
-                                      eventDate: eventDateController.text,
-                                      venue: dropDownValue.toString(),
-                                      hostId: hostIdx,
-                                      isUpdate: widget.isUpdate,
-                                      eventTime: eventTimeController.text,
-                                      posterUrl: imageUrl.toString(),
-                                      mapReference: mapReferenceController.text,
-                                      event: widget.event,
+
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.end,
+                            children: [
+                              SizedBox(
+                                height: 30,
+                              ),
+                              Padding(
+                                padding: const EdgeInsets.only(bottom: 70),
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Center(
+                                      child: Container(
+                                        margin: const EdgeInsets.only(top: 20),
+                                        height: 50,
+                                        width: 100,
+                                        child: FLButton(
+                                          borderRadius: 20,
+                                          title: "Next".tr,
+                                          onPressed: () async {
+
+                                            if (eventNameController.text == '' ||
+                                                eventNameController.text == null) {
+                                              Get.snackbar(
+                                                  'error', "The Event Name Can't be empty.",
+                                                  colorText: AppColors.textRed,
+                                                  backgroundColor: AppColors.kWhite);
+                                            } else if (eventDescriptionController.text ==
+                                                '' ||
+                                                eventDescriptionController.text == null) {
+                                              Get.snackbar('error',
+                                                  "The Event Description Can't be empty.",
+                                                  colorText: AppColors.textRed,
+                                                  backgroundColor: AppColors.kWhite);
+                                            } else if (eventTimeController.text == '' ||
+                                                eventTimeController.text == null) {
+                                              Get.snackbar(
+                                                  'error', "The Event Time Can't be empty.",
+                                                  colorText: AppColors.textRed,
+                                                  backgroundColor: AppColors.kWhite);
+                                            } else if (hostIdx == null || hostIdx == 0) {
+                                              Get.snackbar(
+                                                  'error', "The Host should be selected.",
+                                                  colorText: AppColors.textRed,
+                                                  backgroundColor: AppColors.kWhite);
+                                            } else if (venueIdx == null || venueIdx == 0) {
+                                              Get.snackbar(
+                                                  'error', "The Venue should be selected.",
+                                                  colorText: AppColors.textRed,
+                                                  backgroundColor: AppColors.kWhite);
+                                            }
+                                            // else if(widget.venue == '' || widget.venue == null) {
+                                            //   Get.snackbar('error', "The Event Name Can't be empty.",
+                                            //       colorText: AppColors.textRed,
+                                            //       backgroundColor: AppColors.kWhite);
+                                            // }
+                                            else {
+                                              await Navigator.push(
+                                                context,
+                                                MaterialPageRoute(
+                                                  builder: (context) =>
+                                                      EventRegistrationStep2(
+                                                        eventName: eventNameController.text,
+                                                        eventDescription:
+                                                        eventDescriptionController.text,
+                                                        eventDate: eventDateController.text,
+                                                        venue: dropDownValue.toString(),
+                                                        hostId: hostIdx,
+                                                        isUpdate: widget.isUpdate,
+                                                        eventTime: eventTimeController.text,
+                                                        posterUrl: imageUrl.toString(),
+                                                        mapReference: mapReferenceController.text,
+                                                        event: widget.event,
+                                                      ),
+                                                ),
+                                              );
+                                            }
+
+                                          },
+                                          backgroundColor: AppColors.buttonBlue,
+                                          titleFontColor: AppColors.kWhite,
+                                          borderColor: AppColors.buttonBlue,
+                                          minWidth: 100,
+                                          height: 40,
+                                        ),
+                                      ),
                                     ),
-                                  ),
-                                );
-                              }
-                            },
-                            child: Container(
-                              decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(3),
-                                  border: Border.all(
-                                      color: Colors.deepPurpleAccent)),
-                              child: Padding(
-                                padding: const EdgeInsets.symmetric(
-                                    vertical: 6, horizontal: 24),
-                                child: FLText(
-                                  displayText: "Next",
-                                  textColor: Colors.deepPurpleAccent,
-                                  setToWidth: false,
-                                  textSize: AppFonts.textFieldFontSize14,
+                                  ],
                                 ),
                               ),
-                            ),
+
+                            ],
                           ),
+
                           SizedBox(
                             height: 40,
                           ),

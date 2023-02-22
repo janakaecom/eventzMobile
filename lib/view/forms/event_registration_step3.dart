@@ -6,6 +6,7 @@ import 'package:country_calling_code_picker/country_code_picker.dart';
 import 'package:eventz/model/event_register_request.dart' as rr;
 import 'package:eventz/view/widget/imput_square_text_field.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import '../../model/all_event_response.dart' as er;
 import '../../api/api_service.dart';
 import '../../configs/colors.dart';
@@ -18,6 +19,7 @@ import '../../model/register_error_response.dart';
 import '../BaseUI.dart';
 import '../widget/app_bar.dart';
 import '../widget/app_drawer.dart';
+import '../widget/fl_button.dart';
 import '../widget/fl_text.dart';
 
 class EventRegistrationStep3 extends StatefulWidget {
@@ -96,10 +98,12 @@ class _EventRegistrationStep3State extends State<EventRegistrationStep3> with Ba
 
 
   void initialisation(){
-
+    // var ebStartDate = DateFormat("yyyy-MM-dd").format(DateTime.parse(widget.event.));
+    var ebEndDate = DateFormat("yyyy-MM-dd").format(DateTime.parse(widget.event.earlyBirdEndDate));
     print(widget.event.cashOnPayment);
     print("widget.event.cashOnPayment::::::");
-    EBEndDateController.text = '';
+    EBEndDateController.text = ebEndDate;
+    percentageController.text = widget.event.ebDiscountRate.toString();
     isCheckedBankTransfer = widget.event.bankTransferPayment;
     isCheckedCashOnTheEventDay = widget.event.cashOnPayment;
     isCheckedCheque = widget.event.chequePayment;
@@ -225,7 +229,7 @@ class _EventRegistrationStep3State extends State<EventRegistrationStep3> with Ba
                         padding:const EdgeInsets.symmetric(vertical: 5),
                         readOnly: false,
                         textController: priceCategoryController,
-                        inputType: TextInputType.number,
+                        inputType: TextInputType.text,
                         onChanged: (value) {
                         },
                       ),
@@ -605,38 +609,32 @@ class _EventRegistrationStep3State extends State<EventRegistrationStep3> with Ba
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 12),
                   child: Row(
-                    mainAxisAlignment: MainAxisAlignment.end,
+                    mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      InkWell(
-                        onTap: () async {
 
-                          eventRegisterCall();
-                          // await Navigator.push(
-                          //   context,
-                          //   MaterialPageRoute(
-                          //     builder: (context) =>
-                          //         EventRegistrationStep3(
-                          //         ),
-                          //   ),
-                          // );
-                        },
-                        child: Container(
-                          decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(3),
-                              border: Border.all(
-                                  color:  Colors.deepPurpleAccent
-                              )
-                          ),
-                          child: Padding(
-                            padding: const EdgeInsets.symmetric(vertical: 6,horizontal: 24),
-                            child: FLText(
-                              displayText: "Finish",
-                              textColor: Colors.deepPurpleAccent,
-                              setToWidth: false,
-                              textSize: AppFonts.textFieldFontSize14,
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Center(
+                            child: Container(
+                              margin: const EdgeInsets.only(top: 20,bottom: 50),
+                              height: 50,
+                              width: 250,
+                              child: FLButton(
+                                borderRadius: 20,
+                                title: "Finish".tr,
+                                onPressed: () async {
+                                  eventRegisterCall();
+                                },
+                                backgroundColor: AppColors.buttonBlue,
+                                titleFontColor: AppColors.kWhite,
+                                borderColor: AppColors.buttonBlue,
+                                minWidth: 100,
+                                height: 40,
+                              ),
                             ),
                           ),
-                        ),
+                        ],
                       ),
                       SizedBox(
                         height: 40,

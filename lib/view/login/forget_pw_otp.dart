@@ -30,10 +30,14 @@ class _ForgetPwOtpState extends State<ForgetPwOtp> with BaseUI {
       body: SingleChildScrollView(
         child: Container(
             color: AppColors.kBackgroundWhite,
-            child: Stack(
+            child: Column(
               children: [
-                bgView(),
-                mainView(),
+                Stack(
+                  children: [
+                    bgView(),
+                    mainView(),
+                  ],
+                ),
               ],
             )),
       ),

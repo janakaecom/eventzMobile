@@ -267,56 +267,52 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> with BaseUI
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 12),
                       child: Row(
-                        mainAxisAlignment: MainAxisAlignment.end,
+                        mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          InkWell(
-                            onTap: () async {
-                              RegExp regex = RegExp(r'^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[!@#\$&*~]).{8,}$');
-                              if (currentPasswordController.text == null || currentPasswordController.text == "" ) {
-                                Get.snackbar('Error', 'Please enter the current password',
-                                    colorText: AppColors.textRed,
-                                    backgroundColor: AppColors.kWhite);
-                              }
-                              else if (newPasswordController.text == null || newPasswordController.text == "" ){
-                                Get.snackbar('Error', 'Please enter a new password',
-                                    colorText: AppColors.textRed,
-                                    backgroundColor: AppColors.kWhite);
-                              }
-                              else if (!regex.hasMatch(newPasswordController.text))
-                              {
-                                Get.snackbar('Error', 'Enter valid password including uppercase letters, lowercase letters, numbers, special characters and minimum 8 characters.',
-                                    colorText: AppColors.textRed,
-                                    backgroundColor: AppColors.kWhite);
-                              }
-                              else if (newPasswordController.text != confirmPasswordController.text)
-                              {
-                                Get.snackbar('Error', "New password and confirmation password don't match",
-                                    colorText: AppColors.textRed,
-                                    backgroundColor: AppColors.kWhite);
-                              }
-                              else{
-                                changePasswordCall();
-                                // Get.snackbar("Success", "Successfully updated the password.",
-                                //     colorText: AppColors.textGreenLight,
-                                //     backgroundColor: AppColors.kWhite);
-                              }
-                            },
+                          Center(
                             child: Container(
-                              decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(3),
-                                  color:  Colors.deepPurpleAccent,
-                                  border: Border.all(
-                                      color:  Colors.deepPurpleAccent
-                                  )
-                              ),
-                              child: Padding(
-                                padding: const EdgeInsets.symmetric(vertical: 6,horizontal: 24),
-                                child: FLText(
-                                  displayText: "Submit",
-                                  textColor: Colors.white,
-                                  setToWidth: false,
-                                  textSize: AppFonts.textFieldFontSize14,
-                                ),
+                              margin: const EdgeInsets.only(top: 20),
+                              height: 50,
+                              width: 250,
+                              child: FLButton(
+                                borderRadius: 20,
+                                title: "Submit".tr,
+                                onPressed: () async {
+                                  RegExp regex = RegExp(r'^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[!@#\$&*~]).{8,}$');
+                                  if (currentPasswordController.text == null || currentPasswordController.text == "" ) {
+                                    Get.snackbar('Error', 'Please enter the current password',
+                                        colorText: AppColors.textRed,
+                                        backgroundColor: AppColors.kWhite);
+                                  }
+                                  else if (newPasswordController.text == null || newPasswordController.text == "" ){
+                                    Get.snackbar('Error', 'Please enter a new password',
+                                        colorText: AppColors.textRed,
+                                        backgroundColor: AppColors.kWhite);
+                                  }
+                                  else if (!regex.hasMatch(newPasswordController.text))
+                                  {
+                                    Get.snackbar('Error', 'Enter valid password including uppercase letters, lowercase letters, numbers, special characters and minimum 8 characters.',
+                                        colorText: AppColors.textRed,
+                                        backgroundColor: AppColors.kWhite);
+                                  }
+                                  else if (newPasswordController.text != confirmPasswordController.text)
+                                  {
+                                    Get.snackbar('Error', "New password and confirmation password don't match",
+                                        colorText: AppColors.textRed,
+                                        backgroundColor: AppColors.kWhite);
+                                  }
+                                  else{
+                                    changePasswordCall();
+                                    // Get.snackbar("Success", "Successfully updated the password.",
+                                    //     colorText: AppColors.textGreenLight,
+                                    //     backgroundColor: AppColors.kWhite);
+                                  }
+                                },
+                                backgroundColor: AppColors.buttonBlue,
+                                titleFontColor: AppColors.kWhite,
+                                borderColor: AppColors.buttonBlue,
+                                minWidth: 100,
+                                height: 40,
                               ),
                             ),
                           ),

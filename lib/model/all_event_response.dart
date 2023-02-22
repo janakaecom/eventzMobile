@@ -659,9 +659,9 @@ class EventsResult {
   int createdUserIdx;
   String termsCondition;
   String hostName;
-  Null categoryName;
+  String categoryName;
   String eventStatusName;
-  Null currencyName;
+  String currencyName;
   bool onlinePayment;
   bool chequePayment;
   bool cashOnPayment;
