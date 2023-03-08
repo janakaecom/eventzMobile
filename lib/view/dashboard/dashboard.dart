@@ -68,16 +68,19 @@ class _DashBoardState extends State<DashBoard> with BaseUI {
 
   ///Event row view in list-view
   _eventRow(int index) {
+    String finalizedDate;
     var item = eventList;
     String apiDate = item[index].eventDate.split(" ")[0];
     String year = "";
     String date = "";
     String month = "";
-    var val  = DateFormat("yyyy-MM-dd").format(DateTime.parse(item[index].eventDate));
+    var val  = DateFormat("MMM \n dd").format(DateTime.parse(item[index].eventDate));
+    finalizedDate = val;
     try {
       year = apiDate.split("/")[2];
       date = apiDate.split("/")[1];
       month = helper.getMonthShortName(int.parse(apiDate.split("/")[0]) - 1);
+      // finalizedDate = "${month} \n ${date}";
     } catch (e) {
       date = "N/A";
     }
@@ -114,9 +117,8 @@ class _DashBoardState extends State<DashBoard> with BaseUI {
                   item[index].artworkPath,
                   width: Get.width,
                   height: 200,
-                  fit: BoxFit.fill,
+                  fit: BoxFit.cover,
                 ),
-
                 Container(
                   padding: const EdgeInsets.only(
                       top: 120, left: 15, right: 10, bottom: 10),
@@ -174,14 +176,14 @@ class _DashBoardState extends State<DashBoard> with BaseUI {
                       InkWell(
                         onTap: (){
                           // Get.to(EventDetails(), arguments: item);
-                          // Navigator.push(
-                          //   context,
-                          //   MaterialPageRoute(
-                          //     builder: (context) => EventDetails(
-                          //       eventsResult: eventList[index],
-                          //     ),
-                          //   ),
-                          // );
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => EventDetails(
+                                eventsResult: eventList[index],
+                              ),
+                            ),
+                          );
                         },
                         child: Container(
                           margin: const EdgeInsets.only(top: 10, right: 10),
@@ -214,39 +216,26 @@ class _DashBoardState extends State<DashBoard> with BaseUI {
                   children: [
                     Container(
                       margin: const EdgeInsets.only(left: 10.0, top: 10.0),
-                      width: 200,
-                      height: 65,
+                      width: 80,
+                      height: 60,
                       decoration: BoxDecoration(
-                          color: AppColors.buttonBlue.withOpacity(0.9),
+                          color: AppColors.buttonBlue.withOpacity(0.6),
                           borderRadius: BorderRadius.all(Radius.circular(15)),
                           border: Border.all(color: AppColors.buttonBlue)),
                       child:
                       Column(
                         mainAxisAlignment: MainAxisAlignment.center,
-                        crossAxisAlignment: CrossAxisAlignment.center,
+                        // crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
-                          // SizedBox(
-                          //   height: 10,
-                          //   width: double.infinity,
-                          //   child: FLText(
-                          //     displayText: month,
-                          //     textColor: AppColors.kWhite,
-                          //     setToWidth: false,
-                          //     textSize: AppFonts.textFieldFontSize12,
-                          //   ),
-                          // ),
-                          Padding(
-                            padding: const EdgeInsets.only(left: 0),
-                            child: SizedBox(
-                              height: 10,
-                              width: double.infinity,
-                              child: FLText(
-                                displayText: val.toString(),
-                                textColor: AppColors.kWhite,
-                                setToWidth: false,
-                                fontWeight: FontWeight.w800,
-                                textSize: AppFonts.textFieldFontLarge24,
-                              ),
+                          SizedBox(
+                            height: 10,
+                            width: 20,
+                            child: FLText(
+                              displayText: finalizedDate.toString(),
+                              textColor: AppColors.kWhite,
+                              setToWidth: false,
+                              fontWeight: FontWeight.w800,
+                              textSize: 20,
                             ),
                           ),
                         ],
@@ -341,7 +330,7 @@ class _DashBoardState extends State<DashBoard> with BaseUI {
             borderRadius: 20,
             title: "enroll".tr,
             onPressed: () {
-              // Get.to(EventDetails(), arguments: item);
+              Get.to(EventDetails(), arguments: item);
             },
             backgroundColor: AppColors.textGreenLight,
             titleFontColor: AppColors.kWhite,

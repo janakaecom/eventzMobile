@@ -18,19 +18,30 @@ import 'package:get/get.dart';
 class LoginView extends StatefulWidget {
   static var routeName = "/login_view";
 
+  final String email;
+
+  const LoginView({Key key, this.email}) : super(key: key);
+
   @override
   _LoginViewState createState() => _LoginViewState();
 }
+
 
 class _LoginViewState extends State<LoginView> with BaseUI {
   TextEditingController emailController = new TextEditingController();
   TextEditingController pwController = new TextEditingController();
 
+
   @override
   void initState() {
     super.initState();
-    emailController.text = "janakarodrigo1@gmail.com";
-    pwController.text = "3342";
+    if(widget.email != null) {
+      emailController.text = widget.email.toString();
+    }
+    else{
+      emailController.text = "maryse@gmail.com";
+      pwController.text = "Shan@999";
+    }
   }
 
   @override
@@ -45,24 +56,6 @@ class _LoginViewState extends State<LoginView> with BaseUI {
           child: Stack(
             children: [
               bgView(),
-              // Column(
-              //   children: [
-              //     Expanded(
-              //       flex: 1,
-              //       child: Container(
-              //         color: AppColors.appDark,
-              //       ),
-              //     ),
-              //     Expanded(
-              //       flex: 1,
-              //       child: Container(
-              //         margin: const EdgeInsets.only(
-              //             left: 20, right: 20, top: 250, bottom: 10),
-              //         child: bottomMenus(),
-              //       ),
-              //     ),
-              //   ],
-              // ),
               mainView()
             ],
           ),
@@ -105,7 +98,7 @@ class _LoginViewState extends State<LoginView> with BaseUI {
                   Align(
                     alignment: Alignment.centerLeft,
                     child: FLText(
-                      displayText: 'login'.tr,
+                      displayText: 'sign_in'.tr,
                       textColor: AppColors.textBlue,
                       setToWidth: false,
                       fontWeight: FontWeight.bold,
@@ -120,17 +113,18 @@ class _LoginViewState extends State<LoginView> with BaseUI {
                           padding: const EdgeInsets.only(
                               top: 15, left: 5, right: 0, bottom: 15),
                           child: SizedBox(
-                            width: 4,
-                            height: 4,
+                            width: 10,
+                            height: 10,
                             child: Image.asset(
                               email,
+
                             ),
                           ),
                         ),
                         hintText: 'enter_email'.tr,
                         hintStyle: TextStyle(
                             color: AppColors.kTextLight,
-                            fontSize: AppFonts.textFieldFontSize16),
+                            fontSize: AppFonts.textFieldFontSize),
                         labelText: 'email_cap'.tr,
                         labelStyle: TextStyle(
                             color: AppColors.buttonBlue,
@@ -146,8 +140,8 @@ class _LoginViewState extends State<LoginView> with BaseUI {
                           padding: const EdgeInsets.only(
                               top: 15, left: 5, right: 0, bottom: 15),
                           child: SizedBox(
-                            width: 4,
-                            height: 4,
+                            width: 23,
+                            height: 23,
                             child: Image.asset(
                               password,
                             ),
@@ -160,9 +154,26 @@ class _LoginViewState extends State<LoginView> with BaseUI {
                         labelText: 'password_cap'.tr,
                         labelStyle: TextStyle(
                             color: AppColors.buttonBlue,
-                            fontSize: AppFonts.textFieldFontSize16),
+                            fontSize: AppFonts.textFieldFontSize),
                         border: UnderlineInputBorder(
                             borderSide: BorderSide(color: AppColors.textRed))),
+                  ),
+                  SizedBox(
+                    height: 20,
+                  ),
+                  Align(
+                    alignment: Alignment.centerRight,
+                    child: InkWell(
+                      onTap: () {
+                        Get.to(ForgetPwView());
+                      },
+                      child: FLText(
+                        displayText: 'forgot_pw'.tr,
+                        textColor: AppColors.textBlue,
+                        setToWidth: false,
+                        textSize: 14,
+                      ),
+                    ),
                   ),
                   Center(
                     child: Container(
@@ -171,7 +182,7 @@ class _LoginViewState extends State<LoginView> with BaseUI {
                       width: 250,
                       child: FLButton(
                         borderRadius: 20,
-                        title: "login".tr,
+                        title: "sign_in".tr,
                         onPressed: () {
                           loginAction();
                         },
@@ -186,20 +197,7 @@ class _LoginViewState extends State<LoginView> with BaseUI {
                   SizedBox(
                     height: 20,
                   ),
-                  Align(
-                    alignment: Alignment.centerRight,
-                    child: InkWell(
-                      onTap: () {
-                        Get.to(ForgetPwView());
-                      },
-                      child: FLText(
-                        displayText: 'forgot_pw'.tr,
-                        textColor: AppColors.kTextDark,
-                        setToWidth: false,
-                        textSize: AppFonts.textFieldFontSize16,
-                      ),
-                    ),
-                  ),
+
                 ],
               ),
             ],
@@ -223,9 +221,9 @@ class _LoginViewState extends State<LoginView> with BaseUI {
             },
             child: FLText(
               displayText: 'new_sign_up'.tr,
-              textColor: AppColors.kTextDark,
+              textColor: AppColors.textBlue,
               setToWidth: false,
-              textSize: AppFonts.textFieldFontSize,
+              textSize: 16,
             ),
           ),
           SizedBox(
@@ -233,14 +231,14 @@ class _LoginViewState extends State<LoginView> with BaseUI {
           ),
           FLButton(
             borderRadius: 20,
-            title: "sign_up".tr,
+            title: "SIGN UP",
             onPressed: () {
               Get.to(SignUpView());
             },
-            backgroundColor: AppColors.kPrimaryDark,
+            backgroundColor: AppColors.buttonBlue,
             titleFontColor: AppColors.kWhite,
             borderColor: AppColors.kPrimaryDark,
-            minWidth: 100,
+            minWidth: 120,
             height: 40,
           )
         ],
@@ -253,12 +251,22 @@ class _LoginViewState extends State<LoginView> with BaseUI {
     String email = emailController.text;
 
     if (!GetUtils.isEmail(email)) {
-      Get.snackbar('error'.tr, 'invalid_email'.tr,
+      Get.snackbar('error'.tr, 'invalid_email'.tr, duration: Duration(seconds: 5),
           colorText: AppColors.textRed, backgroundColor: AppColors.kWhite);
-    } else if (pw.isEmpty) {
-      Get.snackbar('error'.tr, 'invalid_password'.tr,
+    }
+    if (email.characters.length > 100) {
+      Get.snackbar('eventz', "Email is too long!", duration: Duration(seconds: 5),
           colorText: AppColors.textRed, backgroundColor: AppColors.kWhite);
-    } else {
+    }
+    else if (pw.isEmpty) {
+      Get.snackbar('eventz', 'invalid_password'.tr, duration: Duration(seconds: 5),
+          colorText: AppColors.textRed, backgroundColor: AppColors.kWhite);
+    }
+    else if (pw.characters.length > 20) {
+      Get.snackbar('eventz', 'Password must be less than 20 characters!', duration: Duration(seconds: 5),
+          colorText: AppColors.textRed, backgroundColor: AppColors.kWhite);
+    }
+    else {
       apiService.check().then((check) {
         showProgressbar(context);
         if (check) {
@@ -280,7 +288,7 @@ class _LoginViewState extends State<LoginView> with BaseUI {
             } else {
               ErrorResponse responseData =
                   ErrorResponse.fromJson(json.decode(value.body));
-              Get.snackbar('error'.tr, responseData.message,
+              Get.snackbar("eventz", responseData.message,
                   colorText: AppColors.textRed,
                   snackPosition: SnackPosition.TOP,
                   borderRadius: 0,

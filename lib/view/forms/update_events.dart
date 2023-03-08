@@ -142,7 +142,7 @@ class _UpdateEventsState extends State<UpdateEvents> with BaseUI {
                                     setState(
                                           () {
                                         _hostDropDownValue = val.hostName;
-                                        hostIdx = int.parse(val.hostIdx);
+                                        hostIdx = int.parse(val.countryCodeId);
                                         downloadAllEvents();
                                       },
                                     );

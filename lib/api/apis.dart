@@ -16,6 +16,7 @@ class APIs {
   static const String loadCountries = "$BASE_URL$apiVersion/Country/LoadCountry";
   static const String loadHosts = "$BASE_URL$apiVersion/Host/LoadHostfromUserId";
   static const String loadVenues = "$BASE_URL$apiVersion/EventVenue/LoadVenues";
+  static const String loadCodes = "$BASE_URL$apiVersion/Country/LoadCountry";
   static const String getPaymentOptions = "$BASE_URL$apiVersion/Paymode/LoadPaymode";
   static const String myEvents = "$BASE_URL$apiVersion/EventEnroll/LoadMyEvents";
   static const String getUserProfile = "$BASE_URL$apiVersion/User/GetSelectedUser";

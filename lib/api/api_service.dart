@@ -97,7 +97,19 @@ class APIService {
 
     return setValue;
   }
+  ///get all codes
+  Future<Response> getAllCodes() async {
+    Response setValue;
+    await httpService
+        .centsPostRequest(null, APIs.loadCodes, method: HttpMethod.GET)
+        .then((value) {
+      print("====response received====");
+      print(value);
+      setValue = value;
+    });
 
+    return setValue;
+  }
   ///get all venues
   Future<Response> getAllVenues() async {
     Response setValue;

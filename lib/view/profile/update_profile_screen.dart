@@ -386,7 +386,7 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> with BaseUI {
                   SizedBox(
                     height: 8,
                   ),
-                  InputSquareTextField(
+                  InputRoundedTextField(
                     readOnly: false,
                     textController: firstNameController,
                     inputType: TextInputType.text,
@@ -409,7 +409,7 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> with BaseUI {
                   SizedBox(
                     height: 8,
                   ),
-                  InputSquareTextField(
+                  InputRoundedTextField(
                     readOnly: false,
                     textController: lastNameController,
                     inputType: TextInputType.text,
@@ -493,7 +493,7 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> with BaseUI {
                   SizedBox(
                     height: 8,
                   ),
-                  InputSquareTextField(
+                  InputRoundedTextField(
                     readOnly: false,
                     textController: nicController,
                     inputType: TextInputType.text,
@@ -516,7 +516,7 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> with BaseUI {
                   SizedBox(
                     height: 8,
                   ),
-                  InputSquareTextField(
+                  InputRoundedTextField(
                     readOnly: false,
                     textController: dateController,
                     inputType: TextInputType.number,
@@ -542,7 +542,7 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> with BaseUI {
                   SizedBox(
                     height: 8,
                   ),
-                  InputSquareTextField(
+                  InputRoundedTextField(
                     // hint: "E",
                     hintColor: AppColors.TextGray,
                     readOnly: false,
@@ -567,7 +567,7 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> with BaseUI {
                   SizedBox(
                     height: 8,
                   ),
-                  InputSquareTextField(
+                  InputRoundedTextField(
                     hintColor: AppColors.TextGray,
                     readOnly: false,
                     textController: addressController,
@@ -658,7 +658,7 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> with BaseUI {
                     height: 8,
                   ),
 
-                  InputSquareTextField(
+                  InputRoundedTextField(
                     hintColor: AppColors.TextGray,
                     readOnly: false,
                     textController: occupationController,
@@ -684,7 +684,7 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> with BaseUI {
                   SizedBox(
                     height: 8,
                   ),
-                  InputSquareTextField(
+                  InputRoundedTextField(
                     hintColor: AppColors.TextGray,
                     readOnly: false,
                     textController: workPlaceController,
@@ -709,7 +709,7 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> with BaseUI {
                   SizedBox(
                     height: 8,
                   ),
-                  InputSquareTextField(
+                  InputRoundedTextField(
                     hintColor: AppColors.TextGray,
                     readOnly: false,
                     textController: emgContactNameController,
@@ -734,7 +734,7 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> with BaseUI {
                     height: 8,
                   ),
 
-                  InputSquareTextField(
+                  InputRoundedTextField(
                     hintColor: AppColors.TextGray,
 
                     readOnly: false,

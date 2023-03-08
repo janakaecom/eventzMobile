@@ -225,7 +225,7 @@ class _EventRegistrationStep3State extends State<EventRegistrationStep3> with Ba
                       width: 30,
                     ),
                     Expanded(
-                      child: InputSquareTextField(
+                      child: InputRoundedTextField(
                         padding:const EdgeInsets.symmetric(vertical: 5),
                         readOnly: false,
                         textController: priceCategoryController,
@@ -249,7 +249,7 @@ class _EventRegistrationStep3State extends State<EventRegistrationStep3> with Ba
                       width: 58,
                     ),
                     Expanded(
-                      child: InputSquareTextField(
+                      child: InputRoundedTextField(
                         padding:const EdgeInsets.symmetric(vertical: 5),
                         readOnly: false,
                         textController: eventPriceCategory,
@@ -272,7 +272,7 @@ class _EventRegistrationStep3State extends State<EventRegistrationStep3> with Ba
                       width: 73,
                     ),
                     Expanded(
-                      child: InputSquareTextField(
+                      child: InputRoundedTextField(
                         padding:const EdgeInsets.symmetric(vertical: 5),
                         readOnly: false,
                         textController: quantityController,
@@ -378,7 +378,7 @@ class _EventRegistrationStep3State extends State<EventRegistrationStep3> with Ba
                       width: 36,
                     ),
                     Expanded(
-                      child: InputSquareTextField(
+                      child: InputRoundedTextField(
                         padding:const EdgeInsets.symmetric(vertical: 5),
                         readOnly: true,
                         textController: EBStartDateController,
@@ -404,7 +404,7 @@ class _EventRegistrationStep3State extends State<EventRegistrationStep3> with Ba
                       width: 44,
                     ),
                     Expanded(
-                      child: InputSquareTextField(
+                      child: InputRoundedTextField(
                         padding:const EdgeInsets.symmetric(vertical: 5),
                         readOnly: true,
                         textController: EBEndDateController,
@@ -435,7 +435,7 @@ class _EventRegistrationStep3State extends State<EventRegistrationStep3> with Ba
                     Expanded(
                         child: Padding(
                           padding: const EdgeInsets.only(right: 120),
-                          child: InputSquareTextField(
+                          child: InputRoundedTextField(
                           padding:const EdgeInsets.symmetric(vertical: 5),
                           readOnly: false,
                           textController: percentageController,

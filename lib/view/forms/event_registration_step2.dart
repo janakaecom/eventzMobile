@@ -406,7 +406,7 @@ class _EventRegistrationStep2State extends State<EventRegistrationStep2> {
                       width: 30,
                     ),
                     Expanded(
-                      child: InputSquareTextField(
+                      child: InputRoundedTextField(
                         padding: const EdgeInsets.symmetric(vertical: 5),
                         readOnly: true,
                         textController: closingDateController,
@@ -450,7 +450,7 @@ class _EventRegistrationStep2State extends State<EventRegistrationStep2> {
                       width: 44,
                     ),
                     Expanded(
-                      child: InputSquareTextField(
+                      child: InputRoundedTextField(
                         padding: const EdgeInsets.symmetric(vertical: 5),
                         readOnly: false,
                         textController: categoryController,
@@ -478,7 +478,7 @@ class _EventRegistrationStep2State extends State<EventRegistrationStep2> {
                       width: 44,
                     ),
                     Expanded(
-                      child: InputSquareTextField(
+                      child: InputRoundedTextField(
                         padding: const EdgeInsets.symmetric(vertical: 5),
                         readOnly: false,
                         textController: namesController,

@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 
 import 'package:eventz/configs/colors.dart';
@@ -12,6 +13,10 @@ import 'package:eventz/view/widget/fl_text.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
+import '../../model/responses.dart';
+import '../widget/app_bar.dart';
+import '../widget/imput_square_text_field.dart';
+
 class ForgetPwOtp extends StatefulWidget {
   @override
   _ForgetPwOtpState createState() => _ForgetPwOtpState();
@@ -21,12 +26,36 @@ class _ForgetPwOtpState extends State<ForgetPwOtp> with BaseUI {
   TextEditingController otpController = new TextEditingController();
   TextEditingController pwController = new TextEditingController();
   String email = Get.arguments;
+  FocusNode _passwordFocusNode;
+  bool obscurePassword = true;
 
   @override
   Widget build(BuildContext context) {
     print("EMAIL : " + email);
 
     return Scaffold(
+      // appBar: AppBar(
+      //   centerTitle: true,
+      //   backgroundColor: AppColors.kWhite,
+      //   bottomOpacity: 0.0,
+      //   leading: IconButton(
+      //     icon: Icon(
+      //       Icons.arrow_back_ios,
+      //       color: Colors.black,
+      //     ), onPressed: () {
+      //     Navigator.of(context).pop();
+      //   },
+      //   ),
+      //   elevation: 0.0,
+      //   title: FLText(
+      //     displayText: "OTP Verification",
+      //     textColor: AppColors.buttonBlue,
+      //     fontWeight: FontWeight.bold,
+      //     setToWidth: false,
+      //     textSize: AppFonts.textFieldFontSize,
+      //   ),
+      //   actions: [],
+      // ),
       body: SingleChildScrollView(
         child: Container(
             color: AppColors.kBackgroundWhite,
@@ -35,6 +64,36 @@ class _ForgetPwOtpState extends State<ForgetPwOtp> with BaseUI {
                 Stack(
                   children: [
                     bgView(),
+                    Padding(
+                      padding: const EdgeInsets.only(top: 62),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          IconButton(
+                            icon: Icon(
+                              Icons.arrow_back_ios,
+                              color: Colors.black,
+                            ), onPressed: () {
+                            Navigator.of(context).pop();
+                          },
+                          ),
+                          FLText(
+                            displayText: "OTP Verification",
+                            textColor: AppColors.buttonBlue,
+                            fontWeight: FontWeight.bold,
+                            setToWidth: false,
+                            textSize: AppFonts.textFieldFontSize,
+                          ),
+                          IconButton(
+                            icon: Icon(
+                              Icons.arrow_back_ios,
+                              color: Colors.transparent,
+                            ), onPressed: () {
+                          },
+                          ),
+                        ],
+                      ),
+                    ),
                     mainView(),
                   ],
                 ),
@@ -72,47 +131,71 @@ class _ForgetPwOtpState extends State<ForgetPwOtp> with BaseUI {
             children: [
               Column(
                 children: [
-                  Align(
-                    alignment: Alignment.centerLeft,
-                    child: FLText(
-                      displayText: "OTP Verification",
-                      textColor: AppColors.textBlue,
-                      setToWidth: false,
-                      fontWeight: FontWeight.bold,
-                      textSize: AppFonts.textFieldFontLarge24,
-                    ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: [
+                      FLText(
+                        displayText: "Enter OTP",
+                        textColor: AppColors.textBlue,
+                        setToWidth: false,
+                        textSize: 14,
+                      ),
+                    ],
                   ),
-                  TextField(
-                    controller: otpController,
-                    keyboardType: TextInputType.number,
+                  SizedBox(
+                    height: 3,
+                  ),
+                  InputRoundedTextField(
+                    padding:const EdgeInsets.symmetric(vertical: 5),
+                    readOnly: false,
+                    // validator: validatePassword,
+                    hint: 'OTP code',
                     maxLength: 6,
-                    decoration: new InputDecoration(
-                        hintText: 'OTP code',
-                        hintStyle: TextStyle(
-                            color: AppColors.kTextLight,
-                            fontSize: AppFonts.textFieldFontSize16),
-                        labelText: 'OTP'.tr,
-                        labelStyle: TextStyle(
-                            color: AppColors.buttonBlue,
-                            fontSize: AppFonts.textFieldFontSize16),
-                        border: UnderlineInputBorder(
-                            borderSide: BorderSide(color: Colors.red))),
+                    textController: otpController,
+                    inputType: TextInputType.number,
+                    // onChanged: passwordValidationCheck
                   ),
-                  TextField(
-                    controller: pwController,
-                    obscureText: true,
-                    decoration: new InputDecoration(
-                        hintText: "Enter new password",
-                        hintStyle: TextStyle(
-                            color: AppColors.kTextLight,
-                            fontSize: AppFonts.textFieldFontSize16),
-                        labelText: "NEW PASSWORD",
-                        labelStyle: TextStyle(
-                            color: AppColors.buttonBlue,
-                            fontSize: AppFonts.textFieldFontSize16),
-                        border: UnderlineInputBorder(
-                            borderSide: BorderSide(color: Colors.red))),
+                  Column(
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        children: [
+                          FLText(
+                            displayText: "Enter New Password",
+                            textColor: AppColors.textBlue,
+                            setToWidth: false,
+                            textSize: 14,
+                          ),
+                        ],
+                      ),
+                      SizedBox(
+                        height: 3,
+                      ),
+                      InputRoundedTextField(
+                        padding:const EdgeInsets.symmetric(vertical: 5),
+                        readOnly: false,
+                        // validator: validatePassword,
+
+                        focusNode: _passwordFocusNode,
+                        isObscure: obscurePassword,
+                        textController: pwController,
+                        inputType: TextInputType.text,
+                        suffixIcon: Icon(
+                            obscurePassword
+                                ? Icons.visibility_off
+                                : Icons.visibility,
+                            size: 22,
+                            color: Colors.grey),
+                        onSuffixPress: (){
+                          setState(() {
+                            obscurePassword = !obscurePassword;
+                          });
+                        },
+                        // onChanged: passwordValidationCheck
+                      ),
+                    ],
                   ),
+
                   SizedBox(
                     height: 20,
                   ),
@@ -132,7 +215,7 @@ class _ForgetPwOtpState extends State<ForgetPwOtp> with BaseUI {
                     ),
                   ),
                   SizedBox(
-                    height: 20,
+                    height: 15,
                   ),
                   Container(
                     width: 200,
@@ -160,27 +243,44 @@ class _ForgetPwOtpState extends State<ForgetPwOtp> with BaseUI {
 
   ///forget password OTP verify Call
   void forgetPwOTPAPICall() {
+    RegExp regex = RegExp(r'^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[!@#\$&*~]).{8,}$');
     String otp = otpController.text;
     String pw = pwController.text;
     if (otp.length < 6) {
-      Get.snackbar('error'.tr, "Please enter valid OTP code",
+      Get.snackbar('eventz', "Please enter valid OTP",
           colorText: AppColors.textRed, backgroundColor: AppColors.kWhite);
     } else if (pw.isEmpty) {
-      Get.snackbar('error'.tr, 'invalid_password'.tr,
+      Get.snackbar('eventz', 'invalid_password'.tr,
           colorText: AppColors.textRed, backgroundColor: AppColors.kWhite);
-    } else {
+    }
+    else if (!regex.hasMatch(pw))
+    {
+      Get.snackbar('eventz',  'Enter valid password including one uppercase letter, lowercase letters, numbers, special characters and minimum 8 characters.',
+          colorText: AppColors.textRed,
+          backgroundColor: AppColors.kWhite);
+    }
+    else if (pw.characters.length > 20) {
+      Get.snackbar('eventz', 'Password must be less than 20 characters!', duration: Duration(seconds: 5),
+          colorText: AppColors.textRed, backgroundColor: AppColors.kWhite);
+    }
+    else {
       apiService.check().then((check) {
         showProgressbar(context);
         if (check) {
-          apiService.forgetPwOTP(email, otp, pw).then((value) {
+          apiService.forgetPwOTP(email, otp, pw).then((value) async {
             hideProgressbar(context);
 
             if (value.statusCode == 200) {
-              Get.off(LoginView());
+              const oneSec = Duration(seconds:2);
+                SuccessResponse responseData = SuccessResponse.fromJson(json.decode(value.body));
+                 Get.snackbar('evnetz', responseData.result, duration: Duration(seconds: 3),
+                    colorText: AppColors.textGreenLight,
+                    backgroundColor: AppColors.kWhite);
+              await Future.delayed(const Duration(seconds: 4));
+              Get.off(LoginView(email: email,));
             } else {
-              RegisterErrorResponse responseData =
-                  RegisterErrorResponse.fromJson(json.decode(value.body));
-              Get.snackbar('error'.tr, responseData.message,
+              RegisterErrorResponse responseData = RegisterErrorResponse.fromJson(json.decode(value.body));
+              Get.snackbar('evnetz', responseData.message,
                   colorText: AppColors.textRed,
                   backgroundColor: AppColors.kWhite);
             }
@@ -208,7 +308,7 @@ class _ForgetPwOtpState extends State<ForgetPwOtp> with BaseUI {
         //   ),
         // ),
         SizedBox(
-          height: 40,
+          height: 0,
         ),
         submitForm(),
       ],

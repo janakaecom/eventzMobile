@@ -232,7 +232,7 @@ class _EventRegistrationStep1State extends State<EventRegistrationStep1>
                         SizedBox(
                           height: 5,
                         ),
-                        InputSquareTextField(
+                        InputRoundedTextField(
                           padding: const EdgeInsets.symmetric(vertical: 5),
                           readOnly: false,
                           textController: eventNameController,
@@ -260,7 +260,7 @@ class _EventRegistrationStep1State extends State<EventRegistrationStep1>
                         SizedBox(
                           height: 5,
                         ),
-                        InputSquareTextField(
+                        InputRoundedTextField(
                           padding: const EdgeInsets.symmetric(vertical: 5),
                           readOnly: false,
                           textController: eventDescriptionController,
@@ -324,7 +324,7 @@ class _EventRegistrationStep1State extends State<EventRegistrationStep1>
                                   setState(
                                     () {
                                       _hostDropDownValue = val.hostName;
-                                      hostIdx = int.parse(val.hostIdx);
+                                      hostIdx = int.parse(val.countryCodeId);
                                     },
                                   );
                                 },
@@ -358,7 +358,7 @@ class _EventRegistrationStep1State extends State<EventRegistrationStep1>
                           width: 10,
                         ),
                         Expanded(
-                          child: InputSquareTextField(
+                          child: InputRoundedTextField(
                             padding: const EdgeInsets.symmetric(vertical: 5),
                             readOnly: true,
                             textController: eventDateController,
@@ -390,7 +390,7 @@ class _EventRegistrationStep1State extends State<EventRegistrationStep1>
                         SizedBox(
                           height: 5,
                         ),
-                        InputSquareTextField(
+                        InputRoundedTextField(
                           padding: const EdgeInsets.symmetric(vertical: 5),
                           readOnly: false,
                           textController: eventTimeController,
@@ -483,7 +483,7 @@ class _EventRegistrationStep1State extends State<EventRegistrationStep1>
                         SizedBox(
                           height: 5,
                         ),
-                        InputSquareTextField(
+                        InputRoundedTextField(
                           padding: const EdgeInsets.symmetric(vertical: 5),
                           readOnly: false,
                           textController: mapReferenceController ?? "",

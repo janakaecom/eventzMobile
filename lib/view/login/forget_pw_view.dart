@@ -11,6 +11,8 @@ import 'package:eventz/view/widget/fl_text.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
+import '../widget/imput_square_text_field.dart';
+
 class ForgetPwView extends StatefulWidget {
   @override
   _ForgetPwViewState createState() => _ForgetPwViewState();
@@ -20,12 +22,23 @@ class _ForgetPwViewState extends State<ForgetPwView> with BaseUI {
   TextEditingController emailController = new TextEditingController();
   TextEditingController mobileController = new TextEditingController();
 
+  FocusNode _PasswordFocusNode;
+  bool isPasswordValidate = false;
+  bool obscurePassword = true;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: AppColors.kWhite,
         elevation: 0,
+        title:  FLText(
+          displayText: "Forgot Password",
+          textColor: AppColors.buttonBlue,
+          fontWeight: FontWeight.bold,
+          setToWidth: false,
+          textSize: AppFonts.textFieldFontSize,
+        ),
         leading: IconButton(
           icon: Icon(Icons.arrow_back_ios,color: Colors.black,),
           onPressed: () {
@@ -72,29 +85,40 @@ class _ForgetPwViewState extends State<ForgetPwView> with BaseUI {
             children: [
               Column(
                 children: [
-                  Center(
-                    child: FLText(
-                      displayText: 'forgot_pw'.tr,
-                      textColor: AppColors.kTextDark,
-                      setToWidth: false,
-                      textSize: AppFonts.textFieldFontLarge,
-                    ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: [
+                      FLText(
+                        displayText: "Email",
+                        textColor: AppColors.textBlue,
+                        setToWidth: false,
+                        textSize: 14,
+                      ),
+                    ],
                   ),
-                  TextField(
-                    controller: emailController,
-                    keyboardType: TextInputType.emailAddress,
-                    decoration: new InputDecoration(
-                        hintText: 'enter_email'.tr,
-                        hintStyle: TextStyle(
-                            color: AppColors.kTextLight,
-                            fontSize: AppFonts.textFieldFontSize16),
-                        labelText: 'email_cap'.tr,
-                        labelStyle: TextStyle(
-                            color: AppColors.buttonBlue,
-                            fontSize: AppFonts.textFieldFontSize16),
-                        border: UnderlineInputBorder(
-                            borderSide: BorderSide(color: Colors.red))),
+                  InputRoundedTextField(
+                    padding:const EdgeInsets.symmetric(vertical: 5),
+                    readOnly: false,
+                    // validator: validatePassword,
+                    textController: emailController,
+                    inputType: TextInputType.text,
+                    // onChanged: passwordValidationCheck
                   ),
+                  // TextField(
+                  //   controller: emailController,
+                  //   keyboardType: TextInputType.emailAddress,
+                  //   decoration: new InputDecoration(
+                  //       hintText: 'enter_email'.tr,
+                  //       hintStyle: TextStyle(
+                  //           color: AppColors.kTextLight,
+                  //           fontSize: AppFonts.textFieldFontSize16),
+                  //       labelText: 'email_cap'.tr,
+                  //       labelStyle: TextStyle(
+                  //           color: AppColors.buttonBlue,
+                  //           fontSize: AppFonts.textFieldFontSize16),
+                  //       border: UnderlineInputBorder(
+                  //           borderSide: BorderSide(color: Colors.red))),
+                  // ),
                   SizedBox(
                     height: 20,
                   ),
@@ -125,15 +149,19 @@ class _ForgetPwViewState extends State<ForgetPwView> with BaseUI {
   void forgetPwAPICall() {
     String email = emailController.text;
     if (!GetUtils.isEmail(email)) {
-      Get.snackbar('error'.tr, 'invalid_email'.tr,
+      Get.snackbar('eventz', 'invalid_email'.tr,
           colorText: AppColors.textRed, backgroundColor: AppColors.kWhite);
-    } else {
+    }
+    else if (email.characters.length > 100) {
+      Get.snackbar('eventz', 'Email is too long!', duration: Duration(seconds: 5),
+          colorText: AppColors.textRed, backgroundColor: AppColors.kWhite);
+    }
+    else {
       apiService.check().then((check) {
         showProgressbar(context);
         if (check) {
           apiService.forgetPw(email).then((value) {
             hideProgressbar(context);
-
             if (value.statusCode == 200) {
               Get.to(ForgetPwOtp(), arguments: email);
             } else {

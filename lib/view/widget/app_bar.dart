@@ -48,7 +48,6 @@ class BaseAppBar extends StatelessWidget implements PreferredSizeWidget {
     return AppBar(
       centerTitle: true,
       automaticallyImplyLeading: isDrawerShow,
-      brightness: Brightness.dark,
       backgroundColor: backgrounColor,
       bottomOpacity: 0.0,
       leading: isBackShow
@@ -62,7 +61,7 @@ class BaseAppBar extends StatelessWidget implements PreferredSizeWidget {
             )
           : isDrawerShow
               ? IconButton(
-                  icon: Image.asset('assets/images/appbar/img_home_drawer.png'),
+                  icon: Icon(Icons.menu,size: 25,color: Colors.black),
                   onPressed: () {
                     Scaffold.of(context).openDrawer();
                   })

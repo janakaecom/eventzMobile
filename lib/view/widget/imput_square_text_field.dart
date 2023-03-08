@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 /// Text view text to fill the entire width, using any font size or it occupies the minimum width with the specified font size.
 /// set setToWidth = false and give textSize to occupies the minimum width with the specified font size
 
-class InputSquareTextField extends StatelessWidget {
+class InputRoundedTextField extends StatelessWidget {
   final IconData icon;
   final String hint;
   final String errorText;
@@ -27,6 +27,7 @@ class InputSquareTextField extends StatelessWidget {
   final double hight;
   final int lines;
   final double width;
+  final int maxLength;
   final String prefixIcon;
   final VoidCallback onSuffixPress;
   final VoidCallback onPrefixPress;
@@ -35,7 +36,7 @@ class InputSquareTextField extends StatelessWidget {
   final String Function(String v) validator;
   final bool autoValidate;
 
-  const InputSquareTextField(
+  const InputRoundedTextField(
       {Key key,
         this.icon,
         this.hint,
@@ -59,7 +60,7 @@ class InputSquareTextField extends StatelessWidget {
         this.onSuffixPress,
         this.textColor,
         this.autoValidate = false,
-        this.validator, TextEditingController controller, InputDecoration decoration, this.readOnly, this.onPrefixPress, this.hight, this.width, this.lines})
+        this.validator, TextEditingController controller, InputDecoration decoration, this.readOnly, this.onPrefixPress, this.hight, this.width, this.lines, this.maxLength})
       : super(key: key);
 
   @override
@@ -70,6 +71,7 @@ class InputSquareTextField extends StatelessWidget {
           height: hight ?? 40,
           width: width,
           child: TextFormField(
+              maxLength: maxLength,
               readOnly: readOnly,
               controller: textController,
               focusNode: focusNode,
@@ -88,16 +90,21 @@ class InputSquareTextField extends StatelessWidget {
                   fillColor: Colors.white,
                   hintText: hint,
                   hintStyle: TextStyle(
-                      fontSize: 13.0,
-                      color: hintColor.withOpacity(0.3),
-                    fontWeight: FontWeight.bold
-                  ),
+                      color: AppColors.kTextLight.withOpacity(0.5),
+                      fontSize: 12),
                   errorText: errorText,
                   counterText: '',
                   contentPadding: EdgeInsets.symmetric(vertical: 0.0, horizontal: 10.0),
-                  border: OutlineInputBorder(borderSide: BorderSide(color: AppColors.TextGray.withOpacity(0.5), width: 1.5),),
-                  enabledBorder: OutlineInputBorder(borderSide: BorderSide(color: AppColors.TextGray.withOpacity(0.5), width: 1.5),),
-                  focusedBorder: OutlineInputBorder(borderSide: BorderSide(color: AppColors.TextGray.withOpacity(0.5), width: 1.5),),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10),
+                    borderSide: BorderSide(
+                        color: AppColors.TextGray.withOpacity(0.5),
+                        width: 1.5
+                    ),
+                  ),
+                  // border: OutlineInputBorder(borderSide: BorderSide(color: AppColors.TextGray.withOpacity(0.5), width: 1.5),),
+                  // enabledBorder: OutlineInputBorder(borderSide: BorderSide(color: AppColors.TextGray.withOpacity(0.5), width: 1.5),),
+                  // focusedBorder: OutlineInputBorder(borderSide: BorderSide(color: AppColors.TextGray.withOpacity(0.5), width: 1.5),),
                   prefixIcon: prefixIcon != null
                   // ? isValid != null && isValid
                       ? IconButton(

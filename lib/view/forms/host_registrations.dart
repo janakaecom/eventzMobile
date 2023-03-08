@@ -169,7 +169,7 @@ class _HostRegistrationState extends State<HostRegistration> with BaseUI {
                         width: 23,
                       ),
                       Expanded(
-                        child: InputSquareTextField(
+                        child: InputRoundedTextField(
                           padding:const EdgeInsets.symmetric(vertical: 5),
                           readOnly: false,
                           textController: businessNameController,
@@ -195,7 +195,7 @@ class _HostRegistrationState extends State<HostRegistration> with BaseUI {
                         width: 22,
                       ),
                       Expanded(
-                        child: InputSquareTextField(
+                        child: InputRoundedTextField(
                           padding:const EdgeInsets.symmetric(vertical: 5),
                           readOnly: false,
                           textController: address1Controller,
@@ -221,7 +221,7 @@ class _HostRegistrationState extends State<HostRegistration> with BaseUI {
                         width: 20,
                       ),
                       Expanded(
-                        child: InputSquareTextField(
+                        child: InputRoundedTextField(
                           padding:const EdgeInsets.symmetric(vertical: 5),
                           readOnly: false,
                           textController: address2Controller,
@@ -324,7 +324,7 @@ class _HostRegistrationState extends State<HostRegistration> with BaseUI {
                         width: 16,
                       ),
                       Expanded(
-                        child: InputSquareTextField(
+                        child: InputRoundedTextField(
                           hint: "E",
                           hintColor: AppColors.TextGray,
                           padding:const EdgeInsets.symmetric(vertical: 5),
@@ -352,7 +352,7 @@ class _HostRegistrationState extends State<HostRegistration> with BaseUI {
                         width: 27,
                       ),
                       Expanded(
-                        child: InputSquareTextField(
+                        child: InputRoundedTextField(
                           hint: "E",
                           hintColor: AppColors.TextGray,
                           padding:const EdgeInsets.symmetric(vertical: 5),

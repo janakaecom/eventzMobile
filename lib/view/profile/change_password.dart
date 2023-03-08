@@ -92,9 +92,8 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> with BaseUI
           hideProgressbar(context);
 
           if (value.statusCode == 200) {
-            HostRegistrationResponse responseData =
-            HostRegistrationResponse.fromJson(json.decode(value.body));
-            Get.snackbar("Success", responseData.error,
+            SuccessResponse responseData = SuccessResponse.fromJson(json.decode(value.body));
+             Get.snackbar('evnetz', responseData.result, duration: Duration(seconds: 5),
                 colorText: AppColors.textGreenLight,
                 backgroundColor: AppColors.kWhite);
             // Get.off(LoginView());
@@ -123,209 +122,241 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> with BaseUI
             menuList: [],
             isDrawerShow: true,
             isBackShow: false),
-        body: SingleChildScrollView(
-          child: Container(
-            height: 1000,
-            width: 1000,
-            decoration: const BoxDecoration(
-                color: AppColors.kWhite
-            ),
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20,vertical: 20),
-              child: SingleChildScrollView(
-                child: Column(
-                  children: [
-
-
-                    Column(
-                      children: [
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          children: [
-                            FLText(
-                              displayText: "Current Password",
-                              textColor: AppColors.kTextDark,
-                              setToWidth: false,
-                              textSize: AppFonts.textFieldFontSize14,
-                            ),
-                          ],
-                        ),
-                        SizedBox(
-                          height: 5,
-                        ),
-                        InputSquareTextField(
-                          padding:const EdgeInsets.symmetric(vertical: 5),
-                          readOnly: false,
-                          // validator: validatePassword,
-                          focusNode: _currentPasswordFocusNode,
-                          isObscure: obscureCurrentPassword,
-                          textController: currentPasswordController,
-                          inputType: TextInputType.text,
-                          suffixIcon: Icon(
-                              obscureCurrentPassword
-                                  ? Icons.visibility
-                                  : Icons.visibility_off,
-                              size: 22,
-                              color: Colors.grey),
-                          onSuffixPress: (){
-                            setState(() {
-                              obscureCurrentPassword = !obscureCurrentPassword;
-                            });
-                          },
-                          // onChanged: passwordValidationCheck
+        body: Stack(
+          children: [
+            bgView(),
+            Container(
+              height: 1000,
+              width: 1000,
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 20,vertical: 50),
+                child: SingleChildScrollView(
+                  child: Container(
+                    decoration: BoxDecoration(
+                      color: AppColors.kWhite,
+                      borderRadius: BorderRadius.only(
+                          topLeft: Radius.circular(10),
+                          topRight: Radius.circular(10),
+                          bottomLeft: Radius.circular(10),
+                          bottomRight: Radius.circular(10)),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.grey.withOpacity(0.5),
+                          spreadRadius: 5,
+                          blurRadius: 7,
+                          offset: Offset(0, 3), // changes position of shadow
                         ),
                       ],
                     ),
-
-                    SizedBox(
-                      height: 8,
-                    ),
-
-                    Column(
-                      children: [
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          children: [
-                            FLText(
-                              displayText: "New Password",
-                              textColor: AppColors.kTextDark,
-                              setToWidth: false,
-                              textSize: AppFonts.textFieldFontSize14,
-                            ),
-                          ],
-                        ),
-                        SizedBox(
-                          height: 5,
-                        ),
-                        InputSquareTextField(
-                          padding:const EdgeInsets.symmetric(vertical: 5),
-                          readOnly: false,
-                          focusNode: _newPasswordFocusNode,
-                          isObscure: obscureNewPassword,
-                          textController: newPasswordController,
-                          inputType: TextInputType.text,
-                          suffixIcon: Icon(
-                              obscureNewPassword
-                                  ? Icons.visibility
-                                  : Icons.visibility_off,
-                              size: 22,
-                              color: Colors.grey),
-                          onSuffixPress: (){
-                            setState(() {
-                              obscureNewPassword = !obscureNewPassword;
-                            });
-                          },
-                          // onChanged: passwordValidationCheck
-                        ),
-                      ],
-                    ),
-                    SizedBox(
-                      height: 8,
-                    ),
-
-                    Column(
-                      children: [
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          children: [
-                            FLText(
-                              displayText: "Confirm Password",
-                              textColor: AppColors.kTextDark,
-                              setToWidth: false,
-                              textSize: AppFonts.textFieldFontSize14,
-                            ),
-                          ],
-                        ),
-                        SizedBox(
-                          height: 5,
-                        ),
-                        InputSquareTextField(
-                          padding:const EdgeInsets.symmetric(vertical: 5),
-                          readOnly: false,
-                          focusNode: _confirmPasswordFocusNode,
-                          isObscure: obscureConfirmPassword,
-                          textController: confirmPasswordController,
-                          inputType: TextInputType.text,
-                          suffixIcon: Icon(
-                              obscureConfirmPassword
-                                  ? Icons.visibility
-                                  : Icons.visibility_off,
-                              size: 22,
-                              color: Colors.grey),
-                          onSuffixPress: (){
-                            setState(() {
-                              obscureConfirmPassword = !obscureConfirmPassword;
-                            });
-                          },
-                          // onChanged: passwordValidationCheck
-                        ),
-                      ],
-                    ),
-                    SizedBox(
-                      height: 30,
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 12),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
+                    child: Padding(
+                      padding: const EdgeInsets.all(20),
+                      child: Column(
                         children: [
-                          Center(
-                            child: Container(
-                              margin: const EdgeInsets.only(top: 20),
-                              height: 50,
-                              width: 250,
-                              child: FLButton(
-                                borderRadius: 20,
-                                title: "Submit".tr,
-                                onPressed: () async {
-                                  RegExp regex = RegExp(r'^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[!@#\$&*~]).{8,}$');
-                                  if (currentPasswordController.text == null || currentPasswordController.text == "" ) {
-                                    Get.snackbar('Error', 'Please enter the current password',
-                                        colorText: AppColors.textRed,
-                                        backgroundColor: AppColors.kWhite);
-                                  }
-                                  else if (newPasswordController.text == null || newPasswordController.text == "" ){
-                                    Get.snackbar('Error', 'Please enter a new password',
-                                        colorText: AppColors.textRed,
-                                        backgroundColor: AppColors.kWhite);
-                                  }
-                                  else if (!regex.hasMatch(newPasswordController.text))
-                                  {
-                                    Get.snackbar('Error', 'Enter valid password including uppercase letters, lowercase letters, numbers, special characters and minimum 8 characters.',
-                                        colorText: AppColors.textRed,
-                                        backgroundColor: AppColors.kWhite);
-                                  }
-                                  else if (newPasswordController.text != confirmPasswordController.text)
-                                  {
-                                    Get.snackbar('Error', "New password and confirmation password don't match",
-                                        colorText: AppColors.textRed,
-                                        backgroundColor: AppColors.kWhite);
-                                  }
-                                  else{
-                                    changePasswordCall();
-                                    // Get.snackbar("Success", "Successfully updated the password.",
-                                    //     colorText: AppColors.textGreenLight,
-                                    //     backgroundColor: AppColors.kWhite);
-                                  }
-                                },
-                                backgroundColor: AppColors.buttonBlue,
-                                titleFontColor: AppColors.kWhite,
-                                borderColor: AppColors.buttonBlue,
-                                minWidth: 100,
-                                height: 40,
+
+
+                          Column(
+                            children: [
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                children: [
+                                  FLText(
+                                  displayText: "Current Password",
+                                    textColor: AppColors.textBlue,
+                                    setToWidth: false,
+                                    textSize: 14,
+                                  ),
+                                ],
                               ),
+                              SizedBox(
+                                height: 3,
+                              ),
+                              InputRoundedTextField(
+                                padding:const EdgeInsets.symmetric(vertical: 5),
+                                readOnly: false,
+                                // validator: validatePassword,
+
+                                focusNode: _currentPasswordFocusNode,
+                                isObscure: obscureCurrentPassword,
+                                textController: currentPasswordController,
+                                inputType: TextInputType.text,
+                                suffixIcon: Icon(
+                                    obscureCurrentPassword
+                                        ? Icons.visibility_off
+                                        : Icons.visibility,
+                                    size: 22,
+                                    color: Colors.grey),
+                                onSuffixPress: (){
+                                  setState(() {
+                                    obscureCurrentPassword = !obscureCurrentPassword;
+                                  });
+                                },
+                                // onChanged: passwordValidationCheck
+                              ),
+                            ],
+                          ),
+
+                          SizedBox(
+                            height: 4,
+                          ),
+
+                          Column(
+                            children: [
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                children: [
+                                  FLText(
+                                    displayText: "New Password",
+                                    textColor: AppColors.textBlue,
+                                    setToWidth: false,
+                                    textSize: 14,
+                                  ),
+                                ],
+                              ),
+                              SizedBox(
+                                height: 3,
+                              ),
+                              InputRoundedTextField(
+                                padding:const EdgeInsets.symmetric(vertical: 5),
+                                readOnly: false,
+                                focusNode: _newPasswordFocusNode,
+                                isObscure: obscureNewPassword,
+                                textController: newPasswordController,
+                                inputType: TextInputType.text,
+                                suffixIcon: Icon(
+                                    obscureNewPassword
+                                        ? Icons.visibility_off
+                                        : Icons.visibility,
+                                    size: 22,
+                                    color: Colors.grey),
+                                onSuffixPress: (){
+                                  setState(() {
+                                    obscureNewPassword = !obscureNewPassword;
+                                  });
+                                },
+                                // onChanged: passwordValidationCheck
+                              ),
+                            ],
+                          ),
+                          SizedBox(
+                            height: 4,
+                          ),
+                          Column(
+                            children: [
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                children: [
+                                  FLText(
+                                    displayText: "Confirm Password",
+                                    textColor: AppColors.textBlue,
+                                    setToWidth: false,
+                                    textSize: 14,
+                                  ),
+
+                                ],
+                              ),
+                              SizedBox(
+                                height: 3,
+                              ),
+                              InputRoundedTextField(
+                                padding:const EdgeInsets.symmetric(vertical: 5),
+                                readOnly: false,
+                                focusNode: _confirmPasswordFocusNode,
+                                isObscure: obscureConfirmPassword,
+                                textController: confirmPasswordController,
+                                inputType: TextInputType.text,
+                                suffixIcon: Icon(
+                                    obscureConfirmPassword
+                                        ? Icons.visibility_off
+                                        : Icons.visibility,
+                                    size: 22,
+                                    color: Colors.grey),
+                                onSuffixPress: (){
+                                  setState(() {
+                                    obscureConfirmPassword = !obscureConfirmPassword;
+                                  });
+                                },
+                                // onChanged: passwordValidationCheck
+                              ),
+                            ],
+                          ),
+                          SizedBox(
+                            height: 10,
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 12),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Center(
+                                  child: Container(
+                                    margin: const EdgeInsets.only(top: 20),
+                                    height: 50,
+                                    width: 250,
+                                    child: FLButton(
+                                      borderRadius: 20,
+                                      title: "Submit".tr,
+                                      onPressed: () async {
+                                        RegExp regex = RegExp(r'^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[!@#\$&*~]).{8,}$');
+                                        if (currentPasswordController.text == null || currentPasswordController.text == "" ) {
+                                          Get.snackbar('eventz', 'Please enter the current password',
+                                              colorText: AppColors.textRed,
+                                              backgroundColor: AppColors.kWhite);
+                                        }
+                                        else if (newPasswordController.text == null || newPasswordController.text == "" ){
+                                          Get.snackbar('eventz', 'Please enter a new password',
+                                              colorText: AppColors.textRed,
+                                              backgroundColor: AppColors.kWhite);
+                                        }
+                                        else if (!regex.hasMatch(newPasswordController.text))
+                                        {
+                                          Get.snackbar('eventz', 'Enter a Valid Password, including Uppercase Letters, Lowercase Letters, Numbers, Special Characters, with a Minimum of Eight (8) Characters.',
+                                              colorText: AppColors.textRed,
+                                              backgroundColor: AppColors.kWhite);
+                                        }
+                                        else if (newPasswordController.text != confirmPasswordController.text)
+                                        {
+                                          Get.snackbar('Error', "New password and confirmation password don't match",
+                                              colorText: AppColors.textRed,
+                                              backgroundColor: AppColors.kWhite);
+                                        }
+                                        else{
+                                          changePasswordCall();
+                                          // Get.snackbar("Success", "Successfully updated the password.",
+                                          //     colorText: AppColors.textGreenLight,
+                                          //     backgroundColor: AppColors.kWhite);
+                                        }
+                                      },
+                                      backgroundColor: AppColors.buttonBlue,
+                                      titleFontColor: AppColors.kWhite,
+                                      borderColor: AppColors.buttonBlue,
+                                      minWidth: 100,
+                                      height: 40,
+                                    ),
+                                  ),
+                                ),
+                              ],
                             ),
                           ),
+
                         ],
                       ),
                     ),
-
-                  ],
+                  ),
                 ),
               ),
             ),
-          ),
+          ],
         ));
+  }
+
+
+  bgView() {
+    return Image.asset(
+      mainBg,
+      height: MediaQuery.of(context).size.height,
+      width: MediaQuery.of(context).size.width,
+      fit: BoxFit.cover,
+    );
   }
 
 }

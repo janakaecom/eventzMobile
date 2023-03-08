@@ -116,46 +116,38 @@ class _EventDetailsState extends State<EventDetails> with BaseUI {
       margin: const EdgeInsets.only(top: 140, left: 30),
       child: Row(
           children: [
-        Container(
-          width: 70,
-          height: 70,
-          decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.all(Radius.circular(8)),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.grey.withOpacity(0.3),
-                  spreadRadius: 5,
-                  blurRadius: 7,
-                  offset: Offset(0, 3), // changes position of shadow
-                ),
-              ],
-              border: Border.all(color: Colors.white)),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              FLText(
-                displayText: year,
-                textColor: AppColors.kSecondary,
-                setToWidth: false,
-                textSize: AppFonts.textFieldFontSize12,
+        Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Text(
+              year,
+              style: TextStyle(
+                  fontWeight: FontWeight.w600,
+                  color: AppColors.kSecondary,
+                  fontFamily: AppFonts.circularStd,
+                  fontSize: AppFonts.textFieldFontSize12
               ),
-              FLText(
-                displayText: date,
-                textColor: AppColors.kSecondary,
-                setToWidth: false,
-                fontWeight: FontWeight.w800,
-                textSize: AppFonts.textFieldFontLarge24,
+            ),
+            Text(
+              date,
+              style: TextStyle(
+                  fontWeight: FontWeight.w600,
+                  color: AppColors.kSecondary,
+                  fontFamily: AppFonts.circularStd,
+                  fontSize: AppFonts.textFieldFontSize12
               ),
-              FLText(
-                displayText: month,
-                textColor: AppColors.kSecondary,
-                setToWidth: false,
-                textSize: AppFonts.textFieldFontSize12,
+            ),
+            Text(
+              month,
+              style: TextStyle(
+                  fontWeight: FontWeight.w600,
+                  color: AppColors.kSecondary,
+                  fontFamily: AppFonts.circularStd,
+                  fontSize: AppFonts.textFieldFontSize12
               ),
-            ],
-          ),
+            )
+          ],
         ),
         SizedBox(
           width: 20,

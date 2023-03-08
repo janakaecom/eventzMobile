@@ -13,6 +13,11 @@ import 'package:eventz/view/widget/fl_text.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
+import '../../model/country_codes_response.dart';
+import '../../model/error_response.dart';
+import '../../model/hosts_response.dart';
+import '../widget/imput_square_text_field.dart';
+
 class SignUpView extends StatefulWidget {
   @override
   _SignUpViewState createState() => _SignUpViewState();
@@ -25,23 +30,70 @@ class _SignUpViewState extends State<SignUpView> with BaseUI {
   TextEditingController fNameController = new TextEditingController();
   TextEditingController lNameController = new TextEditingController();
   TextEditingController mobileController = new TextEditingController();
-  bool obscurePassword = true;
+  FocusNode _currentPasswordFocusNode;
+  FocusNode _newPasswordFocusNode;
+  FocusNode _confirmPasswordFocusNode;
+  bool isPasswordValidate = false;
+  String _countryCodesDropDownValue;
+  List<Country> countryCodesList = [];
+  List<String> venuesListNames = [];
+  List<String> countryCodes = [];
+  bool obscureCurrentPassword = true;
+  bool obscureNewPassword = true;
+  int countryCodeId;
+  String selectedCountryCode;
   bool obscureConfirmPassword = true;
 
 
   @override
+  void initState() {
+    super.initState();
+
+    getAllCodes();
+
+  }
+
+
+  ///get all codes from API
+  void getAllCodes() {
+    print("codes load");
+    apiService.check().then((check) {
+      showProgressbar(context);
+      if (check) {
+        apiService.getAllCodes().then((value) {
+          hideProgressbar(context);
+          if (value.statusCode == 200) {
+            CountryCodesResponse responseData =
+            CountryCodesResponse.fromJson(json.decode(value.body));
+            setState(() {
+              countryCodesList = responseData.country;
+              for (int i = 0; i < countryCodesList.length; i++) {
+                countryCodes.add(countryCodesList[i].countryCode);
+              }
+            });
+          } else {
+            hideProgressbar(context);
+            ErrorResponse responseData =
+            ErrorResponse.fromJson(json.decode(value.body));
+            Get.snackbar('error'.tr, responseData.message,
+                colorText: AppColors.textRed,
+                snackPosition: SnackPosition.TOP,
+                borderRadius: 0,
+                borderWidth: 2,
+                margin: EdgeInsets.only(left: 20, right: 20, top: 30),
+                backgroundColor: AppColors.bgGreyLight);
+          }
+        });
+      } else {
+        hideProgressbar(context);
+        helper.showAlertView(context, 'no_internet'.tr, () {}, 'ok'.tr);
+      }
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: AppColors.kWhite,
-        elevation: 0,
-        leading: IconButton(
-          icon: Icon(Icons.arrow_back_ios,color: Colors.black,),
-          onPressed: () {
-            Navigator.of(context).pop(true);
-          },
-        ),
-      ),
       body: Container(
         width: Get.width,
         height: Get.height,
@@ -56,9 +108,13 @@ class _SignUpViewState extends State<SignUpView> with BaseUI {
               //   child: Container(),
               // ),
               Container(
-                height: 140,
+                height: 100,
               ),
               registerForm(),
+              SizedBox(
+                height: 48,
+              ),
+              bottomMenus(),
             ],
           ),
         ),
@@ -72,8 +128,7 @@ class _SignUpViewState extends State<SignUpView> with BaseUI {
   registerForm() {
     return Center(
       child: Container(
-        width: Get.width,
-        margin: const EdgeInsets.only(left: 20.0, right: 20, top: 0, bottom: 0),
+        margin: const EdgeInsets.only(left: 20.0, right: 20, bottom: 0),
         decoration: BoxDecoration(
           color: AppColors.kWhite,
           borderRadius: BorderRadius.only(
@@ -99,73 +154,293 @@ class _SignUpViewState extends State<SignUpView> with BaseUI {
                 // height: 520,
                 child: Column(
                   children: [
+                    // Container(
+                    //   width: Get.width,
+                    //   height: 10,
+                    // ),
+
+                    Align(
+                      alignment: Alignment.centerLeft,
+                      child: FLText(
+                      displayText: 'sign_up'.tr,
+                      textColor: AppColors.textBlue,
+                      setToWidth: false,
+                      fontWeight: FontWeight.bold,
+                      textSize: AppFonts.textFieldFontLarge24,
+                    ),
+                    ),
                     Container(
                       width: Get.width,
                       height: 10,
                     ),
-                    Align(
-                      alignment: Alignment.centerLeft,
-                      child: FLText(
-                        displayText: 'sign_up'.tr,
-                        textColor: AppColors.textBlue,
-                        setToWidth: false,
-                        fontWeight: FontWeight.bold,
-                        textSize: AppFonts.textFieldFontLarge24,
-                      ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: [
+                        FLText(
+                          displayText: "First Name",
+                          textColor: AppColors.textBlue,
+                          setToWidth: false,
+                          textSize: 14,
+                        ),
+                      ],
                     ),
-                    Container(
-                      width: Get.width,
-                      height: 40,
+
+                    SizedBox(
+                      height: 3,
                     ),
-                    formRow(userName, 'enter_first_name'.tr, 'first_name'.tr,
-                        fNameController),
-                    Container(
-                      width: Get.width,
-                      height: 0.25,
-                      color: AppColors.appDark,
+                    InputRoundedTextField(
+                      padding:const EdgeInsets.symmetric(vertical: 5),
+                      readOnly: false,
+                      // validator: validatePassword,
+                      textController: fNameController,
+                      inputType: TextInputType.text,
+                      // onChanged: passwordValidationCheck
                     ),
-                    formRow(userName, 'enter_last_name'.tr, 'last_name'.tr,
-                        lNameController),
-                    Container(
-                      width: Get.width,
-                      height: 0.25,
-                      color: AppColors.appDark,
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: [
+                        FLText(
+                          displayText: "Last Name",
+                          textColor: AppColors.textBlue,
+                          setToWidth: false,
+                          textSize: 14,
+                        ),
+                      ],
                     ),
-                    formRow(email, 'enter_email'.tr, 'email_cap'.tr,
-                        emailController),
-                    Container(
-                      width: Get.width,
-                      height: 0.25,
-                      color: AppColors.appDark,
+
+                    SizedBox(
+                      height: 3,
                     ),
-                    formRow(mobile, 'enter_mobile'.tr, 'mobile'.tr,
-                        mobileController,
-                        height: 20),
-                    Container(
-                      width: Get.width,
-                      height: 0.25,
-                      color: AppColors.appDark,
+                    InputRoundedTextField(
+                      padding:const EdgeInsets.symmetric(vertical: 5),
+                      readOnly: false,
+                      // validator: validatePassword,
+                      textController: lNameController,
+                      inputType: TextInputType.text,
+                      // onChanged: passwordValidationCheck
                     ),
-                    formRow(password, 'enter_password'.tr, 'password_cap'.tr,
-                        pwController,
-                        obscureText: obscurePassword,
-                        passwordIconVisibility: true
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: [
+                        FLText(
+                          displayText: "Email",
+                          textColor: AppColors.textBlue,
+                          setToWidth: false,
+                          textSize: 14,
+                        ),
+                      ],
                     ),
-                    Container(
-                      width: Get.width,
-                      height: 0.25,
-                      color: AppColors.appDark,
+                    InputRoundedTextField(
+                      padding:const EdgeInsets.symmetric(vertical: 5),
+                      readOnly: false,
+                      // validator: validatePassword,
+                      textController: emailController,
+                      inputType: TextInputType.text,
+                      // onChanged: passwordValidationCheck
                     ),
-                    formRow(password, 're_enter_password'.tr, 'Confirm Password'.tr,
-                        confirmPWController,
-                        obscureText: obscureConfirmPassword,
-                        passwordIconVisibility: true
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: [
+                        FLText(
+                          displayText: "Mobile",
+                          textColor: AppColors.textBlue,
+                          setToWidth: false,
+                          textSize: 14,
+                        ),
+                      ],
                     ),
-                    Container(
-                      width: Get.width,
-                      height: 0.25,
-                      color: AppColors.appDark,
+                    SizedBox(
+                      height: 3,
                     ),
+                    Row(
+                      children: [
+                        Container(
+                          height: 40,
+                          width: 100,
+                          decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(10),
+                              border: Border.all(
+                                  color: AppColors.TextGray.withOpacity(0.5),
+                                  width: 1.5)),
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 10),
+                            child: DropdownButtonHideUnderline(
+                              child: DropdownButton(
+                                hint: _countryCodesDropDownValue == null
+                                    ? Text('code')
+                                    : Text(
+                                  _countryCodesDropDownValue,
+                                  style: TextStyle(
+                                      color: Colors.black,
+                                      fontFamily: AppFonts.circularStd),
+                                ),
+                                isExpanded: true,
+                                iconSize: 30.0,
+                                style: TextStyle(
+                                    color: Colors.black,
+                                    fontFamily: AppFonts.circularStd),
+                                items: countryCodesList.map(
+                                      (val) {
+                                    return DropdownMenuItem<Country>(
+                                      value: val,
+                                      child: Text(val.countryCode),
+                                    );
+                                  },
+                                ).toList(),
+                                onChanged: (val) {
+                                  setState(
+                                        () {
+                                      _countryCodesDropDownValue = val.countryCode;
+                                      // countryCodeId = int.parse(val.countryCodeId);
+                                    },
+                                  );
+                                },
+                              ),
+                            ),
+                          ),
+                        ),
+                        SizedBox(
+                          width: 10,
+                        ),
+                        Expanded(
+                          child: InputRoundedTextField(
+                            padding:const EdgeInsets.symmetric(vertical: 5),
+                            readOnly: false,
+                            // validator: validatePassword,
+                            textController: mobileController,
+                            inputType: TextInputType.text,
+                            // onChanged: passwordValidationCheck
+                          ),
+                        ),
+                      ],
+                    ),
+
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: [
+                        FLText(
+                          displayText: "Password",
+                          textColor: AppColors.textBlue,
+                          setToWidth: false,
+                          textSize: 14,
+                        ),
+                      ],
+                    ),
+                    SizedBox(
+                      height: 3,
+                    ),
+                    InputRoundedTextField(
+                      padding:const EdgeInsets.symmetric(vertical: 5),
+                      readOnly: false,
+                      // validator: validatePassword,
+
+                      focusNode: _currentPasswordFocusNode,
+                      isObscure: obscureCurrentPassword,
+                      textController: pwController,
+                      inputType: TextInputType.text,
+                      suffixIcon: Icon(
+                          obscureCurrentPassword
+                              ? Icons.visibility_off
+                              : Icons.visibility,
+                          size: 22,
+                          color: Colors.grey),
+                      onSuffixPress: (){
+                        setState(() {
+                          obscureCurrentPassword = !obscureCurrentPassword;
+                        });
+                      },
+                      // onChanged: passwordValidationCheck
+                    ),
+
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: [
+                        FLText(
+                          displayText: "Confirm Password",
+                          textColor: AppColors.textBlue,
+                          setToWidth: false,
+                          textSize: 14,
+                        ),
+                      ],
+                    ),
+                    SizedBox(
+                      height: 3,
+                    ),
+                    InputRoundedTextField(
+                      padding:const EdgeInsets.symmetric(vertical: 5),
+                      readOnly: false,
+                      // validator: validatePassword,
+
+                      focusNode: _confirmPasswordFocusNode,
+                      isObscure: obscureConfirmPassword,
+                      textController: confirmPWController,
+                      inputType: TextInputType.text,
+                      suffixIcon: Icon(
+                          obscureConfirmPassword
+                              ? Icons.visibility_off
+                              : Icons.visibility,
+                          size: 22,
+                          color: Colors.grey),
+                      onSuffixPress: (){
+                        setState(() {
+                          obscureConfirmPassword = !obscureConfirmPassword;
+                        });
+                      },
+                      // onChanged: passwordValidationCheck
+                    ),
+                    // Container(
+                    //   width: Get.width,
+                    //   height: 20,
+                    // ),
+                    // formRow(userName, 'enter_first_name'.tr, 'first_name'.tr,
+                    //     fNameController),
+                    // Container(
+                    //   width: Get.width,
+                    //   height: 0.25,
+                    //   color: AppColors.appDark,
+                    // ),
+                    // formRow(userName, 'enter_last_name'.tr, 'last_name'.tr,
+                    //     lNameController),
+                    // Container(
+                    //   width: Get.width,
+                    //   height: 0.25,
+                    //   color: AppColors.appDark,
+                    // ),
+                    // formRow(email, 'enter_email'.tr, 'email_cap'.tr,
+                    //     emailController),
+                    // Container(
+                    //   width: Get.width,
+                    //   height: 0.25,
+                    //   color: AppColors.appDark,
+                    // ),
+                    // formRow(mobile, 'enter_mobile'.tr, 'mobile'.tr,
+                    //     mobileController,
+                    //     height: 20),
+                    // Container(
+                    //   width: Get.width,
+                    //   height: 0.25,
+                    //   color: AppColors.appDark,
+                    // ),
+                    // formRow(password, 'enter_password'.tr, 'password_cap'.tr,
+                    //     pwController,
+                    //     obscureText: obscurePassword,
+                    //     passwordIconVisibility: true
+                    // ),
+                    // Container(
+                    //   width: Get.width,
+                    //   height: 0.25,
+                    //   color: AppColors.appDark,
+                    // ),
+                    // formRow(password, 're_enter_password'.tr, 'Confirm Password'.tr,
+                    //     confirmPWController,
+                    //     obscureText: obscureConfirmPassword,
+                    //     passwordIconVisibility: true
+                    // ),
+                    // Container(
+                    //   width: Get.width,
+                    //   height: 0.25,
+                    //   color: AppColors.appDark,
+                    // ),
                     SizedBox(
                       height: 20,
                     ),
@@ -277,7 +552,42 @@ class _SignUpViewState extends State<SignUpView> with BaseUI {
     );
   }
 
-
+  bottomMenus() {
+    return Center(
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          InkWell(
+            onTap: () {
+              Get.to(SignUpView());
+            },
+            child: FLText(
+              displayText: 'new_sign_up'.tr,
+              textColor: AppColors.textBlue,
+              setToWidth: false,
+              textSize: 16,
+            ),
+          ),
+          SizedBox(
+            height: 10,
+          ),
+          FLButton(
+            borderRadius: 20,
+            title: "SIGN UP",
+            onPressed: () {
+              Get.to(LoginView());
+            },
+            backgroundColor: AppColors.buttonBlue,
+            titleFontColor: AppColors.kWhite,
+            borderColor: AppColors.kPrimaryDark,
+            minWidth: 120,
+            height: 40,
+          )
+        ],
+      ),
+    );
+  }
   ///Sign-up validation call
   void signUpCall() {
     print("EMAIL " + emailController.text);
@@ -290,34 +600,56 @@ class _SignUpViewState extends State<SignUpView> with BaseUI {
     RegExp regex = RegExp(r'^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[!@#\$&*~]).{8,}$');
 
 
-    if (!GetUtils.isEmail(email)) {
-      Get.snackbar('error'.tr, 'invalid_email'.tr,
+    if (fName.isEmpty) {
+      Get.snackbar('eventz', 'enter_first_name'.tr,
           colorText: AppColors.textRed, backgroundColor: AppColors.kWhite);
-    } else if (pw.isEmpty) {
-      Get.snackbar('error'.tr, 'invalid_password'.tr,
+    }
+    else if (fName.characters.length > 50) {
+      Get.snackbar('eventz', 'First name must be less than 50 characters!', duration: Duration(seconds: 5),
           colorText: AppColors.textRed, backgroundColor: AppColors.kWhite);
-    } else if (fName.isEmpty) {
-      Get.snackbar('error'.tr, 'enter_first_name'.tr,
+    }
+    else if (lName.isEmpty) {
+      Get.snackbar('eventz', 'enter_last_name'.tr,
           colorText: AppColors.textRed, backgroundColor: AppColors.kWhite);
-    } else if (fName.isEmpty) {
-      Get.snackbar('error'.tr, 'enter_first_name'.tr,
+    }
+    else if (lName.characters.length > 50) {
+      Get.snackbar('eventz', 'Last name must be less than 50 characters!', duration: Duration(seconds: 5),
           colorText: AppColors.textRed, backgroundColor: AppColors.kWhite);
-    } else if (lName.isEmpty) {
-      Get.snackbar('error'.tr, 'enter_last_name'.tr,
-          colorText: AppColors.textRed, backgroundColor: AppColors.kWhite);
-    } else if (!GetUtils.isPhoneNumber(mobile)) {
-      Get.snackbar('error'.tr, 'invalid_mobile'.tr,
+    }
+    else if (!GetUtils.isEmail(email)) {
+    Get.snackbar('eventz', 'invalid_email'.tr,
+    colorText: AppColors.textRed, backgroundColor: AppColors.kWhite);
+    }
+    else if (email.characters.length > 100) {
+    Get.snackbar('eventz', 'Email is too long!', duration: Duration(seconds: 5),
+    colorText: AppColors.textRed, backgroundColor: AppColors.kWhite);
+    }
+    else if (pw.isEmpty) {
+    Get.snackbar('eventz', 'invalid_password'.tr,
+    colorText: AppColors.textRed, backgroundColor: AppColors.kWhite);
+    }
+    else if (pw.characters.length > 20) {
+    Get.snackbar('eventz', 'Password must be less than 20 characters!', duration: Duration(seconds: 5),
+    colorText: AppColors.textRed, backgroundColor: AppColors.kWhite);
+    }
+    else if (!GetUtils.isPhoneNumber(mobile)) {
+      Get.snackbar('eventz', 'invalid_mobile'.tr,
           colorText: AppColors.textRed, backgroundColor: AppColors.kWhite);
     }
     else if (!regex.hasMatch(pwController.text)) {
-      Get.snackbar('error'.tr, 'Enter valid password including uppercase letters, lowercase letters, numbers, special characters and minimum 8 characters.'.tr,
+      Get.snackbar('eventz', 'Enter valid password including uppercase letters, lowercase letters, numbers, special characters and minimum 8 characters.'.tr,
           colorText: AppColors.textRed, backgroundColor: AppColors.kWhite);
     }
     else if (confirmPWController.text != pwController.text) {
-      Get.snackbar('error'.tr, "The Passwords you have entered don't match".tr,
+      Get.snackbar('eventz', "The Passwords you have entered don't match".tr,
           colorText: AppColors.textRed, backgroundColor: AppColors.kWhite);
     } else {
       apiService.check().then((check) {
+        if (mobile.characters.first == "0") {
+          setState(() {
+            mobile = mobile.substring(1, mobile.characters.length - 1);
+          });
+        }
         RegisterRequest request = RegisterRequest(
             userName: email,
             firstName: fName,
@@ -325,7 +657,7 @@ class _SignUpViewState extends State<SignUpView> with BaseUI {
             userTypeIdx: 1,
             password: pw,
             // isActive: true,
-            mobileNo: mobile,
+            mobileNo: _countryCodesDropDownValue + mobile,
             countryId: 1);
         showProgressbar(context);
         if (check) {
