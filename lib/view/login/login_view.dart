@@ -40,7 +40,7 @@ class _LoginViewState extends State<LoginView> with BaseUI {
     }
     else{
       emailController.text = "maryse@gmail.com";
-      pwController.text = "Shan@999";
+      pwController.text = "Shanuka@97";
     }
   }
 

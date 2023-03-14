@@ -21,4 +21,17 @@ class AppColors {
   static const Color greyLight = Color(0xFFEFF1F4);
   static const Color textRed = Color(0xFFEE2E14);
   static const Color textGreenLight = Color(0xFF00BE6D);
+
+  MaterialColor myGreen =  MaterialColor(0xFFAAD400,
+       {
+        50 :  Color(0xFFEE2E14),
+        100 :  Color(0xFFEE2E14),
+        200 :  Color(0xFFEE2E14),
+        300 :  Color(0xFFEE2E14),
+        400 :  Color(0xFFEE2E14),
+        500 :  Color(0xFFEE2E14),
+        600 :  Color(0xFFEE2E14),
+        700 :  Color(0xFFEE2E14),
+        800 :  Color(0xFFEE2E14),
+        900 :  Color(0xFFEE2E14)});
 }

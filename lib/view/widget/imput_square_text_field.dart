@@ -25,6 +25,8 @@ class InputRoundedTextField extends StatelessWidget {
   final bool readOnly;
   final Icon suffixIcon;
   final double hight;
+  final Color fillColor;
+  final Color borderColor;
   final int lines;
   final double width;
   final int maxLength;
@@ -60,7 +62,7 @@ class InputRoundedTextField extends StatelessWidget {
         this.onSuffixPress,
         this.textColor,
         this.autoValidate = false,
-        this.validator, TextEditingController controller, InputDecoration decoration, this.readOnly, this.onPrefixPress, this.hight, this.width, this.lines, this.maxLength})
+        this.validator, TextEditingController controller, InputDecoration decoration, this.readOnly, this.onPrefixPress, this.hight, this.width, this.lines, this.maxLength, this.fillColor, this.borderColor})
       : super(key: key);
 
   @override
@@ -70,6 +72,9 @@ class InputRoundedTextField extends StatelessWidget {
         child: Container(
           height: hight ?? 40,
           width: width,
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(8),
+          ),
           child: TextFormField(
               maxLength: maxLength,
               readOnly: readOnly,
@@ -87,7 +92,7 @@ class InputRoundedTextField extends StatelessWidget {
               style: TextStyle(color: textColor,fontSize: 13),
               decoration: InputDecoration(
                   filled: true,
-                  fillColor: Colors.white,
+                  fillColor: fillColor ?? Colors.white,
                   hintText: hint,
                   hintStyle: TextStyle(
                       color: AppColors.kTextLight.withOpacity(0.5),
@@ -98,10 +103,11 @@ class InputRoundedTextField extends StatelessWidget {
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(10),
                     borderSide: BorderSide(
-                        color: AppColors.TextGray.withOpacity(0.5),
-                        width: 1.5
+                        color: Colors.red,
+                        width: 10
                     ),
                   ),
+
                   // border: OutlineInputBorder(borderSide: BorderSide(color: AppColors.TextGray.withOpacity(0.5), width: 1.5),),
                   // enabledBorder: OutlineInputBorder(borderSide: BorderSide(color: AppColors.TextGray.withOpacity(0.5), width: 1.5),),
                   // focusedBorder: OutlineInputBorder(borderSide: BorderSide(color: AppColors.TextGray.withOpacity(0.5), width: 1.5),),
@@ -122,7 +128,9 @@ class InputRoundedTextField extends StatelessWidget {
                       icon: suffixIcon,
                       onPressed: onSuffixPress)
                       : null
-              )),
+              )
+          )
+          ,
         )
     );
   }

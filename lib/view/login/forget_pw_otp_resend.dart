@@ -10,6 +10,8 @@ import 'package:eventz/view/widget/fl_text.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
+import '../widget/imput_square_text_field.dart';
+
 class ForgetPWOtpResend extends StatefulWidget {
   @override
   _ForgetPWOtpResendState createState() => _ForgetPWOtpResendState();
@@ -62,20 +64,29 @@ class _ForgetPWOtpResendState extends State<ForgetPWOtpResend> with BaseUI {
             children: [
               Column(
                 children: [
-                  TextField(
-                    controller: mobileController,
-                    keyboardType: TextInputType.phone,
-                    decoration: new InputDecoration(
-                        hintText: 'Please enter mobile number',
-                        hintStyle: TextStyle(
-                            color: AppColors.kTextLight,
-                            fontSize: AppFonts.textFieldFontSize16),
-                        labelText: 'MOBILE NUMBER'.tr,
-                        labelStyle: TextStyle(
-                            color: AppColors.buttonBlue,
-                            fontSize: AppFonts.textFieldFontSize16),
-                        border: UnderlineInputBorder(
-                            borderSide: BorderSide(color: Colors.red))),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: [
+                      FLText(
+                        displayText: "Mobile Number",
+                        textColor: AppColors.textBlue,
+                        setToWidth: false,
+                        textSize: 14,
+                      ),
+                    ],
+                  ),
+                  SizedBox(
+                    height: 3,
+                  ),
+                  InputRoundedTextField(
+                    padding:const EdgeInsets.symmetric(vertical: 5),
+                    readOnly: false,
+                    // validator: validatePassword,
+                    hint: 'Please enter mobile number',
+                    maxLength: 6,
+                    textController: mobileController,
+                    inputType: TextInputType.number,
+                    // onChanged: passwordValidationCheck
                   ),
                   SizedBox(
                     height: 20,
@@ -88,8 +99,8 @@ class _ForgetPWOtpResendState extends State<ForgetPWOtpResend> with BaseUI {
                       onPressed: () {
                         resentAPICall();
                       },
-                      backgroundColor: AppColors.kWhite,
-                      titleFontColor: AppColors.buttonBlue,
+                      backgroundColor: AppColors.buttonBlue,
+                      titleFontColor: AppColors.kWhite,
                       borderColor: AppColors.buttonBlue,
                       minWidth: 100,
                       height: 40,
@@ -107,7 +118,7 @@ class _ForgetPWOtpResendState extends State<ForgetPWOtpResend> with BaseUI {
   void resentAPICall() {
     String mobile = mobileController.text;
     if (!GetUtils.isPhoneNumber(mobile)) {
-      Get.snackbar('error'.tr, 'invalid_mobile'.tr,
+      Get.snackbar("eventz", 'invalid_mobile'.tr,
           colorText: AppColors.textRed, backgroundColor: AppColors.kWhite);
     } else {
       apiService.check().then((check) {
@@ -127,7 +138,7 @@ class _ForgetPWOtpResendState extends State<ForgetPWOtpResend> with BaseUI {
             } else {
               RegisterErrorResponse responseData =
                   RegisterErrorResponse.fromJson(json.decode(value.body));
-              Get.snackbar('error'.tr, responseData.message,
+              Get.snackbar('eventz', responseData.message,
                   colorText: AppColors.textRed,
                   backgroundColor: AppColors.kWhite);
             }

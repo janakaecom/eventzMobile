@@ -1,5 +1,4 @@
 import 'dart:convert';
-
 import 'package:eventz/configs/colors.dart';
 import 'package:eventz/configs/fonts.dart';
 import 'package:eventz/configs/images.dart';
@@ -18,6 +17,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
+import 'package:intl/intl.dart';
+import '../../model/get_user_response.dart' as ur;
+import '../../model/get_user_response.dart';
+import '../widget/imput_square_text_field.dart';
 
 class EventDetails extends StatefulWidget {
   static var routeName = "/event_details";
@@ -31,68 +34,447 @@ class EventDetails extends StatefulWidget {
 }
 
 class _EventDetailsState extends State<EventDetails> with BaseUI {
+
   TextEditingController vehicleNoController = TextEditingController();
   TextEditingController mealTypeController = TextEditingController();
   TextEditingController couponController = TextEditingController();
   TextEditingController amountController = TextEditingController();
-
   List<Paymode> paymode = List();
   Paymode selectedMode = Paymode();
   AllEventResponse item = Get.arguments;
   LoginResponse profileData;
+  String finalizedDate;
+  ur.Result profileDataResponse;
+  String nic;
+  String mobileNum;
+  LoginResponse loginResponse ;
+  GetUserResponse responseData;
 
   @override
   void initState() {
+    getProfileInfo();
     loadUserDate();
     downloadPaymentMode();
     super.initState();
+
+    var val  = DateFormat("MMM \n dd").format(DateTime.parse(widget.eventsResult.eventDate));
+    finalizedDate = val;
+
   }
+
+
+  getProfileInfo() async {
+    try {
+      loginResponse = LoginResponse.fromJson(await sharedPref.read(ShardPrefKey.USER));
+    } catch (Excepetion) {
+      print(Excepetion.toString());
+    }
+    showProgressbar(context);
+    await getUser(loginResponse.result.userIdx);
+    hideProgressbar(context);
+  }
+
+
+
+
+  ///get my profile details from API
+  Future getUser(int userIdx) async {
+    await apiService.check().then((check) {
+      showProgressbar(context);
+      if (check) {
+        apiService.getUserProfile(userIdx).then((value) async {
+          hideProgressbar(context);
+
+          if (value.statusCode == 200) {
+            responseData = await GetUserResponse.fromJson(json.decode(value.body));
+            setState(() {
+            profileDataResponse = responseData.result;
+            nic = profileDataResponse.nic;
+            mobileNum = profileDataResponse.mobileNo;
+            });
+          } else {
+            ErrorResponse responseData = ErrorResponse.fromJson(json.decode(value.body));
+            // hideProgressbar(context);
+            Get.snackbar('error'.tr, responseData.message,
+                colorText: AppColors.textRed,
+                snackPosition: SnackPosition.TOP,
+                borderRadius: 0,
+                borderWidth: 2,
+                margin: EdgeInsets.only(left: 20, right: 20, top: 30),
+                backgroundColor: AppColors.bgGreyLight);
+          }
+        });
+      } else {
+        hideProgressbar(context);
+        helper.showAlertView(context, 'no_internet'.tr, () {}, 'ok'.tr);
+      }
+    });
+  }
+
 
   @override
   Widget build(BuildContext context) {
+
     return Scaffold(
       appBar: BaseAppBar(
           title: widget.eventsResult.eventName,
           menuList: [],
           isDrawerShow: false,
           isBackShow: true),
-      body: SingleChildScrollView(
+      body:
+      SingleChildScrollView(
         child: Container(
-          color: AppColors.kBackgroundWhite,
-          child: Column(
-            children: [
-              Stack(
+          color:  Colors.blue.withOpacity(0.08),
+          child: Padding(
+            padding: const EdgeInsets.only(left: 16,right: 16,bottom: 16),
+            child: Container(
+              decoration:  BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.only(
+                    bottomLeft: Radius.circular(10),
+                    bottomRight: Radius.circular(10),
+                  )
+              ),
+              child: Column(
                 children: [
-                  Image.network(
-                    widget.eventsResult.artworkPath,
-                    width: Get.width,
-                    height: 200,
-                    fit: BoxFit.fill,
-                  ),
-                  interestView(),
-                  Container(
-                    padding: const EdgeInsets.only(top: 100),
-                    decoration: BoxDecoration(
-                        color: AppColors.kWhite,
-                        borderRadius: BorderRadius.all(Radius.circular(8)),
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.grey.withOpacity(0.3),
-                            spreadRadius: 5,
-                            blurRadius: 7,
-                            offset: Offset(0, 3), // changes position of shadow
+                  Padding(
+                    padding: const EdgeInsets.all(16),
+                    child: Stack (
+                      children: [
+                        ClipRRect(
+                          borderRadius: BorderRadius.all(Radius.circular(10)),
+                          child: Image.network(
+                            widget.eventsResult.artworkPath,
+                            width: Get.width,
+                            height: 200,
+                            fit: BoxFit.fill,
                           ),
-                        ],
-                        border: Border.all(color: AppColors.kWhite)),
-                    margin:
-                        const EdgeInsets.only(top: 170, left: 10, right: 10),
-                    width: Get.width,
-                    child: dataBody(),
+                        ),
+                        _dateView(),
+                        nameView(),
+                      ],
+                    ),
                   ),
-                  dateView(),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16),
+                    child: Row(
+                      children: [
+                        FLText(
+                          displayText: "Venue:",
+                          textColor: Colors.black.withOpacity(0.6),
+                          setToWidth: false,
+                          fontWeight: FontWeight.w600,
+                          textSize: 12,
+                        ),
+                        FLText(
+                          displayText: "   ${widget.eventsResult.eventVenue}",
+                          textColor: Colors.blue.withOpacity(0.7),
+                          setToWidth: false,
+                          fontWeight: FontWeight.w600,
+                          textSize: 12,
+                        ),
+                      ],
+                    ),
+                  ),
+                  SizedBox(
+                    height: 10,
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16),
+                    child: Row(
+                      children: [
+                        FLText(
+                          displayText: "Resource Person:",
+                          textColor: Colors.black.withOpacity(0.6),
+                          setToWidth: false,
+                          fontWeight: FontWeight.w600,
+                          textSize: 12,
+                        ),
+                        FLText(
+                          displayText: "   ${widget.eventsResult.eventResourceObjectList[0].resName}",
+                          textColor: Colors.blue.withOpacity(0.7),
+                          setToWidth: false,
+                          fontWeight: FontWeight.w600,
+                          textSize: 12,
+                        ),
+                      ],
+                    ),
+                  ),
+                  SizedBox(
+                    height: 10,
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16),
+                    child: Row(
+                      children: [
+                        FLText(
+                          displayText: "Organized By:",
+                          textColor: Colors.black.withOpacity(0.6),
+                          setToWidth: false,
+                          fontWeight: FontWeight.w600,
+                          textSize: 12,
+                        ),
+                        FLText(
+                          displayText: "   ${widget.eventsResult.hostName}",
+                          textColor: Colors.blue.withOpacity(0.7),
+                          setToWidth: false,
+                          fontWeight: FontWeight.w600,
+                          textSize: 12,
+                        ),
+                      ],
+                    ),
+                  ),
+
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16,vertical: 10),
+                    child: Divider(
+                      color: Colors.black.withOpacity(0.3),
+                      thickness: 0.3,
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: [
+                        FLText(
+                          displayText: "Your Information",
+                          textColor: Colors.black.withOpacity(0.4),
+                          setToWidth: false,
+                          fontWeight: FontWeight.w600,
+                          textSize: 16,
+                        ),
+                      ],
+                    ),
+                  ),
+                  SizedBox(
+                    height: 10,
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16),
+                    child: Row(
+                      children: [
+                        FLText(
+                          displayText: "User Name:",
+                          textColor: Colors.black.withOpacity(0.6),
+                          setToWidth: false,
+                          fontWeight: FontWeight.w600,
+                          textSize: 12,
+                        ),
+                        FLText(
+                          displayText: "   ${loginResponse.result.userName ?? "N/A"}",
+                          textColor: Colors.blue.withOpacity(0.7),
+                          setToWidth: false,
+                          fontWeight: FontWeight.w600,
+                          textSize: 12,
+                        ),
+                      ],
+                    ),
+                  ),
+                  SizedBox(
+                    height: 10,
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16),
+                    child: Row(
+                      children: [
+                        FLText(
+                          displayText: "NIC:",
+                          textColor: Colors.black.withOpacity(0.6),
+                          setToWidth: false,
+                          fontWeight: FontWeight.w600,
+                          textSize: 12,
+                        ),
+                        FLText(
+                          displayText: "   ${nic ?? "N/A"}",
+                          textColor: Colors.blue.withOpacity(0.7),
+                          setToWidth: false,
+                          fontWeight: FontWeight.w600,
+                          textSize: 12,
+                        ),
+                      ],
+                    ),
+                  ),
+                  SizedBox(
+                    height: 10,
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16),
+                    child: Row(
+                      children: [
+                        FLText(
+                          displayText: "Mobile:",
+                          textColor: Colors.black.withOpacity(0.6),
+                          setToWidth: false,
+                          fontWeight: FontWeight.w600,
+                          textSize: 12,
+                        ),
+                        FLText(
+                          displayText: "   ${mobileNum ?? "N/A"}",
+                          textColor: Colors.blue.withOpacity(0.7),
+                          setToWidth: false,
+                          fontWeight: FontWeight.w600,
+                          textSize: 12,
+                        ),
+                      ],
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16,vertical: 10),
+                    child: Divider(
+                      color: Colors.black.withOpacity(0.3),
+                      thickness: 0.3,
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: [
+                        FLText(
+                          displayText: "Additional Information",
+                          textColor: Colors.black.withOpacity(0.4),
+                          setToWidth: false,
+                          fontWeight: FontWeight.w600,
+                          textSize: 16,
+                        ),
+                      ],
+                    ),
+                  ),
+                  SizedBox(
+                    height: 10,
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16),
+                    child:
+                    TextFormField(
+                      style: TextStyle(color: Colors.black,fontSize: 13),
+
+                      decoration: InputDecoration(
+                          filled: true,
+                          fillColor:  Colors.blue.withOpacity(0.08),
+                          hintText: "Please Enter Vehicle Number",
+                          hintStyle: TextStyle(
+                              color: AppColors.kTextLight,
+                              fontSize: 12),
+                          counterText: '',
+                          contentPadding: EdgeInsets.symmetric(vertical: 0.0, horizontal: 10.0),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.all(Radius.circular(8.0)),
+                            borderSide: BorderSide(width:0.7,color: Colors.transparent),
+                          ),
+                          enabledBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.all(Radius.circular(8.0)),
+                            borderSide: BorderSide(width:0.7,color: Colors.transparent),
+                          ),
+                          focusedBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.all(Radius.circular(8.0)),
+                            borderSide: BorderSide(width:0.7,color: Colors.blue),
+                          )
+                      ),
+                    ),
+                  ),
+                  SizedBox(
+                    height: 10,
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16),
+                    child:
+                    TextFormField(
+                      style: TextStyle(color: Colors.black,fontSize: 13),
+
+                      decoration: InputDecoration(
+                          filled: true,
+                          fillColor:  Colors.blue.withOpacity(0.08),
+                          hintText: "Please Enter Meal Preference",
+                          hintStyle: TextStyle(
+                              color: AppColors.kTextLight,
+                              fontSize: 12),
+                          counterText: '',
+                          contentPadding: EdgeInsets.symmetric(vertical: 0.0, horizontal: 10.0),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.all(Radius.circular(8.0)),
+                            borderSide: BorderSide(width:0.7,color: Colors.transparent),
+                          ),
+                          enabledBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.all(Radius.circular(8.0)),
+                            borderSide: BorderSide(width:0.7,color: Colors.transparent),
+                          ),
+                          focusedBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.all(Radius.circular(8.0)),
+                            borderSide: BorderSide(width:0.7,color: Colors.blue),
+                          )
+
+                      ),
+                    ),
+                  ),
+                  SizedBox(
+                    height: 10,
+                  ),
+
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16),
+                    child:
+                    TextFormField(
+                      style: TextStyle(color: Colors.black,fontSize: 13),
+                      decoration: InputDecoration(
+                          filled: true,
+                          fillColor:  Colors.blue.withOpacity(0.08),
+                          hintText: "Please Enter Coupon Code",
+                          hintStyle: TextStyle(
+                              color: AppColors.kTextLight,
+                              fontSize: 12),
+                          counterText: '',
+                          contentPadding: EdgeInsets.symmetric(vertical: 0.0, horizontal: 10.0),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.all(Radius.circular(8.0)),
+                            borderSide: BorderSide(width:0.7,color: Colors.transparent),
+                          ),
+                          enabledBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.all(Radius.circular(8.0)),
+                            borderSide: BorderSide(width:0.7,color: Colors.transparent),
+                          ),
+                          focusedBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.all(Radius.circular(8.0)),
+                            borderSide: BorderSide(width:0.7,color: Colors.blue),
+                          )
+
+                      ),
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 12,vertical: 15),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Center(
+                          child: Container(
+                            margin: const EdgeInsets.only(top: 20),
+                            height: 50,
+                            width: 320,
+                            child: FLButton(
+                              borderRadius: 20,
+                              title: "Submit".tr,
+                              onPressed: () async {
+
+                              },
+                              backgroundColor: AppColors.buttonBlue,
+                              titleFontColor: AppColors.kWhite,
+                              borderColor: AppColors.buttonBlue,
+                              minWidth: 100,
+                              height: 40,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  SizedBox(
+                    height: 20,
+                  ),
                 ],
               ),
-            ],
+            ),
           ),
         ),
       ),
@@ -100,80 +482,27 @@ class _EventDetailsState extends State<EventDetails> with BaseUI {
   }
 
   ///show date view of event
-  dateView() {
-    String apiDate = widget.eventsResult.eventDate.split(" ")[0];
-    String year = "";
-    String date = "";
-    String month = "";
-    try {
-      year = apiDate.split("/")[2];
-      date = apiDate.split("/")[1];
-      month = helper.getMonthShortName(int.parse(apiDate.split("/")[0]) - 1);
-    } catch (e) {
-      date = "N/A";
-    }
+  nameView() {
     return Container(
-      margin: const EdgeInsets.only(top: 140, left: 30),
+      margin: const EdgeInsets.only(top: 140),
       child: Row(
           children: [
-        Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            Text(
-              year,
-              style: TextStyle(
-                  fontWeight: FontWeight.w600,
-                  color: AppColors.kSecondary,
-                  fontFamily: AppFonts.circularStd,
-                  fontSize: AppFonts.textFieldFontSize12
-              ),
-            ),
-            Text(
-              date,
-              style: TextStyle(
-                  fontWeight: FontWeight.w600,
-                  color: AppColors.kSecondary,
-                  fontFamily: AppFonts.circularStd,
-                  fontSize: AppFonts.textFieldFontSize12
-              ),
-            ),
-            Text(
-              month,
-              style: TextStyle(
-                  fontWeight: FontWeight.w600,
-                  color: AppColors.kSecondary,
-                  fontFamily: AppFonts.circularStd,
-                  fontSize: AppFonts.textFieldFontSize12
-              ),
-            )
-          ],
-        ),
         SizedBox(
-          width: 20,
+          width: 16,
         ),
         Column(
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             SizedBox(
-              height: 40,
+              height: 20,
             ),
             FLText(
               displayText: widget.eventsResult.eventName,
-              textColor: AppColors.kTextDark,
+              textColor: Colors.white,
               setToWidth: false,
-              fontWeight: FontWeight.w800,
+              fontWeight: FontWeight.w600,
               textSize: AppFonts.textFieldFontSize,
-            ),
-            SizedBox(
-              height: 4,
-            ),
-            FLText(
-              displayText: widget.eventsResult.hostName,
-              textColor: AppColors.kTextLight,
-              setToWidth: false,
-              textSize: AppFonts.textFieldFontSize14,
             ),
           ],
         )
@@ -182,34 +511,44 @@ class _EventDetailsState extends State<EventDetails> with BaseUI {
   }
 
   ///Interest view
-  interestView() {
+  _dateView() {
     return Align(
       alignment: Alignment.centerRight,
       child: Container(
-        margin: const EdgeInsets.only(top: 10, right: 10),
+        margin: const EdgeInsets.only(left: 10.0, top: 10.0,right: 10),
+        width: 70,
+        height: 60,
         decoration: BoxDecoration(
-            color: AppColors.kWhite,
-            border: Border.all(
-              color: AppColors.kWhite,
+            color: AppColors.buttonBlue.withOpacity(0.8),
+            borderRadius: BorderRadius.all(Radius.circular(15)),
+            border: Border.all(color: AppColors.buttonBlue)),
+        child:
+        Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          // crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            SizedBox(
+              height: 10,
+              width: 20,
+              child: FLText(
+                displayText: finalizedDate.toString(),
+                textColor: AppColors.kWhite,
+                setToWidth: false,
+                fontWeight: FontWeight.w700,
+                textSize: 20,
+              ),
             ),
-            borderRadius: BorderRadius.all(Radius.circular(20))),
-        alignment: Alignment.topRight,
-        height: 30,
-        width: 30,
-        child: Center(
-          child: SvgPicture.asset(
-            heartSvg,
-            color: AppColors.textRed,
-            matchTextDirection: true,
-          ),
+          ],
         ),
       ),
     );
+
   }
 
   ///data details body
   dataBody() {
-    return Container(
+    return
+      Container(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -217,15 +556,11 @@ class _EventDetailsState extends State<EventDetails> with BaseUI {
           dataBodyRow("Venue : ", widget.eventsResult.eventVenue),
           dataBodyRow("Resource Person : ", widget.eventsResult.eventResourceObjectList[0].resName),
           dataBodyRow("Organized By : ", "-"),
-          Container(
-            padding:
-                const EdgeInsets.only(top: 30, left: 20, right: 20, bottom: 20),
-            child: FLText(
-              displayText: "Your Information",
-              textColor: AppColors.kTextDark,
-              setToWidth: false,
-              textSize: AppFonts.textFieldFontSize,
-            ),
+          FLText(
+            displayText: "Your Information",
+            textColor: AppColors.kTextDark,
+            setToWidth: false,
+            textSize: AppFonts.textFieldFontSize,
           ),
           dataBodyRow(
               "User Name : ",
@@ -237,6 +572,7 @@ class _EventDetailsState extends State<EventDetails> with BaseUI {
           dataBodyRow("NIC : ", "-"),
           dataBodyRow("Mobile : ",
               profileData != null ? profileData.result.mobileNo : "-"),
+
           Container(
             padding:
                 const EdgeInsets.only(top: 30, left: 20, right: 20, bottom: 20),
@@ -266,7 +602,6 @@ class _EventDetailsState extends State<EventDetails> with BaseUI {
                       borderSide: BorderSide(color: Colors.red))),
             ),
           ),
-
           Container(
             margin:
                 const EdgeInsets.only(left: 20, right: 20, top: 10, bottom: 10),
@@ -286,7 +621,6 @@ class _EventDetailsState extends State<EventDetails> with BaseUI {
                       borderSide: BorderSide(color: Colors.red))),
             ),
           ),
-
           Container(
             margin:
                 const EdgeInsets.only(left: 20, right: 20, top: 10, bottom: 10),
@@ -383,7 +717,6 @@ class _EventDetailsState extends State<EventDetails> with BaseUI {
                   ),
                 ],
               )),
-
           Container(
             padding: const EdgeInsets.only(left: 50, right: 50),
             child: FLButton(
@@ -399,10 +732,10 @@ class _EventDetailsState extends State<EventDetails> with BaseUI {
               height: 40,
             ),
           ),
-
           SizedBox(
             height: 30,
-          )
+          ),
+
         ],
       ),
     );

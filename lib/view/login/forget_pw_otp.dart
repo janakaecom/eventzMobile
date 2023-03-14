@@ -225,8 +225,8 @@ class _ForgetPwOtpState extends State<ForgetPwOtp> with BaseUI {
                       onPressed: () {
                         Get.to(ForgetPWOtpResend(), arguments: email);
                       },
-                      backgroundColor: AppColors.kWhite,
-                      titleFontColor: AppColors.buttonBlue,
+                      backgroundColor: AppColors.buttonBlue,
+                      titleFontColor: AppColors.kWhite,
                       borderColor: AppColors.buttonBlue,
                       minWidth: 100,
                       height: 40,
