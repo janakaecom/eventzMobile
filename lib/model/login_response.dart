@@ -22,6 +22,7 @@ class Result {
   String firstName;
   String lastName;
   String userName;
+  String profilePicUrl;
   Null password;
   int userTypeIdx;
   String mobileNo;
@@ -34,6 +35,7 @@ class Result {
       this.firstName,
       this.lastName,
       this.userName,
+        this.profilePicUrl,
       this.password,
       this.userTypeIdx,
       this.mobileNo,
@@ -43,6 +45,7 @@ class Result {
 
   Result.fromJson(Map<String, dynamic> json) {
     userIdx = json['userIdx'];
+    profilePicUrl = json['profilePicURL'];
     firstName = json['firstName'];
     lastName = json['lastName'];
     userName = json['userName'];
@@ -57,6 +60,7 @@ class Result {
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = new Map<String, dynamic>();
     data['userIdx'] = this.userIdx;
+    data['profilePicURL'] = this.profilePicUrl;
     data['firstName'] = this.firstName;
     data['lastName'] = this.lastName;
     data['userName'] = this.userName;

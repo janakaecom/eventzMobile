@@ -83,7 +83,7 @@ class _ForgetPWOtpResendState extends State<ForgetPWOtpResend> with BaseUI {
                     readOnly: false,
                     // validator: validatePassword,
                     hint: 'Please enter mobile number',
-                    maxLength: 6,
+                    // maxLength: 6,
                     textController: mobileController,
                     inputType: TextInputType.number,
                     // onChanged: passwordValidationCheck

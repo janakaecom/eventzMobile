@@ -231,7 +231,7 @@ class _EventRegistrationStep2State extends State<EventRegistrationStep2> {
                       child: Container(
                         height: 40,
                         decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(5),
+                            borderRadius: BorderRadius.circular(10),
                             border: Border.all(
                                 color: AppColors.TextGray.withOpacity(0.5),
                                 width: 1.5)),
@@ -372,16 +372,19 @@ class _EventRegistrationStep2State extends State<EventRegistrationStep2> {
                               contentPadding: EdgeInsets.symmetric(
                                   vertical: 10.0, horizontal: 10.0),
                               border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(10),
                                 borderSide: BorderSide(
                                     color: AppColors.TextGray.withOpacity(0.5),
                                     width: 1.5),
                               ),
                               enabledBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(10),
                                 borderSide: BorderSide(
                                     color: AppColors.TextGray.withOpacity(0.5),
                                     width: 1.5),
                               ),
                               focusedBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(10),
                                 borderSide: BorderSide(
                                     color: AppColors.TextGray.withOpacity(0.5),
                                     width: 1.5),

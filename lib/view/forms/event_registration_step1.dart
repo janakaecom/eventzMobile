@@ -291,7 +291,7 @@ class _EventRegistrationStep1State extends State<EventRegistrationStep1>
                         Container(
                           height: 40,
                           decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(5),
+                              borderRadius: BorderRadius.circular(10),
                               border: Border.all(
                                   color: AppColors.TextGray.withOpacity(0.5),
                                   width: 1.5)),
@@ -324,7 +324,7 @@ class _EventRegistrationStep1State extends State<EventRegistrationStep1>
                                   setState(
                                     () {
                                       _hostDropDownValue = val.hostName;
-                                      hostIdx = int.parse(val.countryCodeId);
+                                      hostIdx = int.parse(val.countryIdx);
                                     },
                                   );
                                 },
@@ -421,7 +421,7 @@ class _EventRegistrationStep1State extends State<EventRegistrationStep1>
                         Container(
                           height: 40,
                           decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(5),
+                              borderRadius: BorderRadius.circular(10),
                               border: Border.all(
                                   color: AppColors.TextGray.withOpacity(0.5),
                                   width: 1.5)),

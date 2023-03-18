@@ -1,8 +1,12 @@
+import 'dart:convert';
+
 import 'package:eventz/configs/colors.dart';
 import 'package:eventz/configs/fonts.dart';
 import 'package:eventz/configs/images.dart';
 import 'package:eventz/model/login_response.dart';
 import 'package:eventz/utils/constants.dart';
+import '../../model/error_response.dart';
+import '../../model/get_user_response.dart' as ur;
 import 'package:eventz/utils/shared_storage.dart';
 import 'package:eventz/view/dashboard/dashboard.dart';
 import 'package:eventz/view/login/login_view.dart';
@@ -14,6 +18,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:get/get.dart';
 
+import '../../model/get_user_response.dart';
+import '../BaseUI.dart';
 import '../forms/event_registration_step1.dart';
 import '../forms/host_registrations.dart';
 import '../forms/update_events.dart';
@@ -23,10 +29,11 @@ class AppDrawer extends StatefulWidget {
   _AppDrawerState createState() => _AppDrawerState();
 }
 
-class _AppDrawerState extends State<AppDrawer> {
+class _AppDrawerState extends State<AppDrawer> with BaseUI {
   SharedPref sharedPref = SharedPref();
   String _userName = "";
-  LoginResponse loginResponse ;
+  String imageUrl = "";
+  ur.Result profileData;
 
   @override
   void initState() {
@@ -74,15 +81,50 @@ class _AppDrawerState extends State<AppDrawer> {
 
   getProfileInfo() async {
     try {
-      LoginResponse profileData =
-          LoginResponse.fromJson(await sharedPref.read(ShardPrefKey.USER));
-      setState(() {
+      LoginResponse profileData = LoginResponse.fromJson(await sharedPref.read(ShardPrefKey.USER));
+      setState(() async {
         _userName = profileData.result.firstName + " " + profileData.result.lastName;
+        await getUser(profileData.result.userIdx);
       });
     } catch (Excepetion) {
       print(Excepetion.toString());
     }
   }
+
+
+  ///get my profile details from API
+  Future getUser(int userIdx) async {
+    await apiService.check().then((check) {
+      showProgressbar(context);
+      if (check) {
+        apiService.getUserProfile(userIdx).then((value) async {
+          hideProgressbar(context);
+
+          if (value.statusCode == 200) {
+            GetUserResponse responseData = GetUserResponse.fromJson(json.decode(value.body));
+            setState(() {
+              profileData = responseData.result;
+              imageUrl = profileData.profilePicURL;
+            });
+          } else {
+            ErrorResponse responseData = ErrorResponse.fromJson(json.decode(value.body));
+            // hideProgressbar(context);
+            Get.snackbar('error'.tr, responseData.message,
+                colorText: AppColors.textRed,
+                snackPosition: SnackPosition.TOP,
+                borderRadius: 0,
+                borderWidth: 2,
+                margin: EdgeInsets.only(left: 20, right: 20, top: 30),
+                backgroundColor: AppColors.bgGreyLight);
+          }
+        });
+      } else {
+        hideProgressbar(context);
+        helper.showAlertView(context, 'no_internet'.tr, () {}, 'ok'.tr);
+      }
+    });
+  }
+
 
   appDrawerHeader() {
     return SizedBox(
@@ -127,17 +169,44 @@ class _AppDrawerState extends State<AppDrawer> {
                 child: Container(),
                 flex: 1,
               ),
+              // Container(
+              //   margin: const EdgeInsets.only(top: 0, right: 0),
+              //   decoration: BoxDecoration(
+              //       color: AppColors.kWhite,
+              //       border: Border.all(
+              //         color: AppColors.kWhite,
+              //       ),
+              //       borderRadius: BorderRadius.all(Radius.circular(40))),
+              //   alignment: Alignment.topRight,
+              //   height: 70,
+              //   width: 70,
+              // ),
+              imageUrl == null || imageUrl == "" ?
               Container(
-                margin: const EdgeInsets.only(top: 0, right: 0),
-                decoration: BoxDecoration(
-                    color: AppColors.kWhite,
-                    border: Border.all(
-                      color: AppColors.kWhite,
-                    ),
-                    borderRadius: BorderRadius.all(Radius.circular(40))),
-                alignment: Alignment.topRight,
                 height: 70,
                 width: 70,
+                decoration: BoxDecoration(
+                    color: Colors.white.withOpacity(0.15),
+                    borderRadius: BorderRadius.circular(60)
+                ),
+                child: Center(
+                    child:
+                    Image.asset(
+                      menuUser,
+                      width: 28,
+                      height: 28,
+                      fit: BoxFit.cover,
+                    )
+                ),
+              ):
+              ClipRRect(
+                borderRadius: BorderRadius.circular(60),
+                child: Image.network(
+                  imageUrl,
+                  width: 85,
+                  height: 85,
+                  fit: BoxFit.cover,
+                ),
               ),
               Padding(
                 padding: EdgeInsets.only(right: 0, top: 10),
@@ -156,18 +225,6 @@ class _AppDrawerState extends State<AppDrawer> {
                     ),
                   ),
                 ),
-                // FLText(
-                //   // displayText: "dd",
-                //   displayText: _userName != null
-                //       ? _userName != ''
-                //           ? _userName
-                //           : "-"
-                //       : "-",
-                //   textColor: AppColors.kWhite,
-                //   setToWidth: false,
-                //   textSize: AppFonts.textFieldFontSize16,
-                //   textAlign: TextAlign.center,
-                // ),
               ),
               Expanded(
                 child: Container(),

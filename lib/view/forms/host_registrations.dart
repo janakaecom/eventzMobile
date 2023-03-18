@@ -89,323 +89,337 @@ class _HostRegistrationState extends State<HostRegistration> with BaseUI {
             isDrawerShow: true,
             isBackShow: false),
         body: SingleChildScrollView(
-          child: Container(
-            height: 1000,
-            width: 1000,
-            decoration: const BoxDecoration(
-                color: AppColors.kWhite
-            ),
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20,vertical: 20),
-              child: Column(
-                children: [
-
-                  SizedBox(
-                    height: 10,
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 20,vertical: 20),
+            child: Container(
+              decoration: BoxDecoration(
+                color: AppColors.kWhite,
+                borderRadius: BorderRadius.only(
+                    topLeft: Radius.circular(10),
+                    topRight: Radius.circular(10),
+                    bottomLeft: Radius.circular(10),
+                    bottomRight: Radius.circular(10)),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.grey.withOpacity(0.5),
+                    spreadRadius: 5,
+                    blurRadius: 7,
+                    offset: Offset(0, 3), // changes position of shadow
                   ),
-                  InkWell(
-                    onTap: (){
-                      // imagePickerWithCrop();
-                      uploadImage();
+                ],
+              ),
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16,vertical: 25),
+                child: Column(
+                  children: [
 
-                    },
-                    child:
-                    imageUrl != null?
-                    ClipRRect(
-                      borderRadius: BorderRadius.circular(60),
-                      child: Image.network(
-                        imageUrl,
-                        width: 110,
+                    SizedBox(
+                      height: 10,
+                    ),
+                    InkWell(
+                      onTap: (){
+                        // imagePickerWithCrop();
+                        uploadImage();
+
+                      },
+                      child:
+                      imageUrl != null?
+                      ClipRRect(
+                        borderRadius: BorderRadius.circular(60),
+                        child: Image.network(
+                          imageUrl,
+                          width: 110,
+                          height: 110,
+                          fit: BoxFit.cover,
+                        ),
+                      ):
+                      Container(
                         height: 110,
-                        fit: BoxFit.cover,
-                      ),
-                    ):
-                    Container(
-                      height: 110,
-                      width: 110,
-                      decoration: BoxDecoration(
-                          color: Colors.blue.withOpacity(0.15),
-                          borderRadius: BorderRadius.circular(60)
-                      ),
-                      child: Center(
-                          child:
-                          // logo != null?
-                          // Image.file(
-                          //   files.File(logo),
-                          //   width: 100,
-                          //   height: 100,
-                          // ):
+                        width: 110,
+                        decoration: BoxDecoration(
+                            color: Colors.blue.withOpacity(0.15),
+                            borderRadius: BorderRadius.circular(60)
+                        ),
+                        child: Center(
+                            child:
+                            // logo != null?
+                            // Image.file(
+                            //   files.File(logo),
+                            //   width: 100,
+                            //   height: 100,
+                            // ):
 
-                          Image.asset(
-                            menuUser,
-                            width: 28,
-                            height: 28,
-                            fit: BoxFit.cover,
-                          )
+                            Image.asset(
+                              menuUser,
+                              width: 28,
+                              height: 28,
+                              fit: BoxFit.cover,
+                            )
+                        ),
                       ),
                     ),
-                  ),
-                  SizedBox(
-                    height: 10,
-                  ),
-                  FLText(
-                    displayText: "Business Logo",
-                    textColor: AppColors.kTextDark,
-                    setToWidth: false,
-                    textSize: AppFonts.textFieldFontSize16,
-                  ),
-                  SizedBox(
-                    height: 10,
-                  ),
-                  Row(
-                    children: [
-                      FLText(
-                        displayText: "Business \nName",
-                        textColor: AppColors.kTextDark,
-                        setToWidth: false,
-                        textSize: AppFonts.textFieldFontSize14,
-                      ),
-                      SizedBox(
-                        width: 23,
-                      ),
-                      Expanded(
-                        child: InputRoundedTextField(
-                          padding:const EdgeInsets.symmetric(vertical: 5),
-                          readOnly: false,
-                          textController: businessNameController,
-                          inputType: TextInputType.text,
-                          onChanged: (value) {
-                          },
+                    SizedBox(
+                      height: 10,
+                    ),
+                    FLText(
+                      displayText: "Business Logo",
+                      textColor: AppColors.kTextDark,
+                      setToWidth: false,
+                      textSize: AppFonts.textFieldFontSize16,
+                    ),
+                    SizedBox(
+                      height: 10,
+                    ),
+                    Row(
+                      children: [
+                        FLText(
+                          displayText: "Business \nName",
+                          textColor: AppColors.kTextDark,
+                          setToWidth: false,
+                          textSize: AppFonts.textFieldFontSize14,
                         ),
-                      ),
-                    ],
-                  ),
-                  SizedBox(
-                    height: 8,
-                  ),
-                  Row(
-                    children: [
-                      FLText(
-                        displayText: "Address 1",
-                        textColor: AppColors.kTextDark,
-                        setToWidth: false,
-                        textSize: AppFonts.textFieldFontSize14,
-                      ),
-                      SizedBox(
-                        width: 22,
-                      ),
-                      Expanded(
-                        child: InputRoundedTextField(
-                          padding:const EdgeInsets.symmetric(vertical: 5),
-                          readOnly: false,
-                          textController: address1Controller,
-                          inputType: TextInputType.text,
-                          onChanged: (value) {
-                          },
+                        SizedBox(
+                          width: 23,
                         ),
-                      ),
-                    ],
-                  ),
-                  SizedBox(
-                    height: 8,
-                  ),
-                  Row(
-                    children: [
-                      FLText(
-                        displayText: "Address 2",
-                        textColor: AppColors.kTextDark,
-                        setToWidth: false,
-                        textSize: AppFonts.textFieldFontSize14,
-                      ),
-                      SizedBox(
-                        width: 20,
-                      ),
-                      Expanded(
-                        child: InputRoundedTextField(
-                          padding:const EdgeInsets.symmetric(vertical: 5),
-                          readOnly: false,
-                          textController: address2Controller,
-                          inputType: TextInputType.text,
-                          onChanged: (value) {
-                          },
+                        Expanded(
+                          child: InputRoundedTextField(
+                            padding:const EdgeInsets.symmetric(vertical: 5),
+                            readOnly: false,
+                            textController: businessNameController,
+                            inputType: TextInputType.text,
+                            onChanged: (value) {
+                            },
+                          ),
                         ),
-                      ),
-                    ],
-                  ),
-                  SizedBox(
-                    height: 8,
-                  ),
-                  Row(
-                    children: [
-                      FLText(
-                        displayText: "Country :",
-                        textColor: AppColors.kTextDark,
-                        setToWidth: false,
-                        textSize: AppFonts.textFieldFontSize14,
-                      ),
-                      SizedBox(
-                        width: 26,
-                      ),
-                      Expanded(
-                        child: Padding(
-                          padding: const EdgeInsets.only(right: 38),
-                          child: Container(
-                            height: 40,
-                            decoration: BoxDecoration(
-                                border: Border.all(
-                                  color: AppColors.TextGray.withOpacity(0.5),
-                                  width: 1.5,
-                                ),
-                                borderRadius: BorderRadius.circular(5)
-                            ),
-                            child: Padding(
-                              padding: const EdgeInsets.symmetric(horizontal: 10,vertical: 0),
-                              child: DropdownButtonHideUnderline(
-                                child: DropdownButton(
-                                  hint: _dropDownValue == null
-                                      ? Text('Select a country')
-                                      : Text(
-                                    _dropDownValue,
-                                    style: TextStyle(color: Colors.black,fontFamily: AppFonts.circularStd),
+                      ],
+                    ),
+                    SizedBox(
+                      height: 8,
+                    ),
+                    Row(
+                      children: [
+                        FLText(
+                          displayText: "Address 1",
+                          textColor: AppColors.kTextDark,
+                          setToWidth: false,
+                          textSize: AppFonts.textFieldFontSize14,
+                        ),
+                        SizedBox(
+                          width: 22,
+                        ),
+                        Expanded(
+                          child: InputRoundedTextField(
+                            padding:const EdgeInsets.symmetric(vertical: 5),
+                            readOnly: false,
+                            textController: address1Controller,
+                            inputType: TextInputType.text,
+                            onChanged: (value) {
+                            },
+                          ),
+                        ),
+                      ],
+                    ),
+                    SizedBox(
+                      height: 8,
+                    ),
+                    Row(
+                      children: [
+                        FLText(
+                          displayText: "Address 2",
+                          textColor: AppColors.kTextDark,
+                          setToWidth: false,
+                          textSize: AppFonts.textFieldFontSize14,
+                        ),
+                        SizedBox(
+                          width: 20,
+                        ),
+                        Expanded(
+                          child: InputRoundedTextField(
+                            padding:const EdgeInsets.symmetric(vertical: 5),
+                            readOnly: false,
+                            textController: address2Controller,
+                            inputType: TextInputType.text,
+                            onChanged: (value) {
+                            },
+                          ),
+                        ),
+                      ],
+                    ),
+                    SizedBox(
+                      height: 8,
+                    ),
+                    Row(
+                      children: [
+                        FLText(
+                          displayText: "Country :",
+                          textColor: AppColors.kTextDark,
+                          setToWidth: false,
+                          textSize: AppFonts.textFieldFontSize14,
+                        ),
+                        SizedBox(
+                          width: 26,
+                        ),
+                        Expanded(
+                          child: Padding(
+                            padding: const EdgeInsets.only(right: 38),
+                            child: Container(
+                              height: 40,
+                              decoration: BoxDecoration(
+                                  border: Border.all(
+                                    color: AppColors.TextGray.withOpacity(0.5),
+                                    width: 1.5,
                                   ),
-                                  isExpanded: true,
-                                  iconSize: 30.0,
-                                  style: TextStyle(color: Colors.black,fontFamily: AppFonts.circularStd),
-                                  items: countryList.map(
-                                        (val) {
-                                      return DropdownMenuItem<Country>(
-                                        value: val,
-                                        child: Text(val.countryName.toString()),
+                                borderRadius: BorderRadius.circular(10),
+                              ),
+                              child: Padding(
+                                padding: const EdgeInsets.symmetric(horizontal: 10,vertical: 0),
+                                child: DropdownButtonHideUnderline(
+                                  child: DropdownButton(
+                                    hint: _dropDownValue == null
+                                        ? Text('Select a country')
+                                        : Text(
+                                      _dropDownValue,
+                                      style: TextStyle(color: Colors.black,fontFamily: AppFonts.circularStd),
+                                    ),
+                                    isExpanded: true,
+                                    iconSize: 30.0,
+                                    style: TextStyle(color: Colors.black,fontFamily: AppFonts.circularStd),
+                                    items: countryList.map(
+                                          (val) {
+                                        return DropdownMenuItem<Country>(
+                                          value: val,
+                                          child: Text(val.countryName.toString()),
+                                        );
+                                      },
+                                    ).toList(),
+                                    onChanged: (val) {
+                                      setState(
+                                            () {
+                                          print("val::::::::");
+                                          print(val.countryName);
+                                          _dropDownValue = val.countryName;
+                                          countryIdx = int.parse(val.countryIdx);
+                                        },
                                       );
                                     },
-                                  ).toList(),
-                                  onChanged: (val) {
-                                    setState(
-                                          () {
-                                        print("val::::::::");
-                                        print(val.countryName);
-                                        _dropDownValue = val.countryName;
-                                        countryIdx = int.parse(val.countryIdx);
-                                      },
-                                    );
-                                  },
+                                  ),
                                 ),
                               ),
                             ),
                           ),
                         ),
-                      ),
-                      // Expanded(
-                      //   child: InputSquareTextField(
-                      //     hint: "E",
-                      //     hintColor: AppColors.TextGray,
-                      //     padding:const EdgeInsets.symmetric(vertical: 5),
-                      //     readOnly: true,
-                      //     textController: countryCodeController,
-                      //     inputType: TextInputType.number,
-                      //     onSuffixPress: _onPressedShowBottomSheet,
-                      //     suffixIcon: Icon(Icons.chevron_right),
-                      //   ),
-                      // ),
-                    ],
-                  ),
-                  SizedBox(
-                    height: 8,
-                  ),
-                  Row(
-                    children: [
-                      FLText(
-                        displayText: "Mobile No:",
-                        textColor: AppColors.kTextDark,
-                        setToWidth: false,
-                        textSize: AppFonts.textFieldFontSize14,
-                      ),
-                      SizedBox(
-                        width: 16,
-                      ),
-                      Expanded(
-                        child: InputRoundedTextField(
-                          hint: "E",
-                          hintColor: AppColors.TextGray,
-                          padding:const EdgeInsets.symmetric(vertical: 5),
-                          readOnly: false,
-                          textController: mobileNoController,
-                          inputType: TextInputType.number,
-                          onChanged: (value) {
-                          },
+                        // Expanded(
+                        //   child: InputSquareTextField(
+                        //     hint: "E",
+                        //     hintColor: AppColors.TextGray,
+                        //     padding:const EdgeInsets.symmetric(vertical: 5),
+                        //     readOnly: true,
+                        //     textController: countryCodeController,
+                        //     inputType: TextInputType.number,
+                        //     onSuffixPress: _onPressedShowBottomSheet,
+                        //     suffixIcon: Icon(Icons.chevron_right),
+                        //   ),
+                        // ),
+                      ],
+                    ),
+                    SizedBox(
+                      height: 8,
+                    ),
+                    Row(
+                      children: [
+                        FLText(
+                          displayText: "Mobile No:",
+                          textColor: AppColors.kTextDark,
+                          setToWidth: false,
+                          textSize: AppFonts.textFieldFontSize14,
                         ),
-                      ),
-                    ],
-                  ),
-                  SizedBox(
-                    height: 8,
-                  ),
-                  Row(
-                    children: [
-                      FLText(
-                        displayText: "Email \nAddress:",
-                        textColor: AppColors.kTextDark,
-                        setToWidth: false,
-                        textSize: AppFonts.textFieldFontSize14,
-                      ),
-                      SizedBox(
-                        width: 27,
-                      ),
-                      Expanded(
-                        child: InputRoundedTextField(
-                          hint: "E",
-                          hintColor: AppColors.TextGray,
-                          padding:const EdgeInsets.symmetric(vertical: 5),
-                          readOnly: false,
-                          textController: emailController,
-                          inputType: TextInputType.emailAddress,
-                          onChanged: (value) {
-                          },
+                        SizedBox(
+                          width: 16,
                         ),
-                      ),
-                    ],
-                  ),
+                        Expanded(
+                          child: InputRoundedTextField(
+                            hint: "E",
+                            hintColor: AppColors.TextGray,
+                            padding:const EdgeInsets.symmetric(vertical: 5),
+                            readOnly: false,
+                            textController: mobileNoController,
+                            inputType: TextInputType.number,
+                            onChanged: (value) {
+                            },
+                          ),
+                        ),
+                      ],
+                    ),
+                    SizedBox(
+                      height: 8,
+                    ),
+                    Row(
+                      children: [
+                        FLText(
+                          displayText: "Email \nAddress:",
+                          textColor: AppColors.kTextDark,
+                          setToWidth: false,
+                          textSize: AppFonts.textFieldFontSize14,
+                        ),
+                        SizedBox(
+                          width: 27,
+                        ),
+                        Expanded(
+                          child: InputRoundedTextField(
+                            hint: "E",
+                            hintColor: AppColors.TextGray,
+                            padding:const EdgeInsets.symmetric(vertical: 5),
+                            readOnly: false,
+                            textController: emailController,
+                            inputType: TextInputType.emailAddress,
+                            onChanged: (value) {
+                            },
+                          ),
+                        ),
+                      ],
+                    ),
 
 
 
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      SizedBox(
-                        height: 30,
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 12),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Center(
-                              child: Container(
-                                margin: const EdgeInsets.only(top: 20),
-                                height: 50,
-                                width: 250,
-                                child: FLButton(
-                                  borderRadius: 20,
-                                  title: "Submit".tr,
-                                  onPressed: () async {
-                                    hostRegisterCall();
-                                  },
-                                  backgroundColor: AppColors.buttonBlue,
-                                  titleFontColor: AppColors.kWhite,
-                                  borderColor: AppColors.buttonBlue,
-                                  minWidth: 100,
-                                  height: 40,
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        SizedBox(
+                          height: 30,
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 12),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Center(
+                                child: Container(
+                                  margin: const EdgeInsets.only(top: 20),
+                                  height: 50,
+                                  width: 250,
+                                  child: FLButton(
+                                    borderRadius: 20,
+                                    title: "Submit".tr,
+                                    onPressed: () async {
+                                      hostRegisterCall();
+                                    },
+                                    backgroundColor: AppColors.buttonBlue,
+                                    titleFontColor: AppColors.kWhite,
+                                    borderColor: AppColors.buttonBlue,
+                                    minWidth: 100,
+                                    height: 40,
+                                  ),
                                 ),
                               ),
-                            ),
-                          ],
+                            ],
+                          ),
                         ),
-                      ),
 
-                    ],
-                  ),
+                      ],
+                    ),
 
-                ],
+                  ],
+                ),
               ),
             ),
           ),

@@ -595,9 +595,15 @@ class _EventRegistrationStep3State extends State<EventRegistrationStep3> with Ba
                           fillColor: Colors.white,
                           counterText: '',
                           contentPadding: EdgeInsets.symmetric(vertical: 10.0, horizontal: 10.0),
-                          border: OutlineInputBorder(borderSide: BorderSide(color: AppColors.TextGray.withOpacity(0.5), width: 1.5),),
-                          enabledBorder: OutlineInputBorder(borderSide: BorderSide(color: AppColors.TextGray.withOpacity(0.5), width: 1.5),),
-                          focusedBorder: OutlineInputBorder(borderSide: BorderSide(color: AppColors.TextGray.withOpacity(0.5), width: 1.5),),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(10),
+                            borderSide: BorderSide(color: AppColors.TextGray.withOpacity(0.5), width: 1.5),),
+                          enabledBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(10),
+                            borderSide: BorderSide(color: AppColors.TextGray.withOpacity(0.5), width: 1.5),),
+                          focusedBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(10),
+                            borderSide: BorderSide(color: AppColors.TextGray.withOpacity(0.5), width: 1.5),),
                         )),
                   ],
                 ),
