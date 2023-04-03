@@ -39,8 +39,8 @@ class _LoginViewState extends State<LoginView> with BaseUI {
       emailController.text = widget.email.toString();
     }
     else{
-      emailController.text = "maryse@gmail.com";
-      pwController.text = "Shanuka@97";
+      // emailController.text = "maryse@gmail.com";
+      // pwController.text = "Shanuka@97";
     }
   }
 
@@ -67,141 +67,142 @@ class _LoginViewState extends State<LoginView> with BaseUI {
   ///
   /// get login text field
   Widget login() {
-    return Center(
-      child: Container(
-        width: Get.width,
-        height: 320,
-        margin: const EdgeInsets.only(left: 20.0, right: 20, top: 0),
-        decoration: BoxDecoration(
-          color: AppColors.kWhite,
-          borderRadius: BorderRadius.only(
-              topLeft: Radius.circular(10),
-              topRight: Radius.circular(10),
-              bottomLeft: Radius.circular(10),
-              bottomRight: Radius.circular(10)),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.grey.withOpacity(0.5),
-              spreadRadius: 5,
-              blurRadius: 7,
-              offset: Offset(0, 3), // changes position of shadow
+    return Container(
+      width: Get.width,
+      // height: 320,
+      margin: const EdgeInsets.only(left: 20.0, right: 20),
+      decoration: BoxDecoration(
+        color: AppColors.kWhite,
+        borderRadius: BorderRadius.only(
+            topLeft: Radius.circular(10),
+            topRight: Radius.circular(10),
+            bottomLeft: Radius.circular(10),
+            bottomRight: Radius.circular(10)),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.grey.withOpacity(0.5),
+            spreadRadius: 5,
+            blurRadius: 7,
+            offset: Offset(0, 3), // changes position of shadow
+          ),
+        ],
+      ),
+      child: Padding(
+        padding:
+        const EdgeInsets.only(left: 20,right: 20,top: 20),
+        child: Column(
+          children: [
+            Align(
+              alignment: Alignment.centerLeft,
+              child: FLText(
+                displayText: 'sign_in'.tr,
+                textColor: AppColors.textBlue,
+                setToWidth: false,
+                fontWeight: FontWeight.bold,
+                textSize: AppFonts.textFieldFontLarge24,
+              ),
+            ),
+
+            SizedBox(
+              height: 5,
+            ),
+
+            TextField(
+              controller: emailController,
+              keyboardType: TextInputType.emailAddress,
+              decoration: new InputDecoration(
+                  prefixIcon: Padding(
+                    padding: const EdgeInsets.only(
+                        top: 15, left: 5, right: 0, bottom: 15),
+                    child: SizedBox(
+                      width: 10,
+                      height: 10,
+                      child: Image.asset(
+                        email,
+                        color: Colors.grey,
+                      ),
+                    ),
+                  ),
+                  hintText: 'enter_email'.tr,
+                  hintStyle: TextStyle(
+                      color: AppColors.kTextLight,
+                      fontSize: AppFonts.textFieldFontSize14),
+                  labelText: 'email_cap'.tr,
+                  labelStyle: TextStyle(
+                      color: AppColors.buttonBlue,
+                      fontSize: AppFonts.textFieldFontSize16),
+                  border: UnderlineInputBorder(
+                      borderSide: BorderSide(color: AppColors.textRed))),
+            ),
+            TextField(
+              controller: pwController,
+              obscureText: true,
+              decoration: new InputDecoration(
+                  prefixIcon: Padding(
+                    padding: const EdgeInsets.only(
+                        top: 15, left: 5, right: 0, bottom: 15),
+                    child: SizedBox(
+                      width: 23,
+                      height: 23,
+                      child: Image.asset(
+                        password,
+                        color: Colors.grey,
+                      ),
+                    ),
+                  ),
+                  hintText: 'Enter your password',
+                  hintStyle: TextStyle(
+                      color: AppColors.kTextLight,
+                      fontSize: AppFonts.textFieldFontSize16),
+                  labelText: 'password_cap'.tr,
+                  labelStyle: TextStyle(
+                      color: AppColors.buttonBlue,
+                      fontSize: AppFonts.textFieldFontSize14),
+                  border: UnderlineInputBorder(
+                      borderSide: BorderSide(color: AppColors.textRed))),
+            ),
+            SizedBox(
+              height: 20,
+            ),
+            Align(
+              alignment: Alignment.centerRight,
+              child: InkWell(
+                onTap: () {
+                  Get.to(ForgetPwView());
+                },
+                child: FLText(
+                  displayText: 'forgot_pw'.tr,
+                  textColor: AppColors.textBlue,
+                  setToWidth: false,
+                  textSize: 14,
+                ),
+              ),
+            ),
+            SizedBox(
+              height: 20,
+            ),
+            Center(
+              child: Container(
+                height: 50,
+                width: 150,
+                child: FLButton(
+                  borderRadius: 20,
+                  title: "sign_in".tr,
+                  onPressed: () {
+                    loginAction();
+                  },
+                  backgroundColor: AppColors.buttonBlue,
+                  titleFontColor: AppColors.kWhite,
+                  borderColor: AppColors.buttonBlue,
+                  minWidth: 100,
+                  height: 40,
+                ),
+              ),
+            ),
+            SizedBox(
+              height: 26,
             ),
           ],
-        ),
-        child: Container(
-          margin:
-              const EdgeInsets.only(left: 20, right: 20, top: 10, bottom: 0),
-          child: Stack(
-            children: [
-              Column(
-                children: [
-                  Align(
-                    alignment: Alignment.centerLeft,
-                    child: FLText(
-                      displayText: 'sign_in'.tr,
-                      textColor: AppColors.textBlue,
-                      setToWidth: false,
-                      fontWeight: FontWeight.bold,
-                      textSize: AppFonts.textFieldFontLarge24,
-                    ),
-                  ),
-                  TextField(
-                    controller: emailController,
-                    keyboardType: TextInputType.emailAddress,
-                    decoration: new InputDecoration(
-                        prefixIcon: Padding(
-                          padding: const EdgeInsets.only(
-                              top: 15, left: 5, right: 0, bottom: 15),
-                          child: SizedBox(
-                            width: 10,
-                            height: 10,
-                            child: Image.asset(
-                              email,
-
-                            ),
-                          ),
-                        ),
-                        hintText: 'enter_email'.tr,
-                        hintStyle: TextStyle(
-                            color: AppColors.kTextLight,
-                            fontSize: AppFonts.textFieldFontSize),
-                        labelText: 'email_cap'.tr,
-                        labelStyle: TextStyle(
-                            color: AppColors.buttonBlue,
-                            fontSize: AppFonts.textFieldFontSize16),
-                        border: UnderlineInputBorder(
-                            borderSide: BorderSide(color: AppColors.textRed))),
-                  ),
-                  TextField(
-                    controller: pwController,
-                    obscureText: true,
-                    decoration: new InputDecoration(
-                        prefixIcon: Padding(
-                          padding: const EdgeInsets.only(
-                              top: 15, left: 5, right: 0, bottom: 15),
-                          child: SizedBox(
-                            width: 23,
-                            height: 23,
-                            child: Image.asset(
-                              password,
-                            ),
-                          ),
-                        ),
-                        hintText: 'enter_password'.tr,
-                        hintStyle: TextStyle(
-                            color: AppColors.kTextLight,
-                            fontSize: AppFonts.textFieldFontSize16),
-                        labelText: 'password_cap'.tr,
-                        labelStyle: TextStyle(
-                            color: AppColors.buttonBlue,
-                            fontSize: AppFonts.textFieldFontSize),
-                        border: UnderlineInputBorder(
-                            borderSide: BorderSide(color: AppColors.textRed))),
-                  ),
-                  SizedBox(
-                    height: 20,
-                  ),
-                  Align(
-                    alignment: Alignment.centerRight,
-                    child: InkWell(
-                      onTap: () {
-                        Get.to(ForgetPwView());
-                      },
-                      child: FLText(
-                        displayText: 'forgot_pw'.tr,
-                        textColor: AppColors.textBlue,
-                        setToWidth: false,
-                        textSize: 14,
-                      ),
-                    ),
-                  ),
-                  Center(
-                    child: Container(
-                      margin: const EdgeInsets.only(top: 20),
-                      height: 50,
-                      width: 250,
-                      child: FLButton(
-                        borderRadius: 20,
-                        title: "sign_in".tr,
-                        onPressed: () {
-                          loginAction();
-                        },
-                        backgroundColor: AppColors.buttonBlue,
-                        titleFontColor: AppColors.kWhite,
-                        borderColor: AppColors.buttonBlue,
-                        minWidth: 100,
-                        height: 40,
-                      ),
-                    ),
-                  ),
-                  SizedBox(
-                    height: 20,
-                  ),
-
-                ],
-              ),
-            ],
-          ),
         ),
       ),
     );
@@ -237,7 +238,7 @@ class _LoginViewState extends State<LoginView> with BaseUI {
             },
             backgroundColor: AppColors.buttonBlue,
             titleFontColor: AppColors.kWhite,
-            borderColor: AppColors.kPrimaryDark,
+            borderColor: Colors.transparent,
             minWidth: 120,
             height: 40,
           )
@@ -250,22 +251,31 @@ class _LoginViewState extends State<LoginView> with BaseUI {
     String pw = pwController.text;
     String email = emailController.text;
 
-    if (!GetUtils.isEmail(email)) {
-      Get.snackbar('error'.tr, 'invalid_email'.tr, duration: Duration(seconds: 5),
+
+    if (email.isEmpty && pw.isEmpty) {
+      Get.snackbar('eventz', "Please enter valid email and password", duration: Duration(seconds: 5),
           colorText: AppColors.textRed, backgroundColor: AppColors.kWhite);
     }
-    if (email.characters.length > 100) {
-      Get.snackbar('eventz', "Email is too long!", duration: Duration(seconds: 5),
+    else if (email.isEmpty) {
+      Get.snackbar('eventz', "Please enter valid email", duration: Duration(seconds: 5),
           colorText: AppColors.textRed, backgroundColor: AppColors.kWhite);
     }
     else if (pw.isEmpty) {
-      Get.snackbar('eventz', 'invalid_password'.tr, duration: Duration(seconds: 5),
+      Get.snackbar('eventz', "Please enter valid password", duration: Duration(seconds: 5),
           colorText: AppColors.textRed, backgroundColor: AppColors.kWhite);
     }
-    else if (pw.characters.length > 20) {
-      Get.snackbar('eventz', 'Password must be less than 20 characters!', duration: Duration(seconds: 5),
+    else if (!GetUtils.isEmail(email)) {
+      Get.snackbar("eventz", 'invalid_email'.tr, duration: Duration(seconds: 5),
           colorText: AppColors.textRed, backgroundColor: AppColors.kWhite);
     }
+   else if (email.characters.length > 100) {
+      Get.snackbar('eventz', "Email is too long!", duration: Duration(seconds: 5),
+          colorText: AppColors.textRed, backgroundColor: AppColors.kWhite);
+    }
+    // else if (pw.characters.length > 20) {
+    //   Get.snackbar('eventz', 'Password must be less than 20 characters!', duration: Duration(seconds: 5),
+    //       colorText: AppColors.textRed, backgroundColor: AppColors.kWhite);
+    // }
     else {
       apiService.check().then((check) {
         showProgressbar(context);
@@ -337,10 +347,10 @@ class _LoginViewState extends State<LoginView> with BaseUI {
             height: 40,
           ),
           bottomMenus(),
-          Expanded(
-            child: Container(),
-            flex: 1,
+          SizedBox(
+            height: 40,
           ),
+
         ],
       ),
     );

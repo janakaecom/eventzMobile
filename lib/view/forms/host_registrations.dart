@@ -131,13 +131,14 @@ class _HostRegistrationState extends State<HostRegistration> with BaseUI {
                           width: 110,
                           height: 110,
                           fit: BoxFit.cover,
+                          color: Colors.grey,
                         ),
                       ):
                       Container(
                         height: 110,
                         width: 110,
                         decoration: BoxDecoration(
-                            color: Colors.blue.withOpacity(0.15),
+                            color: AppColors.buttonBlue.withOpacity(0.2),
                             borderRadius: BorderRadius.circular(60)
                         ),
                         child: Center(

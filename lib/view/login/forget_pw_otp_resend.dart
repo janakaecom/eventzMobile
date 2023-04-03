@@ -11,6 +11,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 import '../widget/imput_square_text_field.dart';
+import 'forget_pw_otp.dart';
 
 class ForgetPWOtpResend extends StatefulWidget {
   @override
@@ -26,6 +27,23 @@ class _ForgetPWOtpResendState extends State<ForgetPWOtpResend> with BaseUI {
     print("EMAIL 1: " + email);
 
     return Scaffold(
+      appBar: AppBar(
+        backgroundColor: AppColors.kWhite,
+        elevation: 0,
+        title:  FLText(
+          displayText: "OTP Resend",
+          textColor: AppColors.buttonBlue,
+          fontWeight: FontWeight.bold,
+          setToWidth: false,
+          textSize: AppFonts.textFieldFontSize,
+        ),
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back_ios,color: Colors.black,),
+          onPressed: () {
+            Navigator.of(context).pop(true);
+          },
+        ),
+      ),
       body: SingleChildScrollView(
         child: Container(
             color: AppColors.kBackgroundWhite,
@@ -59,7 +77,7 @@ class _ForgetPWOtpResendState extends State<ForgetPWOtpResend> with BaseUI {
         ),
         child: Container(
           margin:
-              const EdgeInsets.only(left: 20, right: 20, top: 10, bottom: 20),
+              const EdgeInsets.symmetric(horizontal: 20,vertical: 20),
           child: Stack(
             children: [
               Column(
@@ -92,12 +110,12 @@ class _ForgetPWOtpResendState extends State<ForgetPWOtpResend> with BaseUI {
                     height: 20,
                   ),
                   Container(
-                    width: 200,
+                    width: 150,
                     child: FLButton(
                       borderRadius: 20,
                       title: "Resend",
                       onPressed: () {
-                        resentAPICall();
+                        forgetPwAPICall();
                       },
                       backgroundColor: AppColors.buttonBlue,
                       titleFontColor: AppColors.kWhite,
@@ -113,6 +131,41 @@ class _ForgetPWOtpResendState extends State<ForgetPWOtpResend> with BaseUI {
         ),
       ),
     );
+  }
+
+
+  void forgetPwAPICall() {
+    // String email = emailController.text;
+    if (!GetUtils.isEmail(email)) {
+      Get.snackbar('eventz', 'invalid_email'.tr,
+          colorText: AppColors.textRed, backgroundColor: AppColors.kWhite);
+    }
+    else if (email.characters.length > 100) {
+      Get.snackbar('eventz', 'Email is too long!', duration: Duration(seconds: 5),
+          colorText: AppColors.textRed, backgroundColor: AppColors.kWhite);
+    }
+    else {
+      apiService.check().then((check) {
+        showProgressbar(context);
+        if (check) {
+          apiService.forgetPw(email).then((value) {
+            hideProgressbar(context);
+            if (value.statusCode == 200) {
+              // Get.to(ForgetPwOtp(), arguments: email);
+            } else {
+              RegisterErrorResponse responseData =
+              RegisterErrorResponse.fromJson(json.decode(value.body));
+              Get.snackbar('error'.tr, responseData.message,
+                  colorText: AppColors.textRed,
+                  backgroundColor: AppColors.kWhite);
+            }
+          });
+        } else {
+          hideProgressbar(context);
+          helper.showAlertView(context, 'no_internet'.tr, () {}, 'ok'.tr);
+        }
+      });
+    }
   }
 
   void resentAPICall() {
@@ -157,17 +210,7 @@ class _ForgetPWOtpResendState extends State<ForgetPWOtpResend> with BaseUI {
         SizedBox(
           height: Get.height / 3,
         ),
-        Center(
-          child: FLText(
-            displayText: "OTP Resend",
-            textColor: AppColors.kTextDark,
-            setToWidth: false,
-            textSize: AppFonts.textFieldFontLarge,
-          ),
-        ),
-        SizedBox(
-          height: 40,
-        ),
+
         submitForm(),
       ],
     );

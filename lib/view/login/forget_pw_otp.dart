@@ -13,6 +13,7 @@ import 'package:eventz/view/widget/fl_text.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
+import '../../model/register_success_response.dart';
 import '../../model/responses.dart';
 import '../widget/app_bar.dart';
 import '../widget/imput_square_text_field.dart';
@@ -27,6 +28,7 @@ class _ForgetPwOtpState extends State<ForgetPwOtp> with BaseUI {
   TextEditingController pwController = new TextEditingController();
   String email = Get.arguments;
   FocusNode _passwordFocusNode;
+  FocusNode name_focus = FocusNode();
   bool obscurePassword = true;
 
   @override
@@ -34,28 +36,6 @@ class _ForgetPwOtpState extends State<ForgetPwOtp> with BaseUI {
     print("EMAIL : " + email);
 
     return Scaffold(
-      // appBar: AppBar(
-      //   centerTitle: true,
-      //   backgroundColor: AppColors.kWhite,
-      //   bottomOpacity: 0.0,
-      //   leading: IconButton(
-      //     icon: Icon(
-      //       Icons.arrow_back_ios,
-      //       color: Colors.black,
-      //     ), onPressed: () {
-      //     Navigator.of(context).pop();
-      //   },
-      //   ),
-      //   elevation: 0.0,
-      //   title: FLText(
-      //     displayText: "OTP Verification",
-      //     textColor: AppColors.buttonBlue,
-      //     fontWeight: FontWeight.bold,
-      //     setToWidth: false,
-      //     textSize: AppFonts.textFieldFontSize,
-      //   ),
-      //   actions: [],
-      // ),
       body: SingleChildScrollView(
         child: Container(
             color: AppColors.kBackgroundWhite,
@@ -65,7 +45,7 @@ class _ForgetPwOtpState extends State<ForgetPwOtp> with BaseUI {
                   children: [
                     bgView(),
                     Padding(
-                      padding: const EdgeInsets.only(top: 62),
+                      padding: const EdgeInsets.only(top: 20),
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
@@ -126,7 +106,7 @@ class _ForgetPwOtpState extends State<ForgetPwOtp> with BaseUI {
         ),
         child: Container(
           margin:
-              const EdgeInsets.only(left: 20, right: 20, top: 10, bottom: 20),
+              const EdgeInsets.symmetric(horizontal: 20,vertical: 20),
           child: Stack(
             children: [
               Column(
@@ -135,7 +115,7 @@ class _ForgetPwOtpState extends State<ForgetPwOtp> with BaseUI {
                     mainAxisAlignment: MainAxisAlignment.start,
                     children: [
                       FLText(
-                        displayText: "Enter OTP",
+                        displayText: "OTP",
                         textColor: AppColors.textBlue,
                         setToWidth: false,
                         textSize: 14,
@@ -149,7 +129,8 @@ class _ForgetPwOtpState extends State<ForgetPwOtp> with BaseUI {
                     padding:const EdgeInsets.symmetric(vertical: 5),
                     readOnly: false,
                     // validator: validatePassword,
-                    hint: 'OTP code',
+                    hint: 'Enter your OTP',
+                    focusNode: name_focus,
                     maxLength: 6,
                     textController: otpController,
                     inputType: TextInputType.number,
@@ -161,7 +142,7 @@ class _ForgetPwOtpState extends State<ForgetPwOtp> with BaseUI {
                         mainAxisAlignment: MainAxisAlignment.start,
                         children: [
                           FLText(
-                            displayText: "Enter New Password",
+                            displayText: "New Password",
                             textColor: AppColors.textBlue,
                             setToWidth: false,
                             textSize: 14,
@@ -175,6 +156,8 @@ class _ForgetPwOtpState extends State<ForgetPwOtp> with BaseUI {
                         padding:const EdgeInsets.symmetric(vertical: 5),
                         readOnly: false,
                         // validator: validatePassword,
+
+                        hint: "Enter your new password",
 
                         focusNode: _passwordFocusNode,
                         isObscure: obscurePassword,
@@ -200,12 +183,13 @@ class _ForgetPwOtpState extends State<ForgetPwOtp> with BaseUI {
                     height: 20,
                   ),
                   Container(
-                    width: 200,
+                    width: 150,
                     child: FLButton(
                       borderRadius: 20,
                       title: "Verify",
                       onPressed: () {
                         forgetPwOTPAPICall();
+
                       },
                       backgroundColor: AppColors.buttonBlue,
                       titleFontColor: AppColors.kWhite,
@@ -215,18 +199,20 @@ class _ForgetPwOtpState extends State<ForgetPwOtp> with BaseUI {
                     ),
                   ),
                   SizedBox(
-                    height: 15,
+                    height: 20,
                   ),
                   Container(
-                    width: 200,
+                    width: 150,
                     child: FLButton(
                       borderRadius: 20,
                       title: "Resend",
                       onPressed: () {
-                        Get.to(ForgetPWOtpResend(), arguments: email);
+                        // Get.to(ForgetPWOtpResend(), arguments: email);
+                        forgetPwAPICall();
+                        name_focus.requestFocus();
                       },
-                      backgroundColor: AppColors.buttonBlue,
-                      titleFontColor: AppColors.kWhite,
+                      backgroundColor: AppColors.kWhite,
+                      titleFontColor: AppColors.buttonBlue,
                       borderColor: AppColors.buttonBlue,
                       minWidth: 100,
                       height: 40,
@@ -241,6 +227,78 @@ class _ForgetPwOtpState extends State<ForgetPwOtp> with BaseUI {
     );
   }
 
+
+
+  void forgetPwAPICall() {
+    // String email = emailController.text;
+    if (!GetUtils.isEmail(email)) {
+      Get.snackbar('eventz', 'invalid_email'.tr,
+          colorText: AppColors.textRed, backgroundColor: AppColors.kWhite);
+    }
+    else if (email.characters.length > 100) {
+      Get.snackbar('eventz', 'Email is too long!', duration: Duration(seconds: 5),
+          colorText: AppColors.textRed, backgroundColor: AppColors.kWhite);
+    }
+    else {
+      apiService.check().then((check) {
+        showProgressbar(context);
+        if (check) {
+          apiService.forgetPw(email).then((value) {
+            hideProgressbar(context);
+            if (value.statusCode == 200) {
+              // Get.to(ForgetPwOtp(), arguments: email);
+            } else {
+              RegisterErrorResponse responseData =
+              RegisterErrorResponse.fromJson(json.decode(value.body));
+              Get.snackbar('error'.tr, responseData.message,
+                  colorText: AppColors.textRed,
+                  backgroundColor: AppColors.kWhite);
+            }
+          });
+        } else {
+          hideProgressbar(context);
+          helper.showAlertView(context, 'no_internet'.tr, () {}, 'ok'.tr);
+        }
+      });
+    }
+  }
+
+  void resentAPICall() {
+    // String mobile = mobileController.text;
+    if (!GetUtils.isPhoneNumber(mobile)) {
+      Get.snackbar("eventz", 'invalid_mobile'.tr,
+          colorText: AppColors.textRed, backgroundColor: AppColors.kWhite);
+    } else {
+      apiService.check().then((check) {
+        showProgressbar(context);
+        if (check) {
+          apiService.forgetPwOTPResend(email, mobile).then((value) {
+            hideProgressbar(context);
+
+            if (value.statusCode == 200) {
+              //Get.off(LoginView());
+              RegisterSuccessResponse responseData =
+              RegisterSuccessResponse.fromJson(json.decode(value.body));
+              // Get.snackbar('Success'.tr, responseData.result,
+              //     colorText: AppColors.textGreenLight,
+              //     backgroundColor: AppColors.kWhite);
+              Get.back();
+            } else {
+              RegisterErrorResponse responseData =
+              RegisterErrorResponse.fromJson(json.decode(value.body));
+              Get.snackbar('eventz', responseData.message,
+                  colorText: AppColors.textRed,
+                  backgroundColor: AppColors.kWhite);
+            }
+          });
+        } else {
+          hideProgressbar(context);
+          helper.showAlertView(context, 'no_internet'.tr, () {}, 'ok'.tr);
+        }
+      });
+    }
+  }
+
   ///forget password OTP verify Call
   void forgetPwOTPAPICall() {
     RegExp regex = RegExp(r'^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[!@#\$&*~]).{8,}$');
@@ -250,7 +308,7 @@ class _ForgetPwOtpState extends State<ForgetPwOtp> with BaseUI {
       Get.snackbar('eventz', "Please enter valid OTP",
           colorText: AppColors.textRed, backgroundColor: AppColors.kWhite);
     } else if (pw.isEmpty) {
-      Get.snackbar('eventz', 'invalid_password'.tr,
+      Get.snackbar('eventz', 'Please enter valid password including uppercase letters, lowercase letters, numbers, special characters and minimum 8 characters',
           colorText: AppColors.textRed, backgroundColor: AppColors.kWhite);
     }
     else if (!regex.hasMatch(pw))

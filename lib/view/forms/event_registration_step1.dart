@@ -194,7 +194,7 @@ class _EventRegistrationStep1State extends State<EventRegistrationStep1>
                               height: 110,
                               width: 320,
                               decoration: BoxDecoration(
-                                color: Colors.blue.withOpacity(0.15),
+                                color: AppColors.buttonBlue.withOpacity(0.2),
                               ),
                               child: Center(
                                   child: Icon(
@@ -716,7 +716,10 @@ class _EventRegistrationStep1State extends State<EventRegistrationStep1>
       if (pickedDate.month < 10 && pickedDate.day < 10) {
         eventDateController.text =
             "${pickedDate.year}-0${pickedDate.month}-0${pickedDate.day}";
-      } else if (pickedDate.month < 10 && pickedDate.day > 10) {
+      } else if (pickedDate.month < 10 && pickedDate.day == 10) {
+        eventDateController.text =
+        "${pickedDate.year}-0${pickedDate.month}-${pickedDate.day}";
+    } else if (pickedDate.month < 10 && pickedDate.day > 10) {
         eventDateController.text =
             "${pickedDate.year}-0${pickedDate.month}-${pickedDate.day}";
       } else if (pickedDate.month > 10 && pickedDate.day < 10) {

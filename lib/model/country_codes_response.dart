@@ -1,34 +1,34 @@
 class CountryCodesResponse {
-  List<Country> country;
+  List<CountryCodeCountries> countryCodeCountries;
 
-  CountryCodesResponse({this.country});
+  CountryCodesResponse({this.countryCodeCountries});
 
   CountryCodesResponse.fromJson(Map<String, dynamic> json) {
     if (json['country'] != null) {
-      country = <Country>[];
+      countryCodeCountries = <CountryCodeCountries>[];
       json['country'].forEach((v) {
-        country.add(new Country.fromJson(v));
+        countryCodeCountries.add(new CountryCodeCountries.fromJson(v));
       });
     }
   }
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = new Map<String, dynamic>();
-    if (this.country != null) {
-      data['country'] = this.country.map((v) => v.toJson()).toList();
+    if (this.countryCodeCountries != null) {
+      data['country'] = this.countryCodeCountries.map((v) => v.toJson()).toList();
     }
     return data;
   }
 }
 
-class Country {
+class CountryCodeCountries {
   String countryIdx;
   String countryName;
   String countryCode;
 
-  Country({this.countryIdx, this.countryName, this.countryCode});
+  CountryCodeCountries({this.countryIdx, this.countryName, this.countryCode});
 
-  Country.fromJson(Map<String, dynamic> json) {
+  CountryCodeCountries.fromJson(Map<String, dynamic> json) {
     countryIdx = json['CountryIdx'];
     countryName = json['CountryName'];
     countryCode = json['CountryCode'];

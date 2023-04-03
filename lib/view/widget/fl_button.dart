@@ -65,40 +65,5 @@ class FLButton extends StatelessWidget {
           ),
         ),
       ));
-
-    //   FlatButton(
-    //   minWidth: minWidth,
-    //   height: height,
-    //   splashColor: Colors.transparent,
-    //   highlightColor: hightLightColor,
-    //   color: backgroundColor,
-    //   textColor: isSelected ? AppColors.kSecondary : Colors.white,
-    //   padding: const EdgeInsets.all(8),
-    //   onPressed: isEnabled ? onPressed : null,
-    //   child: Align(
-    //     alignment: buttonTextAlignment,
-    //     child: Row(mainAxisAlignment: MainAxisAlignment.center, children: [
-    //       surfixImage != ""
-    //           ? Image.asset(
-    //               surfixImage,
-    //               width: 30,
-    //               height: 20,
-    //             )
-    //           : SizedBox.shrink(),
-    //       Text(
-    //         title,
-    //         style: TextStyle(
-    //           fontFamily: AppFonts.circularStd,
-    //           fontSize: titleFontSize,
-    //           color: titleFontColor,
-    //         ),
-    //       ),
-    //     ]),
-    //   ),
-    //   shape: RoundedRectangleBorder(
-    //       borderRadius: BorderRadius.circular(borderRadius),
-    //       side: BorderSide(
-    //           color: borderColor, width: 1, style: BorderStyle.solid)),
-    // );
   }
 }

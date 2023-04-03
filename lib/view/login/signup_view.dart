@@ -35,7 +35,7 @@ class _SignUpViewState extends State<SignUpView> with BaseUI {
   FocusNode _confirmPasswordFocusNode;
   bool isPasswordValidate = false;
   String _countryCodesDropDownValue;
-  List<Country> countryCodesList = [];
+  List<CountryCodeCountries> countryCodesList = [];
   List<String> venuesListNames = [];
   List<String> countryCodes = [];
   bool obscureCurrentPassword = true;
@@ -66,7 +66,7 @@ class _SignUpViewState extends State<SignUpView> with BaseUI {
             CountryCodesResponse responseData =
             CountryCodesResponse.fromJson(json.decode(value.body));
             setState(() {
-              countryCodesList = responseData.country;
+              countryCodesList = responseData.countryCodeCountries;
               for (int i = 0; i < countryCodesList.length; i++) {
                 countryCodes.add(countryCodesList[i].countryCode);
               }
@@ -112,9 +112,12 @@ class _SignUpViewState extends State<SignUpView> with BaseUI {
               ),
               registerForm(),
               SizedBox(
-                height: 48,
+                height: 40,
               ),
               bottomMenus(),
+              SizedBox(
+                height: 40,
+              ),
             ],
           ),
         ),
@@ -126,344 +129,309 @@ class _SignUpViewState extends State<SignUpView> with BaseUI {
 
   ///Register form
   registerForm() {
-    return Center(
-      child: Container(
-        margin: const EdgeInsets.only(left: 20.0, right: 20, bottom: 0),
-        decoration: BoxDecoration(
-          color: AppColors.kWhite,
-          borderRadius: BorderRadius.only(
-              topLeft: Radius.circular(10),
-              topRight: Radius.circular(10),
-              bottomLeft: Radius.circular(10),
-              bottomRight: Radius.circular(10)),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.grey.withOpacity(0.5),
-              spreadRadius: 5,
-              blurRadius: 7,
-              offset: Offset(0, 3), // changes position of shadow
+    return Container(
+      margin: const EdgeInsets.only(left: 20.0, right: 20),
+      decoration: BoxDecoration(
+        color: AppColors.kWhite,
+        borderRadius: BorderRadius.only(
+            topLeft: Radius.circular(10),
+            topRight: Radius.circular(10),
+            bottomLeft: Radius.circular(10),
+            bottomRight: Radius.circular(10)),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.grey.withOpacity(0.5),
+            spreadRadius: 5,
+            blurRadius: 7,
+            offset: Offset(0, 3), // changes position of shadow
+          ),
+        ],
+      ),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 20,vertical: 20),
+        child: Column(
+          children: [
+            // Container(
+            //   width: Get.width,
+            //   height: 10,
+            // ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: [
+                FLText(
+                  displayText: 'sign_up'.tr,
+                  textColor: AppColors.textBlue,
+                  setToWidth: false,
+                  fontWeight: FontWeight.bold,
+                  textSize: AppFonts.textFieldFontLarge24,
+                ),
+              ]
             ),
-          ],
-        ),
-        child: Container(
-          margin:
-              const EdgeInsets.only(left: 20, right: 20, top: 10, bottom: 20),
-          child: Stack(
-            children: [
-              SizedBox(
-                // height: 520,
-                child: Column(
-                  children: [
-                    // Container(
-                    //   width: Get.width,
-                    //   height: 10,
-                    // ),
 
-                    Align(
-                      alignment: Alignment.centerLeft,
-                      child: FLText(
-                      displayText: 'sign_up'.tr,
-                      textColor: AppColors.textBlue,
-                      setToWidth: false,
-                      fontWeight: FontWeight.bold,
-                      textSize: AppFonts.textFieldFontLarge24,
-                    ),
-                    ),
-                    Container(
-                      width: Get.width,
-                      height: 10,
-                    ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      children: [
-                        FLText(
-                          displayText: "First Name",
-                          textColor: AppColors.textBlue,
-                          setToWidth: false,
-                          textSize: 14,
-                        ),
-                      ],
-                    ),
+            SizedBox(
+              height: 5,
+            ),
 
-                    SizedBox(
-                      height: 3,
-                    ),
-                    InputRoundedTextField(
-                      padding:const EdgeInsets.symmetric(vertical: 5),
-                      readOnly: false,
-                      // validator: validatePassword,
-                      textController: fNameController,
-                      inputType: TextInputType.text,
-                      // onChanged: passwordValidationCheck
-                    ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      children: [
-                        FLText(
-                          displayText: "Last Name",
-                          textColor: AppColors.textBlue,
-                          setToWidth: false,
-                          textSize: 14,
-                        ),
-                      ],
-                    ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: [
 
-                    SizedBox(
-                      height: 3,
-                    ),
-                    InputRoundedTextField(
-                      padding:const EdgeInsets.symmetric(vertical: 5),
-                      readOnly: false,
-                      // validator: validatePassword,
-                      textController: lNameController,
-                      inputType: TextInputType.text,
-                      // onChanged: passwordValidationCheck
-                    ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      children: [
-                        FLText(
-                          displayText: "Email",
-                          textColor: AppColors.textBlue,
-                          setToWidth: false,
-                          textSize: 14,
-                        ),
-                      ],
-                    ),
-                    InputRoundedTextField(
-                      padding:const EdgeInsets.symmetric(vertical: 5),
-                      readOnly: false,
-                      // validator: validatePassword,
-                      textController: emailController,
-                      inputType: TextInputType.text,
-                      // onChanged: passwordValidationCheck
-                    ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      children: [
-                        FLText(
-                          displayText: "Mobile",
-                          textColor: AppColors.textBlue,
-                          setToWidth: false,
-                          textSize: 14,
-                        ),
-                      ],
-                    ),
-                    SizedBox(
-                      height: 3,
-                    ),
-                    Row(
-                      children: [
-                        Container(
-                          height: 40,
-                          width: 100,
-                          decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(10),
-                              border: Border.all(
-                                  color: AppColors.TextGray.withOpacity(0.5),
-                                  width: 1.5)),
-                          child: Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 10),
-                            child: DropdownButtonHideUnderline(
-                              child: DropdownButton(
-                                hint: _countryCodesDropDownValue == null
-                                    ? Text('code')
-                                    : Text(
-                                  _countryCodesDropDownValue,
-                                  style: TextStyle(
-                                      color: Colors.black,
-                                      fontFamily: AppFonts.circularStd),
-                                ),
-                                isExpanded: true,
-                                iconSize: 30.0,
-                                style: TextStyle(
-                                    color: Colors.black,
-                                    fontFamily: AppFonts.circularStd),
-                                items: countryCodesList.map(
-                                      (val) {
-                                    return DropdownMenuItem<Country>(
-                                      value: val,
-                                      child: Text(val.countryCode),
-                                    );
-                                  },
-                                ).toList(),
-                                onChanged: (val) {
-                                  setState(
-                                        () {
-                                      _countryCodesDropDownValue = val.countryCode;
-                                      // countryCodeId = int.parse(val.countryCodeId);
-                                    },
-                                  );
-                                },
-                              ),
-                            ),
-                          ),
-                        ),
-                        SizedBox(
-                          width: 10,
-                        ),
-                        Expanded(
-                          child: InputRoundedTextField(
-                            padding:const EdgeInsets.symmetric(vertical: 5),
-                            readOnly: false,
-                            // validator: validatePassword,
-                            textController: mobileController,
-                            inputType: TextInputType.text,
-                            // onChanged: passwordValidationCheck
-                          ),
-                        ),
-                      ],
-                    ),
+                FLText(
+                  displayText: "First Name",
+                  textColor: AppColors.textBlue,
+                  setToWidth: false,
+                  textSize: 14,
+                ),
+              ],
+            ),
 
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      children: [
-                        FLText(
-                          displayText: "Password",
-                          textColor: AppColors.textBlue,
-                          setToWidth: false,
-                          textSize: 14,
+            SizedBox(
+              height: 3,
+            ),
+            InputRoundedTextField(
+              padding:const EdgeInsets.symmetric(vertical: 5),
+              readOnly: false,
+              // validator: validatePassword,
+              hint: "Enter your first name",
+              textController: fNameController,
+              inputType: TextInputType.text,
+              // onChanged: passwordValidationCheck
+            ),
+            SizedBox(
+              height: 8,
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: [
+                FLText(
+                  displayText: "Last Name",
+                  textColor: AppColors.textBlue,
+                  setToWidth: false,
+                  textSize: 14,
+                ),
+              ],
+            ),
+
+            SizedBox(
+              height: 3,
+            ),
+            InputRoundedTextField(
+              padding:const EdgeInsets.symmetric(vertical: 5),
+              readOnly: false,
+              // validator: validatePassword,
+              textController: lNameController,
+              hint: "Enter your last name",
+              inputType: TextInputType.text,
+              // onChanged: passwordValidationCheck
+            ),
+            SizedBox(
+              height: 8,
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: [
+                FLText(
+                  displayText: "Email",
+                  textColor: AppColors.textBlue,
+                  setToWidth: false,
+                  textSize: 14,
+                ),
+              ],
+            ),
+            SizedBox(
+              height: 3,
+            ),
+
+            InputRoundedTextField(
+              padding:const EdgeInsets.symmetric(vertical: 5),
+              readOnly: false,
+              // validator: validatePassword,
+              textController: emailController,
+              hint: "Enter your email",
+              inputType: TextInputType.text,
+              // onChanged: passwordValidationCheck
+            ),
+
+            SizedBox(
+              height: 8,
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: [
+
+                FLText(
+                  displayText: "Mobile Number",
+                  textColor: AppColors.textBlue,
+                  setToWidth: false,
+                  textSize: 14,
+                ),
+              ],
+            ),
+            SizedBox(
+              height: 8,
+            ),
+            Row(
+              children: [
+                Container(
+                  height: 40,
+                  width: 100,
+                  decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(10),
+                      border: Border.all(
+                          color: AppColors.TextGray.withOpacity(0.5),
+                          width: 1.5)),
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 10),
+                    child: DropdownButtonHideUnderline(
+                      child: DropdownButton(
+                        hint: _countryCodesDropDownValue == null
+                            ? Text('Code',style: TextStyle(fontSize: 14,color: AppColors.kTextLight),)
+                            : Text(
+                          _countryCodesDropDownValue,
+                          style: TextStyle(
+                              color: Colors.black,
+                              fontFamily: AppFonts.circularStd),
                         ),
-                      ],
-                    ),
-                    SizedBox(
-                      height: 3,
-                    ),
-                    InputRoundedTextField(
-                      padding:const EdgeInsets.symmetric(vertical: 5),
-                      readOnly: false,
-                      // validator: validatePassword,
 
-                      focusNode: _currentPasswordFocusNode,
-                      isObscure: obscureCurrentPassword,
-                      textController: pwController,
-                      inputType: TextInputType.text,
-                      suffixIcon: Icon(
-                          obscureCurrentPassword
-                              ? Icons.visibility_off
-                              : Icons.visibility,
-                          size: 22,
-                          color: Colors.grey),
-                      onSuffixPress: (){
-                        setState(() {
-                          obscureCurrentPassword = !obscureCurrentPassword;
-                        });
-                      },
-                      // onChanged: passwordValidationCheck
-                    ),
-
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      children: [
-                        FLText(
-                          displayText: "Confirm Password",
-                          textColor: AppColors.textBlue,
-                          setToWidth: false,
-                          textSize: 14,
-                        ),
-                      ],
-                    ),
-                    SizedBox(
-                      height: 3,
-                    ),
-                    InputRoundedTextField(
-                      padding:const EdgeInsets.symmetric(vertical: 5),
-                      readOnly: false,
-                      // validator: validatePassword,
-
-                      focusNode: _confirmPasswordFocusNode,
-                      isObscure: obscureConfirmPassword,
-                      textController: confirmPWController,
-                      inputType: TextInputType.text,
-                      suffixIcon: Icon(
-                          obscureConfirmPassword
-                              ? Icons.visibility_off
-                              : Icons.visibility,
-                          size: 22,
-                          color: Colors.grey),
-                      onSuffixPress: (){
-                        setState(() {
-                          obscureConfirmPassword = !obscureConfirmPassword;
-                        });
-                      },
-                      // onChanged: passwordValidationCheck
-                    ),
-                    // Container(
-                    //   width: Get.width,
-                    //   height: 20,
-                    // ),
-                    // formRow(userName, 'enter_first_name'.tr, 'first_name'.tr,
-                    //     fNameController),
-                    // Container(
-                    //   width: Get.width,
-                    //   height: 0.25,
-                    //   color: AppColors.appDark,
-                    // ),
-                    // formRow(userName, 'enter_last_name'.tr, 'last_name'.tr,
-                    //     lNameController),
-                    // Container(
-                    //   width: Get.width,
-                    //   height: 0.25,
-                    //   color: AppColors.appDark,
-                    // ),
-                    // formRow(email, 'enter_email'.tr, 'email_cap'.tr,
-                    //     emailController),
-                    // Container(
-                    //   width: Get.width,
-                    //   height: 0.25,
-                    //   color: AppColors.appDark,
-                    // ),
-                    // formRow(mobile, 'enter_mobile'.tr, 'mobile'.tr,
-                    //     mobileController,
-                    //     height: 20),
-                    // Container(
-                    //   width: Get.width,
-                    //   height: 0.25,
-                    //   color: AppColors.appDark,
-                    // ),
-                    // formRow(password, 'enter_password'.tr, 'password_cap'.tr,
-                    //     pwController,
-                    //     obscureText: obscurePassword,
-                    //     passwordIconVisibility: true
-                    // ),
-                    // Container(
-                    //   width: Get.width,
-                    //   height: 0.25,
-                    //   color: AppColors.appDark,
-                    // ),
-                    // formRow(password, 're_enter_password'.tr, 'Confirm Password'.tr,
-                    //     confirmPWController,
-                    //     obscureText: obscureConfirmPassword,
-                    //     passwordIconVisibility: true
-                    // ),
-                    // Container(
-                    //   width: Get.width,
-                    //   height: 0.25,
-                    //   color: AppColors.appDark,
-                    // ),
-                    SizedBox(
-                      height: 20,
-                    ),
-                    Container(
-                      width: 200,
-                      child: FLButton(
-                        borderRadius: 20,
-                        title: "register".tr,
-                        onPressed: () {
-                          signUpCall();
+                        isExpanded: true,
+                        iconSize: 30.0,
+                        style: TextStyle(
+                            color: Colors.black,
+                            fontFamily: AppFonts.circularStd),
+                        items: countryCodesList.map(
+                              (val) {
+                            return DropdownMenuItem<CountryCodeCountries>(
+                              value: val,
+                              child: Text(val.countryCode),
+                            );
+                          },
+                        ).toList(),
+                        onChanged: (val) {
+                          setState(
+                                () {
+                              _countryCodesDropDownValue = val.countryCode;
+                              // countryCodeId = int.parse(val.countryCodeId);
+                            },
+                          );
                         },
-                        backgroundColor: AppColors.buttonBlue,
-                        titleFontColor: AppColors.kWhite,
-                        borderColor: AppColors.buttonBlue,
-                        minWidth: 100,
-                        height: 40,
                       ),
                     ),
-                  ],
+                  ),
                 ),
+                SizedBox(
+                  width: 10,
+                ),
+                Expanded(
+                  child: InputRoundedTextField(
+                    padding:const EdgeInsets.symmetric(vertical: 5),
+                    readOnly: false,
+                    // validator: validatePassword,
+                    textController: mobileController,
+                    hint: "Enter mobile number",
+                    inputType: TextInputType.text,
+                    // onChanged: passwordValidationCheck
+                  ),
+                ),
+              ],
+            ),
+            SizedBox(
+              height: 8,
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: [
+                FLText(
+                  displayText: "Password",
+                  textColor: AppColors.textBlue,
+                  setToWidth: false,
+                  textSize: 14,
+                ),
+              ],
+            ),
+            SizedBox(
+              height: 3,
+            ),
+            InputRoundedTextField(
+              padding:const EdgeInsets.symmetric(vertical: 5),
+              readOnly: false,
+              // validator: validatePassword,
+              hint: "Enter your password",
+              focusNode: _currentPasswordFocusNode,
+              isObscure: obscureCurrentPassword,
+              textController: pwController,
+              inputType: TextInputType.text,
+              suffixIcon: Icon(
+                  obscureCurrentPassword
+                      ? Icons.visibility_off
+                      : Icons.visibility,
+                  size: 22,
+                  color: Colors.grey),
+              onSuffixPress: (){
+                setState(() {
+                  obscureCurrentPassword = !obscureCurrentPassword;
+                });
+              },
+              // onChanged: passwordValidationCheck
+            ),
+            SizedBox(
+              height: 8,
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: [
+                FLText(
+                  displayText: "Confirm Password",
+                  textColor: AppColors.textBlue,
+                  setToWidth: false,
+                  textSize: 14,
+                ),
+              ],
+            ),
+            SizedBox(
+              height: 3,
+            ),
+            InputRoundedTextField(
+              padding:const EdgeInsets.symmetric(vertical: 5),
+              readOnly: false,
+              // validator: validatePassword,
+              hint: "Confirm your password",
+              focusNode: _confirmPasswordFocusNode,
+              isObscure: obscureConfirmPassword,
+              textController: confirmPWController,
+              inputType: TextInputType.text,
+              suffixIcon: Icon(
+                  obscureConfirmPassword
+                      ? Icons.visibility_off
+                      : Icons.visibility,
+                  size: 22,
+                  color: Colors.grey),
+              onSuffixPress: (){
+                setState(() {
+                  obscureConfirmPassword = !obscureConfirmPassword;
+                });
+              },
+              // onChanged: passwordValidationCheck
+            ),
+
+            SizedBox(
+              height: 20,
+            ),
+            Container(
+              width: 150,
+              child: FLButton(
+                borderRadius: 20,
+                title: "SIGN UP",
+                onPressed: () {
+                  signUpCall();
+                },
+                backgroundColor: AppColors.buttonBlue,
+                titleFontColor: AppColors.kWhite,
+                borderColor: AppColors.buttonBlue,
+                minWidth: 100,
+                height: 40,
               ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );
@@ -511,42 +479,7 @@ class _SignUpViewState extends State<SignUpView> with BaseUI {
               ),
             ),
           ),
-          // Visibility(
-          //   visible: passwordIconVisibility,
-          //   child:
-          //   GestureDetector(
-          //     onTap: (){
-          //       print('dwdcwcw');
-          //       print(obscureText);
-          //       setState(() {
-          //         obscureText = !obscureText;
-          //       });
-          //       print('dwdcwcw=====');
-          //       print(obscureText);
-          //     },
-          //     child: Icon(
-          //       obscureText
-          //           ? Icons.visibility
-          //           : Icons.visibility_off,
-          //       size: 20,
-          //       color: Colors.grey,
-          //     ),
-          //   ),
-            // IconButton(
-            //   iconSize: 20,
-            //   icon: Icon(
-            //     obscureText == false
-            //       ? Icons.visibility
-            //       : Icons.visibility_off,),
-            //     color: Colors.black,
-            //   onPressed: () {
-            //     setState(() {
-            //   obscureText = !obscureText;
-            // });
-            //     },
-            //
-            // ),
-          // ),
+
         ],
       ),
     );
@@ -563,7 +496,7 @@ class _SignUpViewState extends State<SignUpView> with BaseUI {
               Get.to(SignUpView());
             },
             child: FLText(
-              displayText: 'new_sign_up'.tr,
+              displayText: " Already Signed up? ",
               textColor: AppColors.textBlue,
               setToWidth: false,
               textSize: 16,
@@ -574,14 +507,14 @@ class _SignUpViewState extends State<SignUpView> with BaseUI {
           ),
           FLButton(
             borderRadius: 20,
-            title: "SIGN UP",
+            title: "SIGN IN",
             onPressed: () {
               Get.to(LoginView());
             },
             backgroundColor: AppColors.buttonBlue,
             titleFontColor: AppColors.kWhite,
-            borderColor: AppColors.kPrimaryDark,
-            minWidth: 120,
+            borderColor: Colors.transparent,
+            minWidth: 100,
             height: 40,
           )
         ],
@@ -590,6 +523,7 @@ class _SignUpViewState extends State<SignUpView> with BaseUI {
   }
   ///Sign-up validation call
   void signUpCall() {
+
     print("EMAIL " + emailController.text);
     String email = emailController.text;
     String pw = pwController.text;

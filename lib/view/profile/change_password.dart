@@ -174,6 +174,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> with BaseUI
                                 padding:const EdgeInsets.symmetric(vertical: 5),
                                 readOnly: false,
                                 // validator: validatePassword,
+                                hint: "Enter your current password",
 
                                 focusNode: _currentPasswordFocusNode,
                                 isObscure: obscureCurrentPassword,
@@ -196,7 +197,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> with BaseUI
                           ),
 
                           SizedBox(
-                            height: 4,
+                            height: 8,
                           ),
 
                           Column(
@@ -221,6 +222,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> with BaseUI
                                 focusNode: _newPasswordFocusNode,
                                 isObscure: obscureNewPassword,
                                 textController: newPasswordController,
+                                hint: "Enter your new password",
                                 inputType: TextInputType.text,
                                 suffixIcon: Icon(
                                     obscureNewPassword
@@ -238,7 +240,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> with BaseUI
                             ],
                           ),
                           SizedBox(
-                            height: 4,
+                            height: 8,
                           ),
                           Column(
                             children: [
@@ -263,6 +265,8 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> with BaseUI
                                 focusNode: _confirmPasswordFocusNode,
                                 isObscure: obscureConfirmPassword,
                                 textController: confirmPasswordController,
+
+                                hint: "Confirm your password",
                                 inputType: TextInputType.text,
                                 suffixIcon: Icon(
                                     obscureConfirmPassword
@@ -279,9 +283,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> with BaseUI
                               ),
                             ],
                           ),
-                          SizedBox(
-                            height: 10,
-                          ),
+
                           Padding(
                             padding: const EdgeInsets.symmetric(horizontal: 12),
                             child: Row(
@@ -291,14 +293,14 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> with BaseUI
                                   child: Container(
                                     margin: const EdgeInsets.only(top: 20),
                                     height: 50,
-                                    width: 250,
+                                    width: 150,
                                     child: FLButton(
                                       borderRadius: 20,
                                       title: "Submit".tr,
                                       onPressed: () async {
                                         RegExp regex = RegExp(r'^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[!@#\$&*~]).{8,}$');
                                         if (currentPasswordController.text == null || currentPasswordController.text == "" ) {
-                                          Get.snackbar('eventz', 'Please enter the current password',
+                                          Get.snackbar('eventz', 'Please enter current password',
                                               colorText: AppColors.textRed,
                                               backgroundColor: AppColors.kWhite);
                                         }
@@ -315,7 +317,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> with BaseUI
                                         }
                                         else if (newPasswordController.text != confirmPasswordController.text)
                                         {
-                                          Get.snackbar('Error', "New password and confirmation password don't match",
+                                          Get.snackbar('eventz', "Passwords do not match",
                                               colorText: AppColors.textRed,
                                               backgroundColor: AppColors.kWhite);
                                         }

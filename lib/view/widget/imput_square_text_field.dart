@@ -84,26 +84,27 @@ class InputRoundedTextField extends StatelessWidget {
               onChanged: onChanged,
               autofocus: autoFocus,
               textInputAction: inputAction,
+
               obscureText: isObscure,
               keyboardType: inputType,
               validator: validator,
               onTap: onTapping,
               autovalidateMode: AutovalidateMode.onUserInteraction,
-              style: TextStyle(color: textColor,fontSize: 13),
+              style: TextStyle(color: textColor,fontSize: 14),
               decoration: InputDecoration(
                   filled: true,
                   fillColor: fillColor ?? Colors.white,
                   hintText: hint,
                   hintStyle: TextStyle(
-                      color: AppColors.kTextLight.withOpacity(0.5),
-                      fontSize: 12),
+                      color: AppColors.kTextLight,
+                      fontSize: AppFonts.textFieldFontSize14),
                   errorText: errorText,
                   counterText: '',
                   contentPadding: EdgeInsets.symmetric(vertical: 0.0, horizontal: 10.0),
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(10),
                     borderSide: BorderSide(
-                        color: Colors.red,
+                        color: Colors.black,
                         width: 10
                     ),
                   ),

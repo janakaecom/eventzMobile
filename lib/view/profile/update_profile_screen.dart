@@ -18,10 +18,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:intl/intl.dart';
 import 'package:permission_handler/permission_handler.dart';
-
 import '../../api/api_service.dart';
 import '../../model/countries_response.dart';
+import '../../model/country_codes_response.dart';
 import '../../model/get_user_response.dart' as ur;
 import '../../model/get_user_response.dart';
 import '../../model/host_register_request.dart';
@@ -47,28 +48,34 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> with BaseUI {
   final TextEditingController addressController = new TextEditingController();
   final TextEditingController nicController = new TextEditingController();
   final TextEditingController passportNoController = new TextEditingController();
-  final TextEditingController mobileNoController = new TextEditingController();
   final TextEditingController occupationController = new TextEditingController();
   final TextEditingController workPlaceController = new TextEditingController();
   final TextEditingController passwordController = new TextEditingController();
   final TextEditingController emgContactNumberController = new TextEditingController();
   final TextEditingController emgContactNameController = new TextEditingController();
+  final TextEditingController titleController = new TextEditingController();
   FocusNode _passwordFocusNode;
   String logo;
+  String fDate;
   DateTime pickedDate = DateTime.now();
   String _userName = "";
   String dropDownTitleValue;
   String dropDownGenderValue;
+  String mobileNo;
+  TextEditingController mobileController = new TextEditingController();
   String dropDownCountryValue;
   int countryIdx;
   String imageUrl;
+  List<CountryCodeCountries> countryCodesList = [];
+  List<String> countryCodes = [];
   FocusNode _confirmPasswordFocusNode;
   APIService apiService = APIService();
-  List<Country> countryList = new List();
-  List<String> countryListNames = new List();
+  List<Country> countryList = [];
+  List<String> countryListNames = [];
   SharedPref sharedPref = SharedPref();
   LoginResponse loginResponse ;
   ur.Result profileData;
+  String _countryCodesDropDownValue;
   int genderIdx;
 
   @override
@@ -76,9 +83,49 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> with BaseUI {
     super.initState();
     _passwordFocusNode = FocusNode();
     getProfileInfo();
-   // initialization();
     getAllCountries();
+    getAllCodes();
 
+
+  }
+
+
+
+  ///get all codes from API
+  void getAllCodes() {
+    print("codes load");
+    apiService.check().then((check) {
+      showProgressbar(context);
+      if (check) {
+        apiService.getAllCodes().then((value) {
+          hideProgressbar(context);
+          if (value.statusCode == 200) {
+            CountryCodesResponse responseData =
+            CountryCodesResponse.fromJson(json.decode(value.body));
+            setState(() {
+              countryCodesList = responseData.countryCodeCountries;
+              for (int i = 0; i < countryCodesList.length; i++) {
+                countryCodes.add(countryCodesList[i].countryCode);
+              }
+            });
+          } else {
+            hideProgressbar(context);
+            ErrorResponse responseData =
+            ErrorResponse.fromJson(json.decode(value.body));
+            Get.snackbar('error'.tr, responseData.message,
+                colorText: AppColors.textRed,
+                snackPosition: SnackPosition.TOP,
+                borderRadius: 0,
+                borderWidth: 2,
+                margin: EdgeInsets.only(left: 20, right: 20, top: 30),
+                backgroundColor: AppColors.bgGreyLight);
+          }
+        });
+      } else {
+        hideProgressbar(context);
+        helper.showAlertView(context, 'no_internet'.tr, () {}, 'ok'.tr);
+      }
+    });
   }
 
   getProfileInfo() async {
@@ -95,7 +142,8 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> with BaseUI {
 
   ///get my profile details from API
   Future getUser(int userIdx) async {
-   await apiService.check().then((check) {
+
+    await apiService.check().then((check) {
       showProgressbar(context);
       if (check) {
         apiService.getUserProfile(userIdx).then((value) async {
@@ -105,14 +153,38 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> with BaseUI {
             GetUserResponse responseData = GetUserResponse.fromJson(json.decode(value.body));
             setState(() {
               profileData = responseData.result;
-              imageUrl = profileData.profilePicURL;
+              // imageUrl = profileData.profilePicURL;
               dropDownTitleValue = profileData.title;
-              dropDownGenderValue = profileData.genderId == 1 ? "Female":"Male";
+              dropDownGenderValue = profileData.genderId == 1 ? "Male":"Female";
               firstNameController.text = profileData.firstName;
               lastNameController.text = profileData.lastName;
-              mobileNoController.text = profileData.mobileNo;
+              mobileController.text = profileData.mobileNo;
               nicController.text = profileData.nic;
-              dateController.text = profileData.dob;
+
+
+              if(profileData.dob == "1900-01-01T00:00:00"){
+                dateController.text = profileData.dob.contains("1900-01-01T00:00:00") ? "YYYY-MM-DD":profileData.dob;
+                setState(() {
+                  var formatter = DateFormat('yyyy-MM-dd');
+                  var formatted = formatter.format(DateTime.parse(profileData.dob));
+                  fDate = formatted;
+                  fDate = formatted;
+                  print("dateController.text:::::::");
+                  print(fDate);
+                });
+              }
+              else{
+                setState(() {
+                  var formatter = DateFormat('yyyy-MM-dd');
+                  var formatted = formatter.format(DateTime.parse(profileData.dob));
+                  fDate = formatted;
+                  dateController.text  = formatted;
+                  print("dateController.text:::::::");
+                  print(fDate);
+                });
+              }
+
+
               passportNoController.text = profileData.passport;
               addressController.text = profileData.address;
               countryIdx = profileData.countryId;
@@ -141,21 +213,10 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> with BaseUI {
     });
   }
 
-  //
-  // Future initialization() async {
-  //   print("profileData.result.firstName::::::");
-  //   print(profileData.ur.result.firstName);
-  //   firstNameController.text = profileData.result.firstName;
-  //   lastNameController.text = profileData.result.lastName;
-  //   passportNoController.text = profileData.result.mobileNo;
-  // }
-  //
-
   @override
   void dispose() {
     super.dispose();
   }
-
 
 
   ///host registration call
@@ -166,8 +227,8 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> with BaseUI {
       print("dropDownGenderValue");
       print(genderIdx);
     });
-    if(dropDownTitleValue == null || dropDownTitleValue == "") {
-      Get.snackbar('error'.tr, "The Title should be selected",
+    if(titleController.text == "" || titleController.text == null) {
+      Get.snackbar('error'.tr, "The Title should be added",
           colorText: AppColors.textRed,
           backgroundColor: AppColors.kWhite);
     }
@@ -181,7 +242,7 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> with BaseUI {
           colorText: AppColors.textRed,
           backgroundColor: AppColors.kWhite);
     }
-    else if(genderIdx == null) {
+    else if(genderIdx == null || genderIdx == 0) {
       Get.snackbar('error'.tr, "Gender should be selected",
           colorText: AppColors.textRed,
           backgroundColor: AppColors.kWhite);
@@ -192,14 +253,22 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> with BaseUI {
           backgroundColor: AppColors.kWhite);
     }
     else {
+
       apiService.check().then((check) {
+
+        print(profileData.dob);
+        print("profileData.dob)))))))");
+
+
+
+
         ProfileUpdateRequest request = ProfileUpdateRequest(
-            title: dropDownTitleValue.toString(),
+            title: titleController.text,
             genderId: dropDownGenderValue.toString() == "Male" ? 1 : 2,
             nIC: nicController.text,
             passport: passportNoController.text,
             address: addressController.text,
-            dOB: dateController.text,
+            dOB: fDate,
             occupation: occupationController.text,
             workPlace: workPlaceController.text,
             emgContactName: emgContactNumberController.text,
@@ -237,6 +306,14 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> with BaseUI {
     }
   }
 
+  bgView() {
+    return Image.asset(
+      mainBg,
+      height: MediaQuery.of(context).size.height,
+      width: MediaQuery.of(context).size.width,
+      fit: BoxFit.cover,
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -247,557 +324,583 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> with BaseUI {
             menuList: [],
             isDrawerShow: true,
             isBackShow: false),
-        body: Container(
-          height: 1000,
-          width: 1000,
-          decoration: const BoxDecoration(
-              color: AppColors.kWhite
-          ),
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
-            child: SingleChildScrollView(
-              child: Column(
-                children: [
-                  SizedBox(
-                    height: 10,
-                  ),
-                  InkWell(
-                    onTap: () {
-                    },
-                    child: InkWell(
-                      onTap: () {
-                        // imagePickerWithCrop();
-                        uploadImage();
-                      },
-                      child:
-                      imageUrl == null || imageUrl == "" ?
-                      Container(
-                        height: 110,
-                        width: 110,
-                        decoration: BoxDecoration(
-                            color: Colors.blue.withOpacity(0.15),
-                            borderRadius: BorderRadius.circular(60)
-                        ),
-                        child: Center(
-                            child:
-                            Image.asset(
-                              menuUser,
-                              width: 28,
-                              height: 28,
-                              fit: BoxFit.cover,
-                            )
-                        ),
-                      ):
-                      ClipRRect(
-                        borderRadius: BorderRadius.circular(60),
-                        child: Image.network(
-                          imageUrl,
-                          width: 110,
-                          height: 110,
-                          fit: BoxFit.cover,
-                        ),
-                      ),
+        body:
+
+        Stack(
+          children: [
+            bgView(),
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 20,horizontal: 20),
+              child: Container(
+
+                decoration: BoxDecoration(
+                  color: AppColors.kWhite,
+                  borderRadius: BorderRadius.only(
+                      topLeft: Radius.circular(10),
+                      topRight: Radius.circular(10),
+                      bottomLeft: Radius.circular(10),
+                      bottomRight: Radius.circular(10)),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.grey.withOpacity(0.5),
+                      spreadRadius: 5,
+                      blurRadius: 7,
+                      offset: Offset(0, 3), // changes position of shadow
                     ),
-                  ),
-                  SizedBox(
-                    height: 10,
-                  ),
-                  FLText(
-                    displayText: "Profile Picture",
-                    textColor: AppColors.kTextDark,
-                    setToWidth: false,
-                    textSize: AppFonts.textFieldFontSize16,
-                  ),
-                  SizedBox(
-                    height: 10,
-                  ),
-                  Row(
-                    children: [
-                      FLText(
-                        displayText: "Title",
-                        textColor: AppColors.kTextDark,
-                        setToWidth: false,
-                        textSize: AppFonts.textFieldFontSize14,
-                      ),
-
-                    ],
-                  ),
-                  SizedBox(
-                    height: 8,
-                  ),
-                  Container(
-                    height: 40,
-                    decoration: BoxDecoration(
-                        border: Border.all(
-                          color: AppColors.TextGray.withOpacity(0.5),
-                          width: 1.5,
-                        ),
-                        borderRadius: BorderRadius.circular(5)
-                    ),
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 10, vertical: 0),
-                      child: DropdownButtonHideUnderline(
-                        child: DropdownButton(
-                          hint: dropDownTitleValue == null
-                              ? Text("Mr")
-                              : Text(
-                            dropDownTitleValue,
-                            style: TextStyle(color: Colors.black,
-                                fontFamily: AppFonts.circularStd),
-                          ),
-                          isExpanded: true,
-                          iconSize: 30.0,
-                          style: TextStyle(color: Colors.black,
-                              fontFamily: AppFonts.circularStd),
-                          items: ["Mr", "Mrs"].map(
-                                (val) {
-                              return DropdownMenuItem<String>(
-                                value: val,
-                                child: Text(val),
-                              );
-                            },
-                          ).toList(),
-                          onChanged: (val) {
-                            setState(
-                                  () {
-                                dropDownTitleValue = val;
-                              },
-                            );
-                          },
-                        ),
-                      ),
-                    ),
-                  ),
-                  SizedBox(
-                    height: 20,
-                  ),
-                  Row(
-                    children: [
-                      FLText(
-                        displayText: "First Name",
-                        textColor: AppColors.kTextDark,
-                        setToWidth: false,
-                        textSize: AppFonts.textFieldFontSize14,
-                      ),
-
-                    ],
-                  ),
-                  SizedBox(
-                    height: 8,
-                  ),
-                  InputRoundedTextField(
-                    readOnly: false,
-                    textController: firstNameController,
-                    inputType: TextInputType.text,
-                    onChanged: (value) {},
-                  ),
-                  SizedBox(
-                    height: 20,
-                  ),
-                  Row(
-                    children: [
-                      FLText(
-                        displayText: "Last Name",
-                        textColor: AppColors.kTextDark,
-                        setToWidth: false,
-                        textSize: AppFonts.textFieldFontSize14,
-                      ),
-
-                    ],
-                  ),
-                  SizedBox(
-                    height: 8,
-                  ),
-                  InputRoundedTextField(
-                    readOnly: false,
-                    textController: lastNameController,
-                    inputType: TextInputType.text,
-                    onChanged: (value) {},
-                  ),
-
-                  SizedBox(
-                    height: 20,
-                  ),
-                  Row(
-                    children: [
-                      FLText(
-                        displayText: "Gender",
-                        textColor: AppColors.kTextDark,
-                        setToWidth: false,
-                        textSize: AppFonts.textFieldFontSize14,
-                      ),
-
-                    ],
-                  ),
-                  SizedBox(
-                    height: 8,
-                  ),
-                  Container(
-                    height: 40,
-                    decoration: BoxDecoration(
-                        border: Border.all(
-                          color: AppColors.TextGray.withOpacity(0.5),
-                          width: 1.5,
-                        ),
-                        borderRadius: BorderRadius.circular(5)
-                    ),
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 10, vertical: 0),
-                      child: DropdownButtonHideUnderline(
-                        child: DropdownButton(
-                          hint: dropDownGenderValue == null
-                              ? Text("Male")
-                              : Text(
-                            dropDownGenderValue,
-                            style: TextStyle(color: Colors.black,
-                                fontFamily: AppFonts.circularStd),
-                          ),
-                          isExpanded: true,
-                          iconSize: 30.0,
-                          style: TextStyle(color: Colors.black,
-                              fontFamily: AppFonts.circularStd),
-                          items: ["Male", "Female"].map(
-                                (val) {
-                              return DropdownMenuItem<String>(
-                                value: val,
-                                child: Text(val),
-                              );
-                            },
-                          ).toList(),
-                          onChanged: (val) {
-                            setState(
-                                  () {
-                                dropDownGenderValue = val;
-                              },
-                            );
-                          },
-                        ),
-                      ),
-                    ),
-                  ),
-                  SizedBox(
-                    height: 20,
-                  ),
-                  Row(
-                    children: [
-                      FLText(
-                        displayText: "NIC",
-                        textColor: AppColors.kTextDark,
-                        setToWidth: false,
-                        textSize: AppFonts.textFieldFontSize14,
-                      ),
-                    ],
-                  ),
-                  SizedBox(
-                    height: 8,
-                  ),
-                  InputRoundedTextField(
-                    readOnly: false,
-                    textController: nicController,
-                    inputType: TextInputType.text,
-                    onChanged: (value) {},
-                  ),
-                  SizedBox(
-                    height: 20,
-                  ),
-                  Row(
-                    children: [
-                      FLText(
-                        displayText: "DOB",
-                        textColor: AppColors.kTextDark,
-                        setToWidth: false,
-                        textSize: AppFonts.textFieldFontSize14,
-                      ),
-                    ],
-                  ),
-
-                  SizedBox(
-                    height: 8,
-                  ),
-                  InputRoundedTextField(
-                    readOnly: false,
-                    textController: dateController,
-                    inputType: TextInputType.number,
-                    onSuffixPress: () {
-                      dateSelection();
-                    },
-                    suffixIcon: Icon(Icons.chevron_right),
-                  ),
-                  SizedBox(
-                    height: 20,
-                  ),
-                  Row(
-                    children: [
-                      FLText(
-                        displayText: "Passport No",
-                        textColor: AppColors.kTextDark,
-                        setToWidth: false,
-                        textSize: AppFonts.textFieldFontSize14,
-                      ),
-                    ],
-                  ),
-
-                  SizedBox(
-                    height: 8,
-                  ),
-                  InputRoundedTextField(
-                    // hint: "E",
-                    hintColor: AppColors.TextGray,
-                    readOnly: false,
-                    textController: passportNoController,
-                    inputType: TextInputType.number,
-                    onChanged: (value) {},
-                  ),
-                  SizedBox(
-                    height: 20,
-                  ),
-                  Row(
-                    children: [
-                      FLText(
-                        displayText: "Address :",
-                        textColor: AppColors.kTextDark,
-                        setToWidth: false,
-                        textSize: AppFonts.textFieldFontSize14,
-                      ),
-
-                    ],
-                  ),
-                  SizedBox(
-                    height: 8,
-                  ),
-                  InputRoundedTextField(
-                    hintColor: AppColors.TextGray,
-                    readOnly: false,
-                    textController: addressController,
-                    inputType: TextInputType.number,
-                    onChanged: (value) {},
-                  ),
-                  SizedBox(
-                    height: 20,
-                  ),
-
-                  Row(
-                    children: [
-                      FLText(
-                        displayText: "Country",
-                        textColor: AppColors.kTextDark,
-                        setToWidth: false,
-                        textSize: AppFonts.textFieldFontSize14,
-                      ),
-                    ],
-                  ),
-
-
-                  SizedBox(
-                    height: 8,
-                  ),
-
-                  Container(
-                    height: 40,
-                    decoration: BoxDecoration(
-                        border: Border.all(
-                          color: AppColors.TextGray.withOpacity(0.5),
-                          width: 1.5,
-                        ),
-                        borderRadius: BorderRadius.circular(5)
-                    ),
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 10, vertical: 0),
-                      child: DropdownButtonHideUnderline(
-                        child: DropdownButton(
-                          hint: dropDownCountryValue == null
-                              ? Text('Select a country')
-                              : Text(
-                            dropDownCountryValue,
-                            style: TextStyle(color: Colors.black,
-                                fontFamily: AppFonts.circularStd),
-                          ),
-                          isExpanded: true,
-                          iconSize: 30.0,
-                          style: TextStyle(color: Colors.black,
-                              fontFamily: AppFonts.circularStd),
-                          items: countryList.map(
-                                (val) {
-                              return DropdownMenuItem<Country>(
-                                value: val,
-                                child: Text(val.countryName.toString()),
-                              );
-                            },
-                          ).toList(),
-                          onChanged: (val) {
-                            setState(
-                                  () {
-                                print("val::::::::");
-                                print(val.countryName);
-                                dropDownCountryValue = val.countryName;
-                                countryIdx = int.parse(val.countryIdx);
-                              },
-                            );
-                          },
-                        ),
-                      ),
-                    ),
-                  ),
-                  SizedBox(
-                    height: 20,
-                  ),
-                  Row(
-                    children: [
-                      FLText(
-                        displayText: "Occupation",
-                        textColor: AppColors.kTextDark,
-                        setToWidth: false,
-                        textSize: AppFonts.textFieldFontSize14,
-                      ),
-                    ],
-                  ),
-                  SizedBox(
-                    height: 8,
-                  ),
-
-                  InputRoundedTextField(
-                    hintColor: AppColors.TextGray,
-                    readOnly: false,
-                    textController: occupationController,
-                    inputType: TextInputType.number,
-                    onChanged: (value) {},
-                  ),
-
-                  SizedBox(
-                    height: 20,
-                  ),
-
-                  Row(
-                    children: [
-                      FLText(
-                        displayText: "Work Place",
-                        textColor: AppColors.kTextDark,
-                        setToWidth: false,
-                        textSize: AppFonts.textFieldFontSize14,
-                      ),
-
-                    ],
-                  ),
-                  SizedBox(
-                    height: 8,
-                  ),
-                  InputRoundedTextField(
-                    hintColor: AppColors.TextGray,
-                    readOnly: false,
-                    textController: workPlaceController,
-                    inputType: TextInputType.number,
-                    onChanged: (value) {},
-                  ),
-                  SizedBox(
-                    height: 20,
-                  ),
-
-                  Row(
-                    children: [
-                      FLText(
-                        displayText: "Emg Contact Name",
-                        textColor: AppColors.kTextDark,
-                        setToWidth: false,
-                        textSize: AppFonts.textFieldFontSize14,
-                      ),
-
-                    ],
-                  ),
-                  SizedBox(
-                    height: 8,
-                  ),
-                  InputRoundedTextField(
-                    hintColor: AppColors.TextGray,
-                    readOnly: false,
-                    textController: emgContactNameController,
-                    inputType: TextInputType.number,
-                    onChanged: (value) {},
-                  ),
-
-                  SizedBox(
-                    height: 20,
-                  ),
-                  Row(
-                    children: [
-                      FLText(
-                        displayText: "Emg Contact Number",
-                        textColor: AppColors.kTextDark,
-                        setToWidth: false,
-                        textSize: AppFonts.textFieldFontSize14,
-                      ),
-                    ],
-                  ),
-                  SizedBox(
-                    height: 8,
-                  ),
-
-                  InputRoundedTextField(
-                    hintColor: AppColors.TextGray,
-
-                    readOnly: false,
-                    textController: emgContactNumberController,
-                    inputType: TextInputType.number,
-                    onChanged: (value) {},
-                  ),
-                  SizedBox(
-                    height: 12,
-                  ),
-
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.end,
+                  ],
+                ),
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 20,vertical: 40),
+                  child: SingleChildScrollView(
+                    child: Column(
                         children: [
+
+                          InkWell(
+                            onTap: () {
+                            },
+                            child: InkWell(
+                              onTap: () {
+                                // imagePickerWithCrop();
+                                uploadImage();
+                              },
+                              child:
+                              imageUrl == null || imageUrl == "" ?
+                              Container(
+                                height: 100,
+                                width: 100,
+                                decoration: BoxDecoration(
+                                    color: AppColors.buttonBlue.withOpacity(0.2),
+                                    borderRadius: BorderRadius.circular(60)
+                                ),
+                                child: Center(
+                                    child:
+                                    Image.asset(
+                                      menuUser,
+                                      width: 28,
+                                      height: 28,
+                                      color: Colors.grey,
+                                      fit: BoxFit.fill,
+                                    )
+                                ),
+                              ):
+                              ClipRRect(
+                                borderRadius: BorderRadius.circular(60),
+                                child: Image.network(
+                                  imageUrl,
+                                  width: 110,
+                                  height: 110,
+                                  fit: BoxFit.cover,
+                                ),
+                              ),
+                            ),
+                          ),
+                          SizedBox(
+                            height: 10,
+                          ),
+                          FLText(
+                            displayText: "Profile Picture",
+                            textColor: AppColors.buttonBlue,
+                            setToWidth: false,
+                            textSize: AppFonts.textFieldFontSize16,
+                          ),
+                          SizedBox(
+                            height: 10,
+                          ),
+                          SizedBox(
+                            height: 8,
+                          ),
                           Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
                             children: [
-                              Center(
-                                child: Container(
-                                  margin: const EdgeInsets.only(top: 20,bottom: 50),
-                                  height: 50,
-                                  width: 250,
-                                  child: FLButton(
-                                    borderRadius: 20,
-                                    title: "Update Profile".tr,
-                                    onPressed: () async {
-                                      updateProfileCall();
-                                    },
-                                    backgroundColor: AppColors.buttonBlue,
-                                    titleFontColor: AppColors.kWhite,
-                                    borderColor: AppColors.buttonBlue,
-                                    minWidth: 100,
-                                    height: 40,
+                              FLText(
+                                displayText: "Title",
+                                textColor: AppColors.textBlue,
+                                setToWidth: false,
+                                textSize: AppFonts.textFieldFontSize14,
+                              ),
+
+                            ],
+                          ),
+                          SizedBox(
+                            height: 8,
+                          ),
+                          InputRoundedTextField(
+                            readOnly: false,
+                            hint: "Enter your title",
+                            textController: titleController,
+                            inputType: TextInputType.text,
+                            onChanged: (value) {},
+                          ),
+                          SizedBox(
+                            height: 8,
+                          ),
+                          SizedBox(
+                            height: 8,
+                          ),
+                          Row(
+                            children: [
+                              FLText(
+                                displayText: "First Name",
+                                textColor: AppColors.textBlue,
+                                setToWidth: false,
+                                textSize: AppFonts.textFieldFontSize14,
+                              ),
+
+                            ],
+                          ),
+                          SizedBox(
+                            height: 8,
+                          ),
+                          InputRoundedTextField(
+                            readOnly: false,
+                            textController: firstNameController,
+                            hint: "Enter your first name",
+                            inputType: TextInputType.text,
+                            onChanged: (value) {},
+                          ),
+                          SizedBox(
+                            height: 8,
+                          ),
+                          Row(
+                            children: [
+                              FLText(
+                                displayText: "Last Name",
+                                textColor: AppColors.textBlue,
+                                setToWidth: false,
+                                textSize: AppFonts.textFieldFontSize14,
+                              ),
+
+                            ],
+                          ),
+                          SizedBox(
+                            height: 8,
+                          ),
+
+                          InputRoundedTextField(
+                            readOnly: false,
+                            hint: "Enter your last name",
+                            textController: lastNameController,
+                            inputType: TextInputType.text,
+                            onChanged: (value) {},
+                          ),
+
+
+                          SizedBox(
+                            height: 8,
+                          ),
+                          SizedBox(
+                            height: 8,
+                          ),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            children: [
+                              FLText(
+                                displayText: "Mobile Number",
+                                textColor: AppColors.textBlue,
+                                setToWidth: false,
+                                textSize: 14,
+                              ),
+                            ],
+                          ),
+                          SizedBox(
+                            height: 6,
+                          ),
+                          Row(
+                            children: [
+                              Container(
+                                height: 40,
+                                width: 100,
+                                decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(10),
+                                    border: Border.all(
+                                        color: AppColors.TextGray.withOpacity(0.5),
+                                        width: 1.5)),
+                                child: Padding(
+                                  padding: const EdgeInsets.symmetric(horizontal: 10),
+                                  child: DropdownButtonHideUnderline(
+                                    child: DropdownButton(
+                                      hint: _countryCodesDropDownValue == null
+                                          ? Text('Code',style: TextStyle(fontSize: 14,color: AppColors.kTextLight),)
+                                          : Text(
+                                        _countryCodesDropDownValue,
+                                        style: TextStyle(
+                                            color: Colors.black,
+                                            fontFamily: AppFonts.circularStd),
+                                      ),
+                                      isExpanded: true,
+                                      iconSize: 30.0,
+                                      style: TextStyle(
+                                          color: Colors.black,
+                                          fontFamily: AppFonts.circularStd),
+                                      items: countryCodesList.map(
+                                            (val) {
+                                          return DropdownMenuItem<CountryCodeCountries>(
+                                            value: val,
+                                            child: Text(val.countryCode),
+                                          );
+                                        },
+                                      ).toList(),
+                                      onChanged: (val) {
+                                        setState(
+                                              () {
+                                            _countryCodesDropDownValue = val.countryCode;
+                                            // countryCodeId = int.parse(val.countryCodeId);
+                                          },
+                                        );
+                                      },
+                                    ),
                                   ),
+                                ),
+                              ),
+                              SizedBox(
+                                width: 10,
+                              ),
+                              Expanded(
+                                child: InputRoundedTextField(
+                                  padding:const EdgeInsets.symmetric(vertical: 5),
+                                  // validator: validatePassword,
+                                  readOnly: false,
+                                  hint: "Enter mobile number",
+                                  textController: mobileController,
+                                  inputType: TextInputType.text,
+                                  // onChanged: passwordValidationCheck
                                 ),
                               ),
                             ],
                           ),
+                          SizedBox(
+                            height: 8,
+                          ),
 
-                        ],
-                      ),
-                    ],
+                          Row(
+                            children: [
+                              FLText(
+                                displayText: "Country",
+                                textColor: AppColors.textBlue,
+                                setToWidth: false,
+                                textSize: AppFonts.textFieldFontSize14,
+                              ),
+                            ],
+                          ),
+
+
+                          SizedBox(
+                            height: 8,
+                          ),
+
+                          Visibility(
+                            visible: countryList == null ? false : true,
+                            child: Container(
+                              height: 40,
+                              decoration: BoxDecoration(
+                                border: Border.all(
+                                  color: AppColors.TextGray.withOpacity(0.5),
+                                  width: 1.5,
+                                ),
+                                borderRadius: BorderRadius.circular(10),
+                              ),
+                              child: Padding(
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 10, vertical: 0),
+                                child: DropdownButtonHideUnderline(
+                                  child: DropdownButton(
+                                    hint: dropDownCountryValue == null
+                                        ? Text('Select your country',style: TextStyle(
+                                      color: AppColors.kTextLight,
+                                    ),)
+                                        : Text(
+                                      dropDownCountryValue,
+                                      style: TextStyle(color: Colors.black,
+                                          fontFamily: AppFonts.circularStd),
+                                    ),
+                                    isExpanded: true,
+                                    iconSize: 30.0,
+                                    style: TextStyle(color: Colors.black,
+                                        fontFamily: AppFonts.circularStd),
+                                    items: countryList.map(
+                                          (val) {
+                                        return DropdownMenuItem<Country>(
+                                          value: val,
+                                          child: Text(val.countryName.toString()),
+                                        );
+                                      },
+                                    ).toList(),
+                                    onChanged: (val) {
+                                      setState(
+                                            () {
+                                          print("val::::::::");
+                                          print(val.countryName);
+                                          dropDownCountryValue = val.countryName;
+                                          countryIdx = int.parse(val.countryIdx);
+                                        },
+                                      );
+                                    },
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                          SizedBox(
+                            height: 8,
+                          ),
+                          Row(
+                            children: [
+                              FLText(
+                                displayText: "Address",
+                                textColor: AppColors.textBlue,
+                                setToWidth: false,
+                                textSize: AppFonts.textFieldFontSize14,
+                              ),
+
+                            ],
+                          ),
+                          SizedBox(
+                            height: 8,
+                          ),
+                          InputRoundedTextField(
+                            hintColor: AppColors.TextGray,
+                            readOnly: true,
+                            hint: "Enter your address",
+                            textController: addressController,
+                            inputType: TextInputType.text,
+                            onChanged: (value) {},
+                          ),
+
+                          SizedBox(
+                            height: 8,
+                          ),
+                          Row(
+                            children: [
+                              FLText(
+                                displayText: "Date of Birth",
+                                textColor: AppColors.textBlue,
+                                setToWidth: false,
+                                textSize: AppFonts.textFieldFontSize14,
+                              ),
+                            ],
+                          ),
+                          SizedBox(
+                            height: 8,
+                          ),
+                          InputRoundedTextField(
+                            readOnly: false,
+                            textController: dateController,
+                            // hint: "YYYY-MM-DD",
+                            inputType: TextInputType.datetime,
+                            onSuffixPress: () {
+                              dateSelection();
+                            },
+                            suffixIcon: Icon(Icons.chevron_right),
+                          ),
+                          SizedBox(
+                            height: 8,
+                          ),
+                          Row(
+                            children: [
+                              FLText(
+                                displayText: "Gender",
+                                textColor: AppColors.textBlue,
+                                setToWidth: false,
+                                textSize: AppFonts.textFieldFontSize14,
+                              ),
+
+                            ],
+                          ),
+                          SizedBox(
+                            height: 8,
+                          ),
+                          Container(
+                            height: 40,
+                            decoration: BoxDecoration(
+                              border: Border.all(
+                                color: AppColors.TextGray.withOpacity(0.5),
+                                width: 1.5,
+                              ),
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                            child: Padding(
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 10, vertical: 0),
+                              child: DropdownButtonHideUnderline(
+                                child: DropdownButton(
+                                  hint: dropDownGenderValue == null
+                                      ? Text("Select your gender",style: TextStyle(
+                                    color: AppColors.kTextLight,
+                                  ))
+                                      : Text(
+                                    dropDownGenderValue,
+                                    style: TextStyle(color: Colors.black,
+                                        fontFamily: AppFonts.circularStd),
+                                  ),
+                                  isExpanded: true,
+                                  iconSize: 30.0,
+                                  style: TextStyle(color: Colors.black,
+                                      fontFamily: AppFonts.circularStd),
+                                  items: ["Male", "Female"].map(
+                                        (val) {
+                                      return DropdownMenuItem<String>(
+                                        value: val,
+                                        child: Text(val),
+                                      );
+                                    },
+                                  ).toList(),
+                                  onChanged: (val) {
+                                    setState(
+                                          () {
+                                        dropDownGenderValue = val;
+                                      },
+                                    );
+                                  },
+                                ),
+                              ),
+                            ),
+                          ),
+                          SizedBox(
+                            height: 8,
+                          ),
+                          Row(
+                            children: [
+                              FLText(
+                                displayText: "N.I.C Number",
+                                textColor: AppColors.textBlue,
+                                setToWidth: false,
+                                textSize: AppFonts.textFieldFontSize14,
+                              ),
+                            ],
+                          ),
+                          SizedBox(
+                            height: 8,
+                          ),
+                          InputRoundedTextField(
+                            readOnly: false,
+                            hint: "Enter your N. I. C. number",
+                            textController: nicController,
+                            inputType: TextInputType.text,
+                            onChanged: (value) {},
+                          ),
+                          SizedBox(
+                            height: 8,
+                          ),
+
+                          Row(
+                            children: [
+                              FLText(
+                                displayText: "Passport Number",
+                                textColor: AppColors.textBlue,
+
+                                setToWidth: false,
+                                textSize: AppFonts.textFieldFontSize14,
+                              ),
+                            ],
+                          ),
+
+                          SizedBox(
+                            height: 8,
+                          ),
+                          InputRoundedTextField(
+                            // hint: "E",
+                            hintColor: AppColors.TextGray,
+                            readOnly: true,
+                            hint: "Enter your passport number",
+                            textController: passportNoController,
+                            inputType: TextInputType.text,
+                            onChanged: (value) {},
+                          ),
+
+                          SizedBox(
+                            height: 8,
+                          ),
+
+
+                          Row(
+                            children: [
+                              FLText(
+                                displayText: "Occupation / Profession",
+                                textColor: AppColors.textBlue,
+                                setToWidth: false,
+                                textSize: AppFonts.textFieldFontSize14,
+                              ),
+                            ],
+                          ),
+                          SizedBox(
+                            height: 8,
+                          ),
+
+                          InputRoundedTextField(
+                            hintColor: AppColors.TextGray,
+                            readOnly: true,
+                            hint: "Enter your occupation / profession",
+                            textController: occupationController,
+                            inputType: TextInputType.text,
+                            onChanged: (value) {},
+                          ),
+
+                          SizedBox(
+                            height: 8,
+                          ),
+
+                          Row(
+                            children: [
+                              FLText(
+                                displayText: "organization",
+                                textColor: AppColors.textBlue,
+                                setToWidth: false,
+                                textSize: AppFonts.textFieldFontSize14,
+                              ),
+
+                            ],
+                          ),
+                          SizedBox(
+                            height: 8,
+                          ),
+                          InputRoundedTextField(
+                            hintColor: AppColors.TextGray,
+                            readOnly: true,
+                            hint: "Enter your organization",
+                            textController: workPlaceController,
+                            inputType: TextInputType.text,
+                            onChanged: (value) {},
+                          ),
+
+                          SizedBox(
+                            height: 40,
+                          ),
+
+                          Center(
+                            child: Container(
+                              height: 50,
+                              width: 150,
+                              child: FLButton(
+                                borderRadius: 20,
+                                title: "Update Profile".tr,
+                                onPressed: () async {
+                                  updateProfileCall();
+                                },
+                                backgroundColor: AppColors.buttonBlue,
+                                titleFontColor: AppColors.kWhite,
+                                borderColor: AppColors.buttonBlue,
+                                minWidth: 100,
+                                height: 40,
+                              ),
+                            ),
+                          ),
+
+                        ]
+                    ),
                   ),
-                  SizedBox(
-                    height: 20,
-                  ),
-                ],
+                ),
               ),
             ),
-          ),
+          ],
         ));
   }
 
   ///get all countries from API
-  void getAllCountries() {
+  Future<void> getAllCountries() async{
     print("country load");
-    apiService.check().then((check) {
+    await apiService.check().then((check) async {
       showProgressbar(context);
       if (check) {
-        apiService.getAllCountries().then((value) {
+        await apiService.getAllCountries().then((value) {
           hideProgressbar(context);
           if (value.statusCode == 200) {
             CountriesResponse responseData =
@@ -866,6 +969,7 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> with BaseUI {
   }
 
   Future<void> dateSelection() async {
+
     String date;
     pickedDate = await showDatePicker(
         context: context,
@@ -874,25 +978,38 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> with BaseUI {
         firstDate: DateTime(1500));
     date = pickedDate.toString();
 
-    // var formatter = DateFormat('dd MMM yyyy');
-    // var formatted = formatter.format(DateTime.parse(date));
-    // date = formatted;
+
 
     setState(() {
 
       if(pickedDate.month < 10 && pickedDate.day < 10){
+        fDate = "${pickedDate.year}-0${pickedDate.month}-0${pickedDate.day}";
+        print(fDate);
+        print("fDate:::::::");
         dateController.text = "${pickedDate.year}-0${pickedDate.month}-0${pickedDate.day}";
       }
       else if(pickedDate.month < 10 && pickedDate.day > 10){
+        fDate = "${pickedDate.year}-0${pickedDate.month}-${pickedDate.day}";
+        print(fDate);
+        print("fDate:::::::");
         dateController.text = "${pickedDate.year}-0${pickedDate.month}-${pickedDate.day}";
       }
       else if(pickedDate.month > 10 && pickedDate.day < 10){
+        fDate = "${pickedDate.year}-${pickedDate.month}-0${pickedDate.day}";
+        print(fDate);
+        print("fDate:::::::");
         dateController.text = "${pickedDate.year}-${pickedDate.month}-0${pickedDate.day}";
       }
       else if(pickedDate.month < 10 && pickedDate.day < 10){
+        fDate = "${pickedDate.year}-${pickedDate.month}-${pickedDate.day}";
+        print(fDate);
+        print("fDate:::::::");
         dateController.text = "${pickedDate.year}-${pickedDate.month}-${pickedDate.day}";
       }
       else {
+        fDate = "${pickedDate.year}-${pickedDate.month}-${pickedDate.day}";
+        print(fDate);
+        print("fDate:::::::");
         dateController.text = "${pickedDate.year}-${pickedDate.month}-${pickedDate.day}";
       }
 
@@ -902,940 +1019,3 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> with BaseUI {
 }
 
 
-
-
-
-
-
-
-
-
-
-
-
-//
-//
-// import 'package:country_calling_code_picker/country_code_picker.dart';
-// import 'package:eventz/model/countries_response.dart';
-// import 'package:eventz/model/host_register_request.dart';
-// import 'package:eventz/view/widget/imput_square_text_field.dart';
-// import 'package:firebase_storage/firebase_storage.dart';
-// import 'package:flutter/material.dart';
-// import 'package:eventz/view/BaseUI.dart';
-// import 'package:permission_handler/permission_handler.dart';
-// import 'dart:io' as files;
-// import '../../api/api_service.dart';
-// import '../../configs/colors.dart';
-// import '../../configs/fonts.dart';
-// import 'package:flutter/material.dart';
-// import 'package:image_cropper/image_cropper.dart';
-// import 'package:image_picker/image_picker.dart';
-// import '../../configs/images.dart';
-// import '../../model/updateProfileResponse.dart';
-// import '../../model/all_event_response.dart';
-// import '../../model/error_response.dart';
-// import '../../model/responses.dart';
-// import '../../model/login_response.dart';
-// import '../../model/register_request.dart';
-// import '../../model/update_profile_request.dart';
-// import '../../utils/constants.dart';
-// import '../../utils/shared_storage.dart';
-// import '../widget/fl_text.dart';
-// import 'dart:convert';
-// import 'package:image_cropper/image_cropper.dart';
-// import 'package:eventz/configs/colors.dart';
-// import 'package:eventz/configs/fonts.dart';
-// import 'package:eventz/configs/images.dart';
-// import 'package:eventz/model/register_error_response.dart';
-// import 'package:eventz/model/register_request.dart';
-// import 'package:eventz/model/register_success_response.dart';
-// import 'package:eventz/view/BaseUI.dart';
-// import 'package:eventz/view/login/login_view.dart';
-// import 'package:eventz/view/widget/fl_button.dart';
-// import 'package:eventz/view/widget/fl_text.dart';
-// import 'package:flutter/material.dart';
-// import 'package:get/get.dart';
-//
-//
-// class UpdateProfileScreen extends StatefulWidget {
-//   static var routeName = "/update_profile_screen";
-//
-//   const UpdateProfileScreen({Key key}) : super(key: key);
-//
-//   @override
-//   State<StatefulWidget> createState() => _UpdateProfileScreenState();
-// }
-//
-// class _UpdateProfileScreenState extends State<UpdateProfileScreen> with BaseUI{
-//
-//   final TextEditingController firstNameController = new TextEditingController();
-//   final TextEditingController lastNameController = new TextEditingController();
-//   final TextEditingController dateController = new TextEditingController();
-//   final TextEditingController addressController = new TextEditingController();
-//   final TextEditingController nicController = new TextEditingController();
-//   final TextEditingController passportNoController = new TextEditingController();
-//   final TextEditingController mobileNoController = new TextEditingController();
-//   final TextEditingController occupationController = new TextEditingController();
-//   final TextEditingController workPlaceController = new TextEditingController();
-//   final TextEditingController passwordController = new TextEditingController();
-//   final TextEditingController emgContactNumberController = new TextEditingController();
-//   final TextEditingController emgContactNameController = new TextEditingController();
-//   FocusNode _passwordFocusNode;
-//   String logo;
-//   DateTime pickedDate = DateTime.now();
-//   String _userName = "";
-//   String _dropDownTitleValue;
-//   String _dropDownGenderValue;
-//   String _dropDownCountryValue;
-//   int countryIdx;
-//   String imageUrl;
-//   FocusNode _confirmPasswordFocusNode;
-//   APIService apiService = APIService();
-//   List<Country> countryList = new List();
-//   List<String> countryListNames = new List();
-//   SharedPref sharedPref = SharedPref();
-//   LoginResponse profileData;
-//
-//   @override
-//   void initState() {
-//     getProfileInfo();
-//     super.initState();
-//     _passwordFocusNode = FocusNode();
-//     getAllCountries();
-//   }
-//
-//   Future<void> initialization() async {
-//     print("profileData.result.firstName::::::");
-//     print(profileData.result.firstName);
-//     firstNameController.text = profileData.result.firstName;
-//     lastNameController.text = profileData.result.lastName;
-//     passportNoController.text = profileData.result.mobileNo;
-//   }
-//
-//   @override
-//   void dispose() {
-//     super.dispose();
-//   }
-//
-//
-//   getProfileInfo() async {
-//     try {
-//       profileData = LoginResponse.fromJson(await sharedPref.read(ShardPrefKey.USER));
-//     } catch (Excepetion) {
-//       print(Excepetion.toString());
-//     }
-//
-//     initialization();
-//   }
-//
-//   ///host registration call
-//   void updateProfileCall() {
-//     apiService.check().then((check) {
-//       ProfileUpdateRequest request = ProfileUpdateRequest(
-//           title: _dropDownTitleValue.toString(),
-//           genderId: _dropDownGenderValue.toString() == "Male" ? 1:2,
-//           NIC: nicController.text,
-//           passportNo: passportNoController.text,
-//           address: addressController.text,
-//           dob: dateController.text,
-//           occupation: occupationController.text,
-//           workPlace: workPlaceController.text,
-//           emgContactName: emgContactNumberController.text,
-//           emgContactNo: emgContactNumberController.text,
-//           profilePicURL: imageUrl,
-//           userTypeIdx: profileData.result.userTypeIdx,
-//           firstName: firstNameController.text,
-//           lastName: lastNameController.text,
-//           mobileNo: mobileNoController.text,
-//           countryID: countryIdx
-//       );
-//       showProgressbar(context);
-//       if (check) {
-//         apiService.userUpdate(request.toJson()).then((value) {
-//           hideProgressbar(context);
-//
-//           if (value.statusCode == 200) {
-//             UpdateProfileResponse responseData =
-//             UpdateProfileResponse.fromJson(json.decode(value.body));
-//             Get.snackbar("Success", responseData.result,
-//                 colorText: AppColors.textGreenLight,
-//                 backgroundColor: AppColors.kWhite);
-//             // Get.off(LoginView());
-//           } else {
-//             RegisterErrorResponse responseData =
-//             RegisterErrorResponse.fromJson(json.decode(value.body));
-//             Get.snackbar('error'.tr, responseData.message,
-//                 colorText: AppColors.textRed,
-//                 backgroundColor: AppColors.kWhite);
-//           }
-//         });
-//       } else {
-//         hideProgressbar(context);
-//         helper.showAlertView(context, 'no_internet'.tr, () {}, 'ok'.tr);
-//       }
-//     });
-//   }
-//
-//   @override
-//   Widget build(BuildContext context) {
-//     return Scaffold(
-//       backgroundColor: AppColors.kWhite,
-//       // drawer: AppDrawer(),
-//       // appBar: BaseAppBar(
-//       //     title: '',
-//       //     menuList: [],
-//       //     isDrawerShow: true,
-//       //     isBackShow: false),
-//       body: Container(
-//         height: 1000,
-//         width: 1000,
-//         decoration: const BoxDecoration(
-//             color: AppColors.kWhite
-//         ),
-//         child: Padding(
-//           padding: const EdgeInsets.symmetric(horizontal: 20,vertical: 60),
-//           child: SingleChildScrollView(
-//             child: Column(
-//               children: [
-//                 Row(
-//                   children: [
-//                     FLText(
-//                       displayText: "My Profile",
-//                       textColor: AppColors.kTextDark,
-//                       setToWidth: false,
-//                       textSize: AppFonts.textFieldFontSize,
-//                     ),
-//                   ],
-//                 ),
-//                 SizedBox(
-//                   height: 10,
-//                 ),
-//                 InkWell(
-//                   onTap: (){
-//
-//                   },
-//                   child: InkWell(
-//                     onTap: (){
-//                       // imagePickerWithCrop();
-//                       uploadImage();
-//
-//                     },
-//                     child:
-//                     imageUrl != null?
-//                     ClipRRect(
-//                       borderRadius: BorderRadius.circular(60),
-//                       child: Image.network(
-//                         imageUrl,
-//                         width: 110,
-//                         height: 110,
-//                         fit: BoxFit.cover,
-//                       ),
-//                     ):
-//                     Container(
-//                       height: 110,
-//                       width: 110,
-//                       decoration: BoxDecoration(
-//                           color: Colors.blue.withOpacity(0.15),
-//                           borderRadius: BorderRadius.circular(60)
-//                       ),
-//                       child: Center(
-//                           child:
-//                           // logo != null?
-//                           // Image.file(
-//                           //   files.File(logo),
-//                           //   width: 100,
-//                           //   height: 100,
-//                           // ):
-//
-//                           Image.asset(
-//                             menuUser,
-//                             width: 28,
-//                             height: 28,
-//                             fit: BoxFit.cover,
-//                           )
-//                       ),
-//                     ),
-//                   ),
-//                 ),
-//                 SizedBox(
-//                   height: 10,
-//                 ),
-//                 FLText(
-//                   displayText: "Profile Picture",
-//                   textColor: AppColors.kTextDark,
-//                   setToWidth: false,
-//                   textSize: AppFonts.textFieldFontSize16,
-//                 ),
-//                 SizedBox(
-//                   height: 10,
-//                 ),
-//                 Row(
-//                   children: [
-//                     FLText(
-//                       displayText: "Title :",
-//                       textColor: AppColors.kTextDark,
-//                       setToWidth: false,
-//                       textSize: AppFonts.textFieldFontSize14,
-//                     ),
-//                     SizedBox(
-//                       width: 23,
-//                     ),
-//                     Expanded(
-//                       child: Padding(
-//                         padding: const EdgeInsets.only(right: 38),
-//                         child: Container(
-//                           height: 40,
-//                           decoration: BoxDecoration(
-//                               border: Border.all(
-//                                 color: AppColors.TextGray.withOpacity(0.5),
-//                                 width: 1.5,
-//                               ),
-//                               borderRadius: BorderRadius.circular(5)
-//                           ),
-//                           child: Padding(
-//                             padding: const EdgeInsets.symmetric(horizontal: 10,vertical: 0),
-//                             child: DropdownButtonHideUnderline(
-//                               child: DropdownButton(
-//                                 hint: _dropDownTitleValue == null
-//                                     ? Text("Mr")
-//                                     : Text(
-//                                   _dropDownTitleValue,
-//                                   style: TextStyle(color: Colors.black,fontFamily: AppFonts.circularStd),
-//                                 ),
-//                                 isExpanded: true,
-//                                 iconSize: 30.0,
-//                                 style: TextStyle(color: Colors.black,fontFamily: AppFonts.circularStd),
-//                                 items: ["Mr","Mrs"].map(
-//                                       (val) {
-//                                     return DropdownMenuItem<String>(
-//                                       value: val,
-//                                       child: Text(val),
-//                                     );
-//                                   },
-//                                 ).toList(),
-//                                 onChanged: (val) {
-//                                   setState(
-//                                         () {
-//                                           _dropDownTitleValue = val;
-//                                     },
-//                                   );
-//                                 },
-//                               ),
-//                             ),
-//                           ),
-//                         ),
-//                       ),
-//                     ),
-//                   ],
-//                 ),
-//                 SizedBox(
-//                   height: 8,
-//                 ),
-//                 Row(
-//                   children: [
-//                     FLText(
-//                       displayText: "First Name :",
-//                       textColor: AppColors.kTextDark,
-//                       setToWidth: false,
-//                       textSize: AppFonts.textFieldFontSize14,
-//                     ),
-//                     SizedBox(
-//                       width: 22,
-//                     ),
-//                     Expanded(
-//                       child: InputSquareTextField(
-//                         padding:const EdgeInsets.symmetric(vertical: 5),
-//                         readOnly: false,
-//                         textController: firstNameController,
-//                         inputType: TextInputType.text,
-//                         onChanged: (value) {
-//                         },
-//                       ),
-//                     ),
-//                   ],
-//                 ),
-//                 SizedBox(
-//                   height: 8,
-//                 ),
-//                 Row(
-//                   children: [
-//                     FLText(
-//                       displayText: "Last Name :",
-//                       textColor: AppColors.kTextDark,
-//                       setToWidth: false,
-//                       textSize: AppFonts.textFieldFontSize14,
-//                     ),
-//                     SizedBox(
-//                       width: 20,
-//                     ),
-//                     Expanded(
-//                       child: InputSquareTextField(
-//                         padding:const EdgeInsets.symmetric(vertical: 5),
-//                         readOnly: false,
-//                         textController: lastNameController,
-//                         inputType: TextInputType.text,
-//                         onChanged: (value) {
-//                         },
-//                       ),
-//                     ),
-//                   ],
-//                 ),
-//                 SizedBox(
-//                   height: 8,
-//                 ),
-//                 Row(
-//                   children: [
-//                     FLText(
-//                       displayText: "Gender :",
-//                       textColor: AppColors.kTextDark,
-//                       setToWidth: false,
-//                       textSize: AppFonts.textFieldFontSize14,
-//                     ),
-//                     SizedBox(
-//                       width: 26,
-//                     ),
-//                     Expanded(
-//                       child: Padding(
-//                         padding: const EdgeInsets.only(right: 38),
-//                         child: Container(
-//                           height: 40,
-//                           decoration: BoxDecoration(
-//                               border: Border.all(
-//                                 color: AppColors.TextGray.withOpacity(0.5),
-//                                 width: 1.5,
-//                               ),
-//                               borderRadius: BorderRadius.circular(5)
-//                           ),
-//                           child: Padding(
-//                             padding: const EdgeInsets.symmetric(horizontal: 10,vertical: 0),
-//                             child: DropdownButtonHideUnderline(
-//                               child: DropdownButton(
-//                                 hint: _dropDownGenderValue == null
-//                                     ? Text("Male")
-//                                     : Text(
-//                                   _dropDownGenderValue,
-//                                   style: TextStyle(color: Colors.black,fontFamily: AppFonts.circularStd),
-//                                 ),
-//                                 isExpanded: true,
-//                                 iconSize: 30.0,
-//                                 style: TextStyle(color: Colors.black,fontFamily: AppFonts.circularStd),
-//                                 items: ["Male","Female"].map(
-//                                       (val) {
-//                                     return DropdownMenuItem<String>(
-//                                       value: val,
-//                                       child: Text(val),
-//                                     );
-//                                   },
-//                                 ).toList(),
-//                                 onChanged: (val) {
-//                                   setState(
-//                                         () {
-//                                       _dropDownGenderValue = val;
-//                                     },
-//                                   );
-//                                 },
-//                               ),
-//                             ),
-//                           ),
-//                         ),
-//                       ),
-//                     ),
-//                     // Expanded(
-//                     //   child: InputSquareTextField(
-//                     //     hint: "E",
-//                     //     hintColor: AppColors.TextGray,
-//                     //     padding:const EdgeInsets.symmetric(vertical: 5),
-//                     //     readOnly: true,
-//                     //     textController: countryCodeController,
-//                     //     inputType: TextInputType.number,
-//                     //     onSuffixPress: _onPressedShowBottomSheet,
-//                     //     suffixIcon: Icon(Icons.chevron_right),
-//                     //   ),
-//                     // ),
-//                   ],
-//                 ),
-//                 SizedBox(
-//                   height: 8,
-//                 ),
-//                 Row(
-//                   children: [
-//                     FLText(
-//                       displayText: "Mobile No :",
-//                       textColor: AppColors.kTextDark,
-//                       setToWidth: false,
-//                       textSize: AppFonts.textFieldFontSize14,
-//                     ),
-//                     SizedBox(
-//                       width: 20,
-//                     ),
-//                     Expanded(
-//                       child: InputSquareTextField(
-//                         padding:const EdgeInsets.symmetric(vertical: 5),
-//                         readOnly: false,
-//                         textController: mobileNoController,
-//                         inputType: TextInputType.text,
-//                         onChanged: (value) {
-//                         },
-//                       ),
-//                     ),
-//                   ],
-//                 ),
-//                 SizedBox(
-//                   height: 8,
-//                 ),
-//                 Row(
-//                   children: [
-//                     FLText(
-//                       displayText: "NIC :",
-//                       textColor: AppColors.kTextDark,
-//                       setToWidth: false,
-//                       textSize: AppFonts.textFieldFontSize14,
-//                     ),
-//                     SizedBox(
-//                       width: 20,
-//                     ),
-//                     Expanded(
-//                       child: InputSquareTextField(
-//                         padding:const EdgeInsets.symmetric(vertical: 5),
-//                         readOnly: false,
-//                         textController: nicController,
-//                         inputType: TextInputType.text,
-//                         onChanged: (value) {
-//                         },
-//                       ),
-//                     ),
-//                   ],
-//                 ),
-//                 SizedBox(
-//                   height: 8,
-//                 ),
-//
-//                 Row(
-//                   children: [
-//                     FLText(
-//                       displayText: "DOB :",
-//                       textColor: AppColors.kTextDark,
-//                       setToWidth: false,
-//                       textSize: AppFonts.textFieldFontSize14,
-//                     ),
-//                     SizedBox(
-//                       width: 10,
-//                     ),
-//                     Image.asset(
-//                       "assets/images/my_events.png",
-//                       height: 30,
-//                       width: 30,
-//                       color: AppColors.TextGray,
-//                     ),
-//                     SizedBox(
-//                       width: 10,
-//                     ),
-//                     Expanded(
-//                       child: InputSquareTextField(
-//                         padding:const EdgeInsets.symmetric(vertical: 5),
-//                         readOnly: false,
-//                         textController: dateController,
-//                         inputType: TextInputType.number,
-//                         onSuffixPress: (){
-//                           dateSelection();
-//                         },
-//                         suffixIcon: Icon(Icons.chevron_right),
-//                       ),
-//                     ),
-//                   ],
-//                 ),
-//                 SizedBox(
-//                   height: 8,
-//                 ),
-//                 Row(
-//                   children: [
-//                     FLText(
-//                       displayText: "Passport No :",
-//                       textColor: AppColors.kTextDark,
-//                       setToWidth: false,
-//                       textSize: AppFonts.textFieldFontSize14,
-//                     ),
-//                     SizedBox(
-//                       width: 16,
-//                     ),
-//                     Expanded(
-//                       child: InputSquareTextField(
-//                         // hint: "E",
-//                         hintColor: AppColors.TextGray,
-//                         padding:const EdgeInsets.symmetric(vertical: 5),
-//                         readOnly: false,
-//                         textController: passportNoController,
-//                         inputType: TextInputType.number,
-//                         onChanged: (value) {
-//                         },
-//                       ),
-//                     ),
-//                   ],
-//                 ),
-//                 SizedBox(
-//                   height: 8,
-//                 ),
-//                 Row(
-//                   children: [
-//                     FLText(
-//                       displayText: "Address :",
-//                       textColor: AppColors.kTextDark,
-//                       setToWidth: false,
-//                       textSize: AppFonts.textFieldFontSize14,
-//                     ),
-//                     SizedBox(
-//                       width: 27,
-//                     ),
-//                     Expanded(
-//                       child: InputSquareTextField(
-//                         hintColor: AppColors.TextGray,
-//                         padding:const EdgeInsets.symmetric(vertical: 5),
-//                         readOnly: false,
-//                         textController: addressController,
-//                         inputType: TextInputType.number,
-//                         onChanged: (value) {
-//                         },
-//                       ),
-//                     ),
-//                   ],
-//                 ),
-//
-//
-//
-//                 SizedBox(
-//                   height: 8,
-//                 ),
-//                 Row(
-//                   children: [
-//                     FLText(
-//                       displayText: "Country :",
-//                       textColor: AppColors.kTextDark,
-//                       setToWidth: false,
-//                       textSize: AppFonts.textFieldFontSize14,
-//                     ),
-//                     SizedBox(
-//                       width: 27,
-//                     ),
-//                     Expanded(
-//                       child: Padding(
-//                         padding: const EdgeInsets.only(right: 38),
-//                         child: Container(
-//                           height: 40,
-//                           decoration: BoxDecoration(
-//                               border: Border.all(
-//                                 color: AppColors.TextGray.withOpacity(0.5),
-//                                 width: 1.5,
-//                               ),
-//                               borderRadius: BorderRadius.circular(5)
-//                           ),
-//                           child: Padding(
-//                             padding: const EdgeInsets.symmetric(horizontal: 10,vertical: 0),
-//                             child: DropdownButtonHideUnderline(
-//                               child: DropdownButton(
-//                                 hint: _dropDownCountryValue == null
-//                                     ? Text('Select a country')
-//                                     : Text(
-//                                   _dropDownCountryValue,
-//                                   style: TextStyle(color: Colors.black,fontFamily: AppFonts.circularStd),
-//                                 ),
-//                                 isExpanded: true,
-//                                 iconSize: 30.0,
-//                                 style: TextStyle(color: Colors.black,fontFamily: AppFonts.circularStd),
-//                                 items: countryList.map(
-//                                       (val) {
-//                                     return DropdownMenuItem<Country>(
-//                                       value: val,
-//                                       child: Text(val.countryName.toString()),
-//                                     );
-//                                   },
-//                                 ).toList(),
-//                                 onChanged: (val) {
-//                                   setState(
-//                                         () {
-//                                       print("val::::::::");
-//                                       print(val.countryName);
-//                                       _dropDownCountryValue = val.countryName;
-//                                       countryIdx = int.parse(val.countryIdx);
-//                                     },
-//                                   );
-//                                 },
-//                               ),
-//                             ),
-//                           ),
-//                         ),
-//                       ),
-//                     ),
-//                   ],
-//                 ),
-//
-//
-//
-//
-//                 SizedBox(
-//                   height: 8,
-//                 ),
-//                 Row(
-//                   children: [
-//                     FLText(
-//                       displayText: "Occupation :",
-//                       textColor: AppColors.kTextDark,
-//                       setToWidth: false,
-//                       textSize: AppFonts.textFieldFontSize14,
-//                     ),
-//                     SizedBox(
-//                       width: 27,
-//                     ),
-//                     Expanded(
-//                       child: InputSquareTextField(
-//                         hintColor: AppColors.TextGray,
-//                         padding:const EdgeInsets.symmetric(vertical: 5),
-//                         readOnly: false,
-//                         textController: occupationController,
-//                         inputType: TextInputType.number,
-//                         onChanged: (value) {
-//                         },
-//                       ),
-//                     ),
-//                   ],
-//                 ),
-//
-//
-//
-//                 SizedBox(
-//                   height: 8,
-//                 ),
-//                 Row(
-//                   children: [
-//                     FLText(
-//                       displayText: "Work Place :",
-//                       textColor: AppColors.kTextDark,
-//                       setToWidth: false,
-//                       textSize: AppFonts.textFieldFontSize14,
-//                     ),
-//                     SizedBox(
-//                       width: 27,
-//                     ),
-//                     Expanded(
-//                       child: InputSquareTextField(
-//                         hintColor: AppColors.TextGray,
-//                         padding:const EdgeInsets.symmetric(vertical: 5),
-//                         readOnly: false,
-//                         textController: workPlaceController,
-//                         inputType: TextInputType.number,
-//                         onChanged: (value) {
-//                         },
-//                       ),
-//                     ),
-//                   ],
-//                 ),
-//
-//
-//
-//                 SizedBox(
-//                   height: 8,
-//                 ),
-//                 Row(
-//                   children: [
-//                     FLText(
-//                       displayText: "Emg Contact \nname :",
-//                       textColor: AppColors.kTextDark,
-//                       setToWidth: false,
-//                       textSize: AppFonts.textFieldFontSize14,
-//                     ),
-//                     SizedBox(
-//                       width: 27,
-//                     ),
-//                     Expanded(
-//                       child: InputSquareTextField(
-//                         hintColor: AppColors.TextGray,
-//                         padding:const EdgeInsets.symmetric(vertical: 5),
-//                         readOnly: false,
-//                         textController: emgContactNameController,
-//                         inputType: TextInputType.number,
-//                         onChanged: (value) {
-//                         },
-//                       ),
-//                     ),
-//                   ],
-//                 ),
-//
-//                 SizedBox(
-//                   height: 8,
-//                 ),
-//                 Row(
-//                   children: [
-//                     FLText(
-//                       displayText: "Emg Contact \nnumber :",
-//                       textColor: AppColors.kTextDark,
-//                       setToWidth: false,
-//                       textSize: AppFonts.textFieldFontSize14,
-//                     ),
-//                     SizedBox(
-//                       width: 27,
-//                     ),
-//                     Expanded(
-//                       child: InputSquareTextField(
-//                         hintColor: AppColors.TextGray,
-//                         padding:const EdgeInsets.symmetric(vertical: 5),
-//                         readOnly: false,
-//                         textController: emgContactNumberController,
-//                         inputType: TextInputType.number,
-//                         onChanged: (value) {
-//                         },
-//                       ),
-//                     ),
-//                   ],
-//                 ),
-//                 SizedBox(
-//                   height: 10,
-//                 ),
-//                 Row(
-//                   mainAxisAlignment: MainAxisAlignment.end,
-//                   children: [
-//                     Row(
-//                       mainAxisAlignment: MainAxisAlignment.end,
-//                       children: [
-//                         InkWell(
-//                           onTap: (){
-//                             updateProfileCall();
-//                           },
-//                           child: Container(
-//                             decoration: BoxDecoration(
-//                                 borderRadius: BorderRadius.circular(3),
-//                                 color: Colors.blue
-//                             ),
-//                             child: Padding(
-//                               padding: const EdgeInsets.symmetric(vertical: 6,horizontal: 12),
-//                               child: FLText(
-//                                 displayText: "Update Profile",
-//                                 textColor: Colors.white,
-//                                 setToWidth: false,
-//                                 textSize: AppFonts.textFieldFontSize14,
-//                               ),
-//                             ),
-//                           ),
-//                         ),
-//                       ],
-//                     ),
-//                   ],
-//                 ),
-//
-//               ],
-//             ),
-//           ),
-//         ),
-//       ),
-//     );
-//   }
-//
-//   ///get all countries from API
-//   void getAllCountries() {
-//     print("country load");
-//     apiService.check().then((check) {
-//       showProgressbar(context);
-//       if (check) {
-//         apiService.getAllCountries().then((value) {
-//           hideProgressbar(context);
-//           if (value.statusCode == 200) {
-//             CountriesResponse responseData =
-//             CountriesResponse.fromJson(json.decode(value.body));
-//             setState(() {
-//               countryList = responseData.country;
-//               print("countryList::::::::");
-//               print(countryList);
-//               for(int i = 0; i < countryList.length; i++){
-//                 countryListNames.add(countryList[i].countryName);
-//               }
-//               print("countryListNames:::::::");
-//               print(countryListNames);
-//             });
-//           } else {
-//             ErrorResponse responseData =
-//             ErrorResponse.fromJson(json.decode(value.body));
-//             Get.snackbar('error'.tr, responseData.message,
-//                 colorText: AppColors.textRed,
-//                 snackPosition: SnackPosition.TOP,
-//                 borderRadius: 0,
-//                 borderWidth: 2,
-//                 margin: EdgeInsets.only(left: 20, right: 20, top: 30),
-//                 backgroundColor: AppColors.bgGreyLight);
-//           }
-//         });
-//       } else {
-//         hideProgressbar(context);
-//         helper.showAlertView(context, 'no_internet'.tr, () {}, 'ok'.tr);
-//       }
-//     });
-//   }
-//
-//   uploadImage() async {
-//     final _firebaseStorage = FirebaseStorage.instance;
-//     final _imagePicker = ImagePicker();
-//     PickedFile image;
-//     //Check Permissions
-//     await Permission.photos.request();
-//
-//     var permissionStatus = await Permission.photos.status;
-//
-//     if (permissionStatus.isGranted){
-//       //Select Image
-//       image = await _imagePicker.getImage(source: ImageSource.gallery);
-//       var file = files.File(image.path);
-//
-//       if (image != null){
-//         //Upload to Firebase
-//         showProgressbar(context);
-//         var snapshot = await _firebaseStorage.ref()
-//             .child('images/imageName')
-//             .putFile(file);
-//         var downloadUrl = await snapshot.ref.getDownloadURL();
-//         setState(() {
-//           imageUrl = downloadUrl;
-//         });
-//         hideProgressbar(context);
-//       } else {
-//         print('No Image Path Received');
-//         hideProgressbar(context);
-//       }
-//     } else {
-//       print('Permission not granted. Try Again with permission access');
-//     }
-//   }
-//
-//   Future<void> dateSelection() async {
-//     String date;
-//     pickedDate = await showDatePicker(
-//         context: context,
-//         lastDate: DateTime(3000),
-//         initialDate: DateTime.now(),
-//         firstDate: DateTime(1500));
-//     date = pickedDate.toString();
-//
-//     // var formatter = DateFormat('dd MMM yyyy');
-//     // var formatted = formatter.format(DateTime.parse(date));
-//     // date = formatted;
-//
-//     setState(() {
-//
-//       if(pickedDate.month < 10 && pickedDate.day < 10){
-//         dateController.text = "${pickedDate.year}-0${pickedDate.month}-0${pickedDate.day}";
-//       }
-//       else if(pickedDate.month < 10 && pickedDate.day > 10){
-//         dateController.text = "${pickedDate.year}-0${pickedDate.month}-${pickedDate.day}";
-//       }
-//       else if(pickedDate.month > 10 && pickedDate.day < 10){
-//         dateController.text = "${pickedDate.year}-${pickedDate.month}-0${pickedDate.day}";
-//       }
-//       else if(pickedDate.month < 10 && pickedDate.day < 10){
-//         dateController.text = "${pickedDate.year}-${pickedDate.month}-${pickedDate.day}";
-//       }
-//       else {
-//         dateController.text = "${pickedDate.year}-${pickedDate.month}-${pickedDate.day}";
-//       }
-//
-//     });
-//   }
-//
-//
-//
-// }

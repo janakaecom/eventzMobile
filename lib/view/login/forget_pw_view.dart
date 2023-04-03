@@ -80,7 +80,7 @@ class _ForgetPwViewState extends State<ForgetPwView> with BaseUI {
         ),
         child: Container(
           margin:
-              const EdgeInsets.only(left: 20, right: 20, top: 10, bottom: 20),
+              const EdgeInsets.symmetric(horizontal: 20,vertical: 20),
           child: Stack(
             children: [
               Column(
@@ -96,34 +96,22 @@ class _ForgetPwViewState extends State<ForgetPwView> with BaseUI {
                       ),
                     ],
                   ),
+                  SizedBox(
+                    height: 8,
+                  ),
                   InputRoundedTextField(
-                    padding:const EdgeInsets.symmetric(vertical: 5),
                     readOnly: false,
                     // validator: validatePassword,
                     textController: emailController,
+                    hint: "Enter your email",
                     inputType: TextInputType.text,
                     // onChanged: passwordValidationCheck
                   ),
-                  // TextField(
-                  //   controller: emailController,
-                  //   keyboardType: TextInputType.emailAddress,
-                  //   decoration: new InputDecoration(
-                  //       hintText: 'enter_email'.tr,
-                  //       hintStyle: TextStyle(
-                  //           color: AppColors.kTextLight,
-                  //           fontSize: AppFonts.textFieldFontSize16),
-                  //       labelText: 'email_cap'.tr,
-                  //       labelStyle: TextStyle(
-                  //           color: AppColors.buttonBlue,
-                  //           fontSize: AppFonts.textFieldFontSize16),
-                  //       border: UnderlineInputBorder(
-                  //           borderSide: BorderSide(color: Colors.red))),
-                  // ),
                   SizedBox(
                     height: 20,
                   ),
                   Container(
-                    width: 200,
+                    width: 150,
                     child: FLButton(
                       borderRadius: 20,
                       title: "Submit",
