@@ -1,3 +1,5 @@
+import 'package:eventz/configs/images.dart';
+
 class ProfileUpdateRequest {
   int userIdx;
   String title;
@@ -10,6 +12,7 @@ class ProfileUpdateRequest {
   String workPlace;
   String emgContactName;
   String emgContactNo;
+  String mobileNo;
   String profilePicURL;
   String firstName;
   String lastName;
@@ -21,6 +24,7 @@ class ProfileUpdateRequest {
         this.dOB,
         this.genderId,
         this.nIC,
+        this.mobileNo,
         this.passport,
         this.address,
         this.occupation,
@@ -38,6 +42,7 @@ class ProfileUpdateRequest {
     dOB = json['DOB'];
     genderId = json['GenderId'];
     nIC = json['NIC'];
+    mobileNo = json['MobileNo'];
     passport = json['Passport'];
     address = json['Address'];
     occupation = json['Occupation'];
@@ -55,6 +60,7 @@ class ProfileUpdateRequest {
     data['UserIdx'] = this.userIdx;
     data['Title'] = this.title;
     data['DOB'] = this.dOB;
+    data['MobileNo'] = this.mobileNo;
     data['GenderId'] = this.genderId;
     data['NIC'] = this.nIC;
     data['Passport'] = this.passport;

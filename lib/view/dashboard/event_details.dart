@@ -447,11 +447,11 @@ class _EventDetailsState extends State<EventDetails> with BaseUI {
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Center(
+                        Expanded(
                           child: Container(
                             margin: const EdgeInsets.only(top: 20),
                             height: 50,
-                            width: 320,
+                            width: double.infinity,
                             child: FLButton(
                               borderRadius: 20,
                               title: "Submit".tr,

@@ -169,7 +169,7 @@ class _SignUpViewState extends State<SignUpView> with BaseUI {
             ),
 
             SizedBox(
-              height: 5,
+              height: 11,
             ),
 
             Row(
@@ -248,7 +248,7 @@ class _SignUpViewState extends State<SignUpView> with BaseUI {
               // validator: validatePassword,
               textController: emailController,
               hint: "Enter your email",
-              inputType: TextInputType.text,
+              inputType: TextInputType.emailAddress,
               // onChanged: passwordValidationCheck
             ),
 
@@ -279,7 +279,7 @@ class _SignUpViewState extends State<SignUpView> with BaseUI {
                       borderRadius: BorderRadius.circular(10),
                       border: Border.all(
                           color: AppColors.TextGray.withOpacity(0.5),
-                          width: 1.5)),
+                          width: 1.4)),
                   child: Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 10),
                     child: DropdownButtonHideUnderline(
@@ -328,7 +328,7 @@ class _SignUpViewState extends State<SignUpView> with BaseUI {
                     // validator: validatePassword,
                     textController: mobileController,
                     hint: "Enter mobile number",
-                    inputType: TextInputType.text,
+                    inputType: TextInputType.number,
                     // onChanged: passwordValidationCheck
                   ),
                 ),
@@ -431,6 +431,10 @@ class _SignUpViewState extends State<SignUpView> with BaseUI {
                 height: 40,
               ),
             ),
+            SizedBox(
+              height: 3,
+            ),
+
           ],
         ),
       ),
@@ -533,9 +537,8 @@ class _SignUpViewState extends State<SignUpView> with BaseUI {
 
     RegExp regex = RegExp(r'^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[!@#\$&*~]).{8,}$');
 
-
     if (fName.isEmpty) {
-      Get.snackbar('eventz', 'enter_first_name'.tr,
+      Get.snackbar('eventz', "Please enter first name",
           colorText: AppColors.textRed, backgroundColor: AppColors.kWhite);
     }
     else if (fName.characters.length > 50) {
@@ -543,7 +546,7 @@ class _SignUpViewState extends State<SignUpView> with BaseUI {
           colorText: AppColors.textRed, backgroundColor: AppColors.kWhite);
     }
     else if (lName.isEmpty) {
-      Get.snackbar('eventz', 'enter_last_name'.tr,
+      Get.snackbar('eventz', 'Please enter last name',
           colorText: AppColors.textRed, backgroundColor: AppColors.kWhite);
     }
     else if (lName.characters.length > 50) {
@@ -558,16 +561,20 @@ class _SignUpViewState extends State<SignUpView> with BaseUI {
     Get.snackbar('eventz', 'Email is too long!', duration: Duration(seconds: 5),
     colorText: AppColors.textRed, backgroundColor: AppColors.kWhite);
     }
-    else if (pw.isEmpty) {
-    Get.snackbar('eventz', 'invalid_password'.tr,
-    colorText: AppColors.textRed, backgroundColor: AppColors.kWhite);
-    }
-    else if (pw.characters.length > 20) {
-    Get.snackbar('eventz', 'Password must be less than 20 characters!', duration: Duration(seconds: 5),
-    colorText: AppColors.textRed, backgroundColor: AppColors.kWhite);
+    else if (_countryCodesDropDownValue == null || _countryCodesDropDownValue == '') {
+      Get.snackbar('eventz', 'Please select country code',
+          colorText: AppColors.textRed, backgroundColor: AppColors.kWhite);
     }
     else if (!GetUtils.isPhoneNumber(mobile)) {
-      Get.snackbar('eventz', 'invalid_mobile'.tr,
+      Get.snackbar('eventz', 'Please enter valid mobile number',
+          colorText: AppColors.textRed, backgroundColor: AppColors.kWhite);
+    }
+    else if (pw.isEmpty) {
+      Get.snackbar('eventz', 'Please enter valid password including uppercase letters, lowercase letters, numbers, special characters and minimum 8 characters',
+          colorText: AppColors.textRed, backgroundColor: AppColors.kWhite);
+    }
+    else if (pw.characters.length > 20) {
+      Get.snackbar('eventz', 'Password must be less than 20 characters!', duration: Duration(seconds: 5),
           colorText: AppColors.textRed, backgroundColor: AppColors.kWhite);
     }
     else if (!regex.hasMatch(pwController.text)) {
@@ -575,7 +582,7 @@ class _SignUpViewState extends State<SignUpView> with BaseUI {
           colorText: AppColors.textRed, backgroundColor: AppColors.kWhite);
     }
     else if (confirmPWController.text != pwController.text) {
-      Get.snackbar('eventz', "The Passwords you have entered don't match".tr,
+      Get.snackbar('eventz', "Passwords do not match".tr,
           colorText: AppColors.textRed, backgroundColor: AppColors.kWhite);
     } else {
       apiService.check().then((check) {

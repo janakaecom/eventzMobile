@@ -138,6 +138,9 @@ class _ForgetPwOtpState extends State<ForgetPwOtp> with BaseUI {
                   ),
                   Column(
                     children: [
+                      SizedBox(
+                        height: 3,
+                      ),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.start,
                         children: [

@@ -153,8 +153,8 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> with BaseUI {
             GetUserResponse responseData = GetUserResponse.fromJson(json.decode(value.body));
             setState(() {
               profileData = responseData.result;
-              // imageUrl = profileData.profilePicURL;
-              dropDownTitleValue = profileData.title;
+              imageUrl = profileData.profilePicURL;
+              titleController.text = profileData.title;
               dropDownGenderValue = profileData.genderId == 1 ? "Male":"Female";
               firstNameController.text = profileData.firstName;
               lastNameController.text = profileData.lastName;
@@ -221,45 +221,40 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> with BaseUI {
 
   ///host registration call
   void updateProfileCall() {
-
+    String mobile = mobileController.text;
     setState(() {
       genderIdx = dropDownGenderValue == "Male" ? 1 : dropDownGenderValue == "Female" ? 2 : 0;
       print("dropDownGenderValue");
       print(genderIdx);
     });
-    if(titleController.text == "" || titleController.text == null) {
-      Get.snackbar('error'.tr, "The Title should be added",
-          colorText: AppColors.textRed,
-          backgroundColor: AppColors.kWhite);
-    }
-    else if(firstNameController.text == "" || firstNameController.text == null) {
-      Get.snackbar('error'.tr, "First name can't be empty",
+      if(firstNameController.text == "" || firstNameController.text == null) {
+      Get.snackbar('eventz', "Please enter first name",
           colorText: AppColors.textRed,
           backgroundColor: AppColors.kWhite);
     }
     else if(lastNameController.text == "" || lastNameController.text == null) {
-      Get.snackbar('error'.tr, "Last name can't be empty",
+      Get.snackbar('eventz', "Please enter last name",
           colorText: AppColors.textRed,
           backgroundColor: AppColors.kWhite);
     }
-    else if(genderIdx == null || genderIdx == 0) {
-      Get.snackbar('error'.tr, "Gender should be selected",
-          colorText: AppColors.textRed,
-          backgroundColor: AppColors.kWhite);
-    }
-    else if(countryIdx == null) {
-      Get.snackbar('error'.tr, "Country should be selected",
-          colorText: AppColors.textRed,
-          backgroundColor: AppColors.kWhite);
-    }
+      else if (_countryCodesDropDownValue == null || _countryCodesDropDownValue == '') {
+        Get.snackbar('eventz', 'Please select country code',
+            colorText: AppColors.textRed, backgroundColor: AppColors.kWhite);
+      }
+      else if (!GetUtils.isPhoneNumber(mobile)) {
+        Get.snackbar('eventz', 'Please enter valid mobile number',
+            colorText: AppColors.textRed, backgroundColor: AppColors.kWhite);
+      }
     else {
 
       apiService.check().then((check) {
-
+        if (mobile.characters.first == "0") {
+          setState(() {
+            mobile = mobile.substring(1, mobile.characters.length - 1);
+          });
+        }
         print(profileData.dob);
         print("profileData.dob)))))))");
-
-
 
 
         ProfileUpdateRequest request = ProfileUpdateRequest(
@@ -269,6 +264,7 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> with BaseUI {
             passport: passportNoController.text,
             address: addressController.text,
             dOB: fDate,
+            mobileNo: _countryCodesDropDownValue + mobileController.text,
             occupation: occupationController.text,
             workPlace: workPlaceController.text,
             emgContactName: emgContactNumberController.text,
@@ -286,14 +282,14 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> with BaseUI {
             if (value.statusCode == 200) {
               UpdateProfileResponse responseData =
               UpdateProfileResponse.fromJson(json.decode(value.body));
-              Get.snackbar("Success", responseData.result,
+              Get.snackbar("eventz", responseData.result,
                   colorText: AppColors.textGreenLight,
                   backgroundColor: AppColors.kWhite);
               // Get.off(LoginView());
             } else {
               RegisterErrorResponse responseData =
               RegisterErrorResponse.fromJson(json.decode(value.body));
-              Get.snackbar('error'.tr, responseData.message,
+              Get.snackbar('eventz', responseData.message,
                   colorText: AppColors.textRed,
                   backgroundColor: AppColors.kWhite);
             }
@@ -350,7 +346,7 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> with BaseUI {
                   ],
                 ),
                 child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 20,vertical: 40),
+                  padding: const EdgeInsets.symmetric(horizontal: 20,vertical: 20),
                   child: SingleChildScrollView(
                     child: Column(
                         children: [
@@ -395,16 +391,13 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> with BaseUI {
                             ),
                           ),
                           SizedBox(
-                            height: 10,
+                            height: 8,
                           ),
                           FLText(
                             displayText: "Profile Picture",
                             textColor: AppColors.buttonBlue,
                             setToWidth: false,
                             textSize: AppFonts.textFieldFontSize16,
-                          ),
-                          SizedBox(
-                            height: 10,
                           ),
                           SizedBox(
                             height: 8,
@@ -430,9 +423,7 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> with BaseUI {
                             inputType: TextInputType.text,
                             onChanged: (value) {},
                           ),
-                          SizedBox(
-                            height: 8,
-                          ),
+
                           SizedBox(
                             height: 8,
                           ),
@@ -484,9 +475,7 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> with BaseUI {
                           ),
 
 
-                          SizedBox(
-                            height: 8,
-                          ),
+
                           SizedBox(
                             height: 8,
                           ),
@@ -502,7 +491,7 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> with BaseUI {
                             ],
                           ),
                           SizedBox(
-                            height: 6,
+                            height: 5,
                           ),
                           Row(
                             children: [
@@ -513,7 +502,8 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> with BaseUI {
                                     borderRadius: BorderRadius.circular(10),
                                     border: Border.all(
                                         color: AppColors.TextGray.withOpacity(0.5),
-                                        width: 1.5)),
+                                        width: 1.4)
+                                ),
                                 child: Padding(
                                   padding: const EdgeInsets.symmetric(horizontal: 10),
                                   child: DropdownButtonHideUnderline(
@@ -561,7 +551,7 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> with BaseUI {
                                   readOnly: false,
                                   hint: "Enter mobile number",
                                   textController: mobileController,
-                                  inputType: TextInputType.text,
+                                  inputType: TextInputType.number,
                                   // onChanged: passwordValidationCheck
                                 ),
                               ),
@@ -594,7 +584,7 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> with BaseUI {
                               decoration: BoxDecoration(
                                 border: Border.all(
                                   color: AppColors.TextGray.withOpacity(0.5),
-                                  width: 1.5,
+                                  width: 1.4,
                                 ),
                                 borderRadius: BorderRadius.circular(10),
                               ),
@@ -713,7 +703,7 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> with BaseUI {
                             decoration: BoxDecoration(
                               border: Border.all(
                                 color: AppColors.TextGray.withOpacity(0.5),
-                                width: 1.5,
+                                width: 1.4,
                               ),
                               borderRadius: BorderRadius.circular(10),
                             ),
@@ -799,7 +789,7 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> with BaseUI {
                           InputRoundedTextField(
                             // hint: "E",
                             hintColor: AppColors.TextGray,
-                            readOnly: true,
+                            readOnly: false,
                             hint: "Enter your passport number",
                             textController: passportNoController,
                             inputType: TextInputType.text,
@@ -841,7 +831,7 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> with BaseUI {
                           Row(
                             children: [
                               FLText(
-                                displayText: "organization",
+                                displayText: "Organization",
                                 textColor: AppColors.textBlue,
                                 setToWidth: false,
                                 textSize: AppFonts.textFieldFontSize14,
@@ -854,7 +844,7 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> with BaseUI {
                           ),
                           InputRoundedTextField(
                             hintColor: AppColors.TextGray,
-                            readOnly: true,
+                            readOnly: false,
                             hint: "Enter your organization",
                             textController: workPlaceController,
                             inputType: TextInputType.text,
@@ -862,7 +852,7 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> with BaseUI {
                           ),
 
                           SizedBox(
-                            height: 40,
+                            height: 20,
                           ),
 
                           Center(

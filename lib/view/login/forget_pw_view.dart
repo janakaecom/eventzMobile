@@ -1,5 +1,4 @@
 import 'dart:convert';
-
 import 'package:eventz/configs/colors.dart';
 import 'package:eventz/configs/fonts.dart';
 import 'package:eventz/configs/images.dart';
@@ -10,7 +9,6 @@ import 'package:eventz/view/widget/fl_button.dart';
 import 'package:eventz/view/widget/fl_text.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-
 import '../widget/imput_square_text_field.dart';
 
 class ForgetPwView extends StatefulWidget {
@@ -22,7 +20,6 @@ class _ForgetPwViewState extends State<ForgetPwView> with BaseUI {
   TextEditingController emailController = new TextEditingController();
   TextEditingController mobileController = new TextEditingController();
 
-  FocusNode _PasswordFocusNode;
   bool isPasswordValidate = false;
   bool obscurePassword = true;
 
@@ -104,7 +101,7 @@ class _ForgetPwViewState extends State<ForgetPwView> with BaseUI {
                     // validator: validatePassword,
                     textController: emailController,
                     hint: "Enter your email",
-                    inputType: TextInputType.text,
+                    inputType: TextInputType.emailAddress,
                     // onChanged: passwordValidationCheck
                   ),
                   SizedBox(
@@ -155,7 +152,7 @@ class _ForgetPwViewState extends State<ForgetPwView> with BaseUI {
             } else {
               RegisterErrorResponse responseData =
                   RegisterErrorResponse.fromJson(json.decode(value.body));
-              Get.snackbar('error'.tr, responseData.message,
+              Get.snackbar('eventz', responseData.message,
                   colorText: AppColors.textRed,
                   backgroundColor: AppColors.kWhite);
             }

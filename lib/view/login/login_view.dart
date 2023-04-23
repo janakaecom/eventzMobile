@@ -39,6 +39,7 @@ class _LoginViewState extends State<LoginView> with BaseUI {
       emailController.text = widget.email.toString();
     }
     else{
+      emailController.text = '';
       // emailController.text = "maryse@gmail.com";
       // pwController.text = "Shanuka@97";
     }
@@ -239,7 +240,7 @@ class _LoginViewState extends State<LoginView> with BaseUI {
             backgroundColor: AppColors.buttonBlue,
             titleFontColor: AppColors.kWhite,
             borderColor: Colors.transparent,
-            minWidth: 120,
+            minWidth: 100,
             height: 40,
           )
         ],
@@ -247,29 +248,33 @@ class _LoginViewState extends State<LoginView> with BaseUI {
     );
   }
 
+
   void loginAction() {
+
     String pw = pwController.text;
     String email = emailController.text;
 
 
-    if (email.isEmpty && pw.isEmpty) {
-      Get.snackbar('eventz', "Please enter valid email and password", duration: Duration(seconds: 5),
-          colorText: AppColors.textRed, backgroundColor: AppColors.kWhite);
-    }
-    else if (email.isEmpty) {
+    if (email.isEmpty) {
+      print('dmmmmmmmmme');
       Get.snackbar('eventz', "Please enter valid email", duration: Duration(seconds: 5),
-          colorText: AppColors.textRed, backgroundColor: AppColors.kWhite);
-    }
-    else if (pw.isEmpty) {
-      Get.snackbar('eventz', "Please enter valid password", duration: Duration(seconds: 5),
           colorText: AppColors.textRed, backgroundColor: AppColors.kWhite);
     }
     else if (!GetUtils.isEmail(email)) {
       Get.snackbar("eventz", 'invalid_email'.tr, duration: Duration(seconds: 5),
           colorText: AppColors.textRed, backgroundColor: AppColors.kWhite);
     }
-   else if (email.characters.length > 100) {
+    else if (pw.isEmpty) {
+      print('dmmmmmmmmme123444');
+      Get.snackbar('eventz', "Please enter valid password", duration: Duration(seconds: 5),
+          colorText: AppColors.textRed, backgroundColor: AppColors.kWhite);
+    }
+    else if (email.characters.length > 100) {
       Get.snackbar('eventz', "Email is too long!", duration: Duration(seconds: 5),
+          colorText: AppColors.textRed, backgroundColor: AppColors.kWhite);
+    }
+    else if (pw.isEmpty) {
+      Get.snackbar('eventz', "Please enter valid password", duration: Duration(seconds: 5),
           colorText: AppColors.textRed, backgroundColor: AppColors.kWhite);
     }
     // else if (pw.characters.length > 20) {

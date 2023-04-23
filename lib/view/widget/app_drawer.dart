@@ -203,8 +203,8 @@ class _AppDrawerState extends State<AppDrawer> with BaseUI {
                 borderRadius: BorderRadius.circular(60),
                 child: Image.network(
                   imageUrl,
-                  width: 85,
-                  height: 85,
+                  width: 70,
+                  height: 70,
                   fit: BoxFit.cover,
                 ),
               ),

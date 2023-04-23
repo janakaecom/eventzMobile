@@ -101,7 +101,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> with BaseUI
             print("cdcd");
             print(value.body);
             RegisterErrorResponse responseData = RegisterErrorResponse.fromJson(json.decode(value.body));
-            Get.snackbar('error'.tr, responseData.message,
+            Get.snackbar('eventz', responseData.message,
                 colorText: AppColors.textRed,
                 backgroundColor: AppColors.kWhite);
           }
@@ -152,8 +152,6 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> with BaseUI
                       padding: const EdgeInsets.all(20),
                       child: Column(
                         children: [
-
-
                           Column(
                             children: [
                               Row(
@@ -305,7 +303,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> with BaseUI
                                               backgroundColor: AppColors.kWhite);
                                         }
                                         else if (newPasswordController.text == null || newPasswordController.text == "" ){
-                                          Get.snackbar('eventz', 'Please enter a new password',
+                                          Get.snackbar('eventz', 'Please enter valid password including uppercase letters, lowercase letters, numbers, special characters and minimum 8 characters',
                                               colorText: AppColors.textRed,
                                               backgroundColor: AppColors.kWhite);
                                         }
